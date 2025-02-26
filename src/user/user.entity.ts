@@ -14,6 +14,6 @@ export class User {
   @Column()
   password: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({ default: 'user' }) // poate fi 'admin' sau 'user'
+  role: string;
 }

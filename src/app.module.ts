@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { User } from './user/user.entity';
 import { Survey } from './survey/survey.entity';
+import { AuthModule } from './auth/auth.module';  // ✅ Importă modulul de autentificare
+import { UserModule } from './user/user.module'; // ✅ Importă modulul utilizatorilor
+import { AdminModule } from './admin/admin.module'; // Importăm modulul Admin
 
 @Module({
   imports: [
@@ -21,7 +24,11 @@ import { Survey } from './survey/survey.entity';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    AuthModule,  // ✅ Importă autentificarea
+    UserModule,
+    AdminModule
   ],
+  
   controllers: [AppController],
 })
 export class AppModule {}
