@@ -32,3 +32,4 @@ import { AdminModule } from './admin/admin.module'; // Importăm modulul Admin
   controllers: [AppController],
 })
 export class AppModule {}
+
