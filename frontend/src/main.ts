@@ -8,6 +8,7 @@ import { AdminDashboardComponent } from './app/pages/admin-dashboard/admin-dashb
 import { LoginComponent } from './app/pages/login/login.component';
 import { authInterceptor } from './app/services/auth-interceptor.service';
 import { AuthGuard } from './app/guards/auth.guard';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -18,6 +19,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    importProvidersFrom(FormsModule) // ✅ Adaugă suport pentru ngModel
+    importProvidersFrom(FormsModule),// ✅ Adaugă suport pentru ngModel
+    JwtHelperService 
   ]
 }).catch(err => console.error(err));
