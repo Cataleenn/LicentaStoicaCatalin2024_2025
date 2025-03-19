@@ -1,0 +1,122 @@
+/* Fundal cu gradient modern */
+/* Asigură-te că body ocupă 100% din ecran și aplică gradient */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: rgb(24,24,173);
+background: radial-gradient(circle, rgba(24,24,173,0.9752275910364145) 22%, rgba(19,13,128,1) 42%, rgba(86,166,205,1) 82%);
+    background-repeat: no-repeat; /* 🔹 Evită repetarea */
+    background-attachment: fixed; /* 🔹 Asigură întinderea pe tot ecranul */
+    background-size: cover; /* 🔹 Acoperă întregul ecran fără a crea coloane */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+  
+  /* Containerul formularului */
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  /* Cardul de login */
+  .login-card {
+    width: 380px;
+    padding: 30px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 25px;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  
+  /* Animație pentru efect vizual */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Titlul */
+  h2 {
+    margin-bottom: 20px;
+    color: #1a2a6c;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  h2::before {
+    content: "🔐";
+    font-size: 22px;
+    margin-right: 8px;
+  }
+  
+  /* Grupul de input-uri */
+.input-group {
+    width: 100%; /* Se asigură că input-urile se aliniază corect */
+    margin-bottom: 15px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Input-urile trebuie să ocupe întreaga lățime */
+  input {
+    width: 100%;  /* Se asigură că umple containerul */
+    padding: 12px;
+    border: 2px solid #0072ff;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: 0.3s;
+    box-sizing: border-box; /* Evită probleme cu margin/padding */
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #00c6ff;
+    box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
+  }
+  
+  /* Butonul de autentificare */
+  button {
+    width: 50%;
+    padding: 12px;
+    background: linear-gradient(135deg, #0072ff, #005bb5);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  button:hover {
+    background: linear-gradient(135deg, #005bb5, #0040a0);
+  }
+  
+  .error-message {
+    color: #ff4d4d; /* Roșu aprins pentru vizibilitate */
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center; /* Centrează textul */
+    padding: 10px;
+    
+    
+}
+
+
+  
+  

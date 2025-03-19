@@ -1,6 +1,24 @@
-<form (ngSubmit)="onSubmit($event)">
-    <input type="email" [(ngModel)]="email" name="email" required />
-    <input type="password" [(ngModel)]="password" name="password" required />
-    <button type="submit">Login</button>
-  </form>
-  
+<div class="login-container">
+  <div class="login-card">
+    <h2> Autentificare</h2>
+    <form (submit)="onSubmit($event)">
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" [(ngModel)]="email" name="email" required>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Parolă</label>
+        <input id="password" type="password" [(ngModel)]="password" name="password" required>
+      </div>
+
+      <button type="submit" [disabled]="!email || !password">
+        Autentifică-te
+      </button>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </form>
+  </div>
+</div>
