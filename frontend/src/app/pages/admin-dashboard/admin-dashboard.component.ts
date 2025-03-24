@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { NavbarComponent } from '../../navbar/navbar.component'; // ajustează dacă e în alt folder
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [NavbarComponent], // ⬅️ Importă navbarul aici
   templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.css'
+  styleUrls: ['./admin-dashboard.component.css'] // ⬅️ era greșit: "styleUrl" → "styleUrls"
 })
 export class AdminDashboardComponent {
   constructor(private authService: AuthService) {}
@@ -13,5 +15,4 @@ export class AdminDashboardComponent {
   logout() {
     this.authService.logout();
   }
-
 }
