@@ -1,0 +1,9 @@
+:host {
+    display: block;
+    height: 100vh;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    padding-top: 64px; /* 🧱 să nu se suprapună cu navbar-ul */
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  

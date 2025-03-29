@@ -1,7 +1,12 @@
-<mat-toolbar color="primary" class="px-4">
-    <span class="text-lg font-semibold">Admin Dashboard</span>
-    <span class="spacer"></span>
-  
+<mat-toolbar color="primary" class="toolbar">
+  <span class="title">Admin Dashboard</span>
+
+  <div class="center-buttons">
     <button mat-button routerLink="/creare-chestionar">Creare Chestionar</button>
-  </mat-toolbar>
-  
+    <!-- Adaugi alte butoane aici -->
+  </div>
+
+  <span class="spacer"></span>
+
+  <button mat-button (click)="logout()">Logout</button>
+</mat-toolbar>

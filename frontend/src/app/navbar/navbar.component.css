@@ -1,4 +1,55 @@
-.spacer {
-    flex: 1 1 auto;
-  }
+.toolbar {
   
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(24, 24, 173, 0.975);
+  color: white;
+  position: fixed;        /* 👈 face bara să fie fixă */
+  top: 0;                 /* 👈 o fixează în partea de sus */
+  left: 0;
+  right: 0;
+  z-index: 1000;          /* 👈 stă deasupra conținutului */
+  padding: 0 24px;
+  height: 64px;           /* standard Material height */
+}
+
+
+.title {
+  margin-right: 16px;
+  color: white;
+}
+
+.center-buttons {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.spacer {
+  width: auto;
+  margin-left: auto;
+}
+/* Stil de bază pentru toate butoanele din navbar */
+mat-toolbar button {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Efect de hover */
+mat-toolbar button:hover {
+  background-color: rgba(100, 149, 237, 0.3); /* un albastru mai deschis */
+  border-color: white;
+  cursor: pointer;
+}
+
+/* Opțional: active/focus efect */
+mat-toolbar button:focus,
+mat-toolbar button:active {
+  outline: none;
+  background-color: rgba(100, 149, 237, 0.5);
+}
