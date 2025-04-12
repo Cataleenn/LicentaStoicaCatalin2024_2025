@@ -3,15 +3,16 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { User } from './user/user.entity';
-import { Survey } from './survey/survey.entity';
-import { AuthModule } from './auth/auth.module';  // ✅ Importă modulul de autentificare
-import { UserModule } from './user/user.module'; // ✅ Importă modulul utilizatorilor
-import { AdminModule } from './admin/admin.module'; // Importăm modulul Admin
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { AdminModule } from './admin/admin.module';
+import { SurveyModule } from './survey/survey.module';  // ✅ Importă SurveyModule
+import { Survey } from './survey/survey.entity';  // Importă entitatea Survey
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Face ca variabilele să fie disponibile oriunde
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -20,16 +21,16 @@ import { AdminModule } from './admin/admin.module'; // Importăm modulul Admin
       username: process.env.DATABASE_USER || 'survey_admin',
       password: process.env.DATABASE_PASSWORD || 'adminpass',
       database: process.env.DATABASE_NAME || 'survey_data_db',
-      entities: [User, Survey],
+      entities: [User, Survey],  // Asigură-te că entitățile sunt incluse
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true,  // Sincronizează entitățile cu baza de date
     }),
-    AuthModule,  // ✅ Importă autentificarea
+    AuthModule,
     UserModule,
+    SurveyModule,  // ✅ SurveyModule este importat corect
     AdminModule
   ],
-  
-  controllers: [AppController],
+  controllers: [AppController],  // Nu mai adăuga SurveyController aici
+  providers: [],
 })
 export class AppModule {}
-

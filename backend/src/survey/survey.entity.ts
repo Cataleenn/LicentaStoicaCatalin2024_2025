@@ -8,17 +8,11 @@ export class Survey {
   @Column()
   formTitle: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ nullable: true })
   description: string;
 
-  @Column({ type: 'jsonb' }) // Stocăm întrebările ca JSONB
+  @Column('jsonb')
   questions: any;
-
-  @Column({ type: 'jsonb' }) // Stocăm datele respondentului
-  respondent: any;
-
-  @Column({ type: 'jsonb' }) // Stocăm progresul utilizatorului
-  progress: any;
 
   @CreateDateColumn()
   createdAt: Date;

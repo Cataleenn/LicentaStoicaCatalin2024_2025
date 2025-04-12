@@ -1,0 +1,17 @@
+<form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+  <label for="formTitle">Chestionar Titlu</label>
+  <input id="formTitle" formControlName="formTitle" required />
+
+  <label for="description">Descriere</label>
+  <textarea id="description" formControlName="description"></textarea>
+
+  <div formArrayName="questions">
+    <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i">
+      <label for="questionText">Întrebare {{ i + 1 }}</label>
+      <input formControlName="text" type="text" required />
+    </div>
+  </div>
+
+  <button type="button" (click)="addQuestion()">Adaugă Întrebare</button>
+  <button type="submit" [disabled]="!surveyForm.valid">Trimite</button>
+</form>
