@@ -8,7 +8,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/auth'; // Schimbă cu URL-ul backend-ului tău
+  private apiUrl = 'http://localhost:3000/api/auth'; // Schimbă cu URL-ul backend-ului tău
   private jwtHelper = new JwtHelperService();
   constructor(private http: HttpClient, private router: Router) {}
 

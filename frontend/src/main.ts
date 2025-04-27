@@ -16,7 +16,7 @@ import { SurveyCreateComponent } from './app/survey-create/survey-create.compone
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
-  { path: 'creare-chestionar', component: SurveyCreateComponent }
+  { path: 'creare-chestionar', component: SurveyCreateComponent, canActivate: [AuthGuard]}
 ];
 
 bootstrapApplication(AppComponent, {

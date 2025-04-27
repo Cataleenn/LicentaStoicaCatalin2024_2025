@@ -12,7 +12,7 @@ export class Survey {
   description: string;
 
   @Column('jsonb')
-  questions: any;
+  questions: any[];
 
   @CreateDateColumn()
   createdAt: Date;

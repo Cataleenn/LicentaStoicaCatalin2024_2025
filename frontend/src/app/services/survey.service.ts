@@ -1,18 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { Survey } from '../models/survey.model';  // Importă modelul corect
 
 @Injectable({
   providedIn: 'root'
 })
 export class SurveyService {
-  private apiUrl = `${environment.apiUrl}/survey`;  // URL-ul backend-ului
+  private apiUrl = 'http://localhost:3000/api/survey';
 
   constructor(private http: HttpClient) {}
 
-  createSurvey(surveyData: Survey): Observable<Survey> {
-    return this.http.post<Survey>(this.apiUrl, surveyData);  // Trimite cererea POST
+  createSurvey(surveyData: any): Observable<any> {
+    return this.http.post(this.apiUrl, surveyData);  // Trimiterea JSON-ului către backend
   }
 }

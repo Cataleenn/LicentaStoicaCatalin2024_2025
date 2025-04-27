@@ -1,17 +1,36 @@
 <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
-  <label for="formTitle">Chestionar Titlu</label>
+  <label for="formTitle">Titlu Chestionar</label>
   <input id="formTitle" formControlName="formTitle" required />
 
   <label for="description">Descriere</label>
   <textarea id="description" formControlName="description"></textarea>
 
-  <div formArrayName="questions">
-    <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i">
+  <div *ngFor="let question of questions; let i = index">
+    <div [formGroupName]="i">
       <label for="questionText">Întrebare {{ i + 1 }}</label>
-      <input formControlName="text" type="text" required />
+      <input [(ngModel)]="question.questionText" type="text" placeholder="Întrebare" required />
+
+      <label for="questionType">Tipul întrebării</label>
+      <select [(ngModel)]="question.questionType">
+        <option value="open_ended">Text liber</option>
+        <option value="single_choice">Alegere unică</option>
+        <option value="multiple_choice">Alegere multiplă</option>
+        <option value="scale">Scală</option>
+      </select>
+
+      <!-- Opțiuni pentru întrebările de tipul "single_choice" și "multiple_choice" -->
+      <div *ngIf="question.questionType === 'single_choice' || question.questionType === 'multiple_choice'">
+        <div *ngFor="let option of question.options; let j = index">
+          <input [(ngModel)]="option.text" type="text" placeholder="Opțiune" />
+          <button type="button" (click)="removeOption(i, j)">Șterge opțiune</button>
+        </div>
+        <button type="button" (click)="addOption(i)">Adaugă opțiune</button>
+      </div>
+
+      <button type="button" (click)="removeQuestion(i)">Șterge întrebare</button>
     </div>
   </div>
 
-  <button type="button" (click)="addQuestion()">Adaugă Întrebare</button>
+  <button type="button" (click)="addQuestion()">Adaugă întrebare</button>
   <button type="submit" [disabled]="!surveyForm.valid">Trimite</button>
 </form>

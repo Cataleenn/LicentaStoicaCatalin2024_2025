@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
 
 export class CreateSurveyDto {
   @IsString()
@@ -6,8 +6,12 @@ export class CreateSurveyDto {
   formTitle: string;
 
   @IsString()
+  @IsOptional()
   description?: string;
 
+  @IsArray()
+  questions: any[];
+
   @IsString()
-  questions: string;  // Ar trebui să fie un string JSON în backend
+  lastModified: string;
 }

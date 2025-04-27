@@ -1,48 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { SurveyService } from '../services/survey.service';  // Importă serviciul corect
-import { Survey } from '../models/survey.model';  // Importă modelul Survey
+import { CommonModule } from '@angular/common';  // Importă CommonModule pentru ngIf și ngFor
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // Importă FormsModule și ReactiveFormsModule
 
-// Importă modulele necesare
-import { CommonModule } from '@angular/common';  // ✅ Importă CommonModule pentru ngFor
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // ✅ Importă FormsModule și ReactiveFormsModule
 
 @Component({
   selector: 'app-survey-create',
-  standalone: true,  // Definește componenta ca fiind standalone
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],  // ✅ Importă CommonModule, FormsModule și ReactiveFormsModule
   templateUrl: './survey-create.component.html',
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],  // ✅ Importă modulele necesare
   styleUrls: ['./survey-create.component.css']
 })
 export class SurveyCreateComponent implements OnInit {
-  surveyForm!: FormGroup;  // Folosește operatorul `!` pentru a spune TypeScript că va fi inițializat
+  surveyForm!: FormGroup;
+  questions: any[] = [];  // Array de întrebări pentru chestionar
 
   constructor(private fb: FormBuilder, private surveyService: SurveyService) {}
 
   ngOnInit(): void {
-    // Inițializarea formularului
     this.surveyForm = this.fb.group({
       formTitle: ['', Validators.required],  // Form title este obligatoriu
-      description: [''],
-      questions: this.fb.array([this.createQuestion()])  // Crearea întrebărilor
+      description: ['']
     });
   }
 
-  // Getter pentru întrebările din formular
-  get questions() {
-    return this.surveyForm.get('questions') as FormArray;
-  }
-
-  // Funcția de creare a întrebării
-  createQuestion(): FormGroup {
-    return this.fb.group({
-      text: ['', Validators.required]  // Textul întrebării este obligatoriu
-    });
-  }
-
-  // Funcția de adăugare a unei întrebări suplimentare
+  // Adăugăm o întrebare nouă
   addQuestion() {
-    this.questions.push(this.createQuestion());  // Adaugă o întrebare
+    this.questions.push({
+      questionText: '',
+      questionType: 'open_ended',  // Sau orice tip dorești
+      options: []  // Opțiuni pentru întrebările de tipul "single_choice" și "multiple_choice"
+    });
+  }
+
+  // Adăugăm o opțiune pentru o întrebare
+  addOption(questionIndex: number) {
+    const newOption = {
+      text: ''  // Opțiune goală
+    };
+    this.questions[questionIndex].options.push(newOption);
+  }
+
+  // Ștergem o întrebare
+  removeQuestion(index: number) {
+    this.questions.splice(index, 1);
+  }
+
+  // Ștergem o opțiune
+  removeOption(questionIndex: number, optionIndex: number) {
+    this.questions[questionIndex].options.splice(optionIndex, 1);
   }
 
   // Funcția de trimitere a formularului
@@ -50,14 +56,21 @@ export class SurveyCreateComponent implements OnInit {
     if (this.surveyForm.valid) {
       const surveyData = this.surveyForm.value;
 
-      // Verifică dacă 'formTitle' este completat
-      if (!surveyData.formTitle) {
-        console.error('Form title is required!');
-        return;
-      }
+      // Crearea unui obiect JSON pentru chestionar
+      const jsonSurvey = {
+        formTitle: surveyData.formTitle,
+        description: surveyData.description,
+        questions: this.questions.map((question: any, index: number) => ({
+          questionId: index + 1,
+          text: question.questionText,
+          type: question.questionType,
+          options: question.options,  // Opțiuni pentru întrebările "single_choice" și "multiple_choice"
+          required: true  // De exemplu, poți adăuga un câmp pentru validare
+        }))
+      };
 
-      // Trimite cererea la serviciu
-      this.surveyService.createSurvey(surveyData).subscribe(
+      // Trimite JSON-ul către backend
+      this.surveyService.createSurvey(jsonSurvey).subscribe(
         (response) => {
           console.log('Survey created!', response);
         },

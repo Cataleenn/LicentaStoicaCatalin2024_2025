@@ -7,15 +7,13 @@ import { CreateSurveyDto } from './create-survey.dto';
 @Injectable()
 export class SurveyService {
   constructor(
-    @InjectRepository(Survey)  // Asigură-te că folosești corect @InjectRepository
-    private readonly surveyRepository: Repository<Survey>,  // SurveyRepository
+    @InjectRepository(Survey)
+    private readonly surveyRepository: Repository<Survey>,
   ) {}
 
   async createSurvey(createSurveyDto: CreateSurveyDto): Promise<Survey> {
-    const newSurvey = this.surveyRepository.create(createSurveyDto);  // Folosește repository-ul corect
-    await this.surveyRepository.save(newSurvey);
-    return newSurvey;
+    const survey = this.surveyRepository.create(createSurveyDto);
+    await this.surveyRepository.save(survey);
+    return survey;
   }
-
-  // Altele...
 }
