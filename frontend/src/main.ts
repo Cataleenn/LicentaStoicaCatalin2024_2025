@@ -12,11 +12,13 @@ import { authInterceptor } from './app/services/auth-interceptor.service';
 import { AuthGuard } from './app/guards/auth.guard';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { SurveyCreateComponent } from './app/survey-create/survey-create.component';
+import { SurveyViewComponent } from './app/survey-view/survey-view.component';  // Importă SurveyViewComponent
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
-  { path: 'creare-chestionar', component: SurveyCreateComponent, canActivate: [AuthGuard]}
+  { path: 'creare-chestionar', component: SurveyCreateComponent, canActivate: [AuthGuard] },
+  { path: 'survey/:id', component: SurveyViewComponent, canActivate: [AuthGuard] }  // Adaugă ruta pentru SurveyViewComponent
 ];
 
 bootstrapApplication(AppComponent, {

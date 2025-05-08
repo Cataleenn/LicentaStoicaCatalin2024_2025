@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany  } from 'typeorm';
+import { Response } from './response.entity'; 
 
 @Entity()
 export class Survey {
@@ -16,4 +17,7 @@ export class Survey {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => Response, (response) => response.survey)  // Legătura cu Response
+  responses: Response[]
 }
