@@ -22,16 +22,16 @@
 
       <!-- Adăugare opțiuni pentru întrebările de tip single_choice sau multiple_choice -->
       <div *ngIf="question.get('questionType')?.value === 'single_choice' || question.get('questionType')?.value === 'multiple_choice'">
-
+        <div *ngIf="questionAllowsOptions(question)">
         <div formArrayName="options">
           <div *ngFor="let option of getOptions(i).controls; let j = index" [formGroupName]="j">
             <label for="optionText">Opțiune {{ j + 1 }}</label>
             <input formControlName="text" type="text" required placeholder="Textul opțiunii" />
-            <input formControlName="value" type="text" required placeholder="Valoarea opțiunii" />
             <button type="button" (click)="removeOption(i, j)">Șterge opțiune</button>
           </div>
         </div>
         <button type="button" (click)="addOption(i)">Adaugă opțiune</button>
+        </div>
       </div>
 
       <button type="button" (click)="removeQuestion(i)">Șterge întrebare</button>

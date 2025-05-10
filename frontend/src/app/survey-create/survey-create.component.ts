@@ -33,8 +33,13 @@ export class SurveyCreateComponent implements OnInit {
       questionText: ['', Validators.required],
       questionType: ['single_choice', Validators.required],
       options: this.fb.array([]),
+      response: this.fb.control([])
     });
   }
+
+  
+
+
 
   addQuestion() {
     this.questions.push(this.createQuestion());
@@ -56,6 +61,12 @@ export class SurveyCreateComponent implements OnInit {
   removeQuestion(index: number) {
     this.questions.removeAt(index);
   }
+  
+  questionAllowsOptions(question: AbstractControl): boolean {
+  const type = question.get('questionType')?.value;
+  return type === 'single_choice' || type === 'multiple_choice';
+}
+
 
   onSubmit() {
     if (this.surveyForm.valid) {
