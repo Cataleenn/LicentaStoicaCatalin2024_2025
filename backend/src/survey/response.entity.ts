@@ -1,5 +1,4 @@
 // src/survey/response.entity.ts
-
 import {
   Entity,
   Column,
@@ -8,7 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Survey } from './survey.entity'; // Asigură-te că entitatea Survey este corect definită
+import { Survey } from './survey.entity';
 
 @Entity('survey_responses')
 export class Response {
@@ -24,10 +23,16 @@ export class Response {
   @Column({ default: false })
   isComplete: boolean;
 
+  @Column({ type: 'jsonb', nullable: true }) // ✅ nou!
+  assembly: {
+    rotations: number;
+    componentsPlaced: { componentId: string; slotId: string }[];
+  };
+
   @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => Survey, survey => survey.responses)
-  @JoinColumn({ name: 'survey_id' }) // poate fi și 'form_id' dacă ai așa în DB
+  @JoinColumn({ name: 'survey_id' }) // sau 'form_id' dacă se potrivește
   survey: Survey;
 }

@@ -11,6 +11,7 @@ export class ResponseController {
   @Post()
   async submit(@Body() dto: CreateResponseDto) {
     const { formId, userId, answers, isComplete } = dto;
-    return this.responseService.saveResponse(formId, userId, answers, isComplete);
+    return this.responseService.saveResponse(dto); // DTO = CreateResponseDto
+
   }
 }

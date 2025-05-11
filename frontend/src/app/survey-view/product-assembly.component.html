@@ -1,0 +1,53 @@
+<!-- Rotate Button -->
+<div class="controls">
+  <button (click)="rotateBoard()">🔄 Rotate ({{ currentSide }})</button>
+</div>
+
+<!-- Board Container -->
+<div class="board">
+  <!-- Slots for the current side -->
+  <div
+    *ngFor="let slot of visibleSlots"
+    class="slot"
+    [ngStyle]="{
+      top: slot.topPercent * 100 + '%',
+      left: slot.leftPercent * 100 + '%'
+    }"
+    (drop)="onDrop(slot)"
+    (dragover)="allowDrop($event)"
+  ></div>
+
+  <!-- Placed Components -->
+  <ng-container *ngFor="let comp of components.concat(cover)">
+    <div
+      *ngIf="comp.placedIn"
+      class="component"
+      [ngStyle]="getSlotPosition(comp.placedIn)"
+      [style.backgroundColor]="comp.color"
+      draggable="true"
+      (dragstart)="onDragStart(comp)"
+    >
+      {{ comp.name }}
+    </div>
+  </ng-container>
+</div>
+
+<!-- Component Pool (Unplaced Components) -->
+<div class="component-pool">
+  <ng-container *ngFor="let comp of components.concat(cover)">
+    <div
+      *ngIf="!comp.placedIn"
+      class="component"
+      [style.backgroundColor]="comp.color"
+      draggable="true"
+      (dragstart)="onDragStart(comp)"
+    >
+      {{ comp.name }}
+    </div>
+  </ng-container>
+</div>
+
+<!-- Submit Button -->
+<div class="submit">
+  <button (click)="submitAssembly()">✅ Confirm Assembly</button>
+</div>

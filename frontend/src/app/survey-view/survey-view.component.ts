@@ -4,13 +4,18 @@ import { SurveyService } from '../services/survey.service';
 import { FormBuilder, FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ProductAssemblyComponent } from './product-assembly.component';
+
+
+
+
 
 @Component({
   selector: 'app-survey-view',
   templateUrl: './survey-view.component.html',
   styleUrls: ['./survey-view.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [CommonModule, ReactiveFormsModule,ProductAssemblyComponent]
 })
 export class SurveyViewComponent implements OnInit {
   surveyForm!: FormGroup;
@@ -18,6 +23,12 @@ export class SurveyViewComponent implements OnInit {
   surveyData: any;
   errorMessage: string = '';
   isLoading: boolean = true;
+  assemblyCompleted = false;
+assemblyData: {
+  rotations: number;
+  componentsPlaced: { componentId: string; slotId: string }[];
+} | null = null;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -57,6 +68,14 @@ export class SurveyViewComponent implements OnInit {
       }
     );
   }
+  onAssemblyComplete(event: {
+  rotations: number;
+  componentsPlaced: { componentId: string; slotId: string }[];
+}) {
+  this.assemblyCompleted = true;
+  this.assemblyData = event;
+}
+
 
   get questions(): FormArray {
     return this.surveyForm.get('questions') as FormArray;
@@ -167,11 +186,13 @@ onSubmit(): void {
     });
 
     const payload = {
-      formId: this.surveyId,       // obținut din URL
-      userId: 1,                   // hardcodat acum, ideal e să-l iei din user auth
-      answers: answers,
-      isComplete: true
-    };
+  formId: this.surveyId,
+  userId: 1,
+  answers: answers,
+  isComplete: true,
+  assembly: this.assemblyData
+};
+
 
     this.surveyService.submitResponses(this.surveyId, payload).subscribe({
       next: (res) => {

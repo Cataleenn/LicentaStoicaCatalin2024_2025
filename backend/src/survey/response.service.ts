@@ -17,22 +17,19 @@ export class ResponseService {
     private readonly surveyRepo: Repository<Survey>,
   ) {}
 
-  async saveResponse(
-    formId: number,
-    userId: number,
-    answers: Record<string, any>,
-    isComplete: boolean,
-  ): Promise<Response> {
-    const survey = await this.surveyRepo.findOne({ where: { id: formId } });
-    if (!survey) throw new NotFoundException(`Survey with id ${formId} not found`);
+  async saveResponse(dto: CreateResponseDto): Promise<Response> {
+  const survey = await this.surveyRepo.findOne({ where: { id: dto.formId } });
+  if (!survey) throw new NotFoundException(`Survey with id ${dto.formId} not found`);
 
-    const response = this.responseRepo.create({
-      userId,
-      answers,
-      isComplete,
-      survey,
-    });
+  const response = this.responseRepo.create({
+    userId: dto.userId,
+    answers: dto.answers,
+    isComplete: dto.isComplete,
+    assembly: dto.assembly, // ✅ salvează și asamblarea
+    survey: survey
+  });
 
-    return await  this.responseRepo.save(response);
-  }
+  return await this.responseRepo.save(response);
+}
+
 }

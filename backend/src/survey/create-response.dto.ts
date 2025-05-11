@@ -1,6 +1,5 @@
 // src/survey/dto/create-response.dto.ts
-
-import { IsNumber, IsBoolean, IsObject } from 'class-validator';
+import { IsNumber, IsBoolean, IsObject, IsOptional } from 'class-validator';
 
 export class CreateResponseDto {
   @IsNumber()
@@ -14,4 +13,11 @@ export class CreateResponseDto {
 
   @IsBoolean()
   isComplete: boolean;
+
+  @IsOptional()
+  @IsObject()
+  assembly?: {
+    rotations: number;
+    componentsPlaced: { componentId: string; slotId: string }[];
+  };
 }
