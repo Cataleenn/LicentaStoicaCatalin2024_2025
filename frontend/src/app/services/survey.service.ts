@@ -21,7 +21,8 @@ export class SurveyService {
   }
 
   // Metoda pentru a trimite răspunsurile la backend
-  submitResponses(surveyId: number, responses: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${surveyId}/submit`, responses);
-  }
+ submitResponses(surveyId: number, responses: any): Observable<any> {
+  return this.http.post(`http://localhost:3000/api/responses`, responses);
+}
+
 }

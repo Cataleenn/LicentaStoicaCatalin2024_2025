@@ -1,0 +1,83 @@
+<!-- Fixed survey-view.component.html -->
+<div class="survey-container" *ngIf="surveyData">
+  <h1>{{ getSurveyTitle() }}</h1>
+  <p *ngIf="getSurveyDescription()">{{ getSurveyDescription() }}</p>
+
+  <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+    <div *ngIf="questions.controls.length === 0" class="alert">
+      No questions found in this survey.
+    </div>
+    
+    <div formArrayName="questions">
+      <!-- Loop through each question -->
+      <div *ngFor="let question of questions.controls; let i = index" class="question-container">
+        <div [formGroupName]="i">
+          <h3>{{ question.get('questionText')?.value || 'Question ' + (i+1) }}</h3>
+          
+          <!-- Radio buttons for multiple choice questions -->
+          <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
+  <div *ngIf="getOptions(i).controls.length === 0" class="alert">
+    No options available for this question.
+  </div>
+  
+  <div *ngFor="let option of getOptions(i).controls; let j = index">
+    <input type="checkbox" 
+           [id]="'q' + i + 'opt' + j" 
+           [value]="option.get('value')?.value"
+           (change)="onCheckboxChange($event, question)">
+    <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
+  </div>
+</div>
+
+           <div *ngIf="question.get('questionType')?.value === 'single-choice'">
+            <div *ngIf="getOptions(i).controls.length === 0" class="alert">
+              No options available for this question.
+            </div>
+            
+            <div *ngFor="let option of getOptions(i).controls; let j = index">
+              <input type="radio" 
+                     [id]="'q' + i + 'opt' + j" 
+                     [value]="option.get('value')?.value" 
+                     formControlName="response">
+              <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
+            </div>
+          </div>
+          
+          <!-- Text input for text questions -->
+          <div *ngIf="question.get('questionType')?.value === 'text'">
+            <input type="text" formControlName="response" class="text-input" placeholder="Enter your answer">
+          </div>
+          
+          
+
+         
+        </div>
+      </div>
+    </div>
+    
+    <button type="submit" class="submit-btn">Submit</button>
+  </form>
+  
+  <!-- DEBUG INFORMATION -->
+  <div class="debug-info">
+    <h3>Debug Information</h3>
+    <p><strong>Survey ID:</strong> {{ surveyId }}</p>
+    <details>
+      <summary>Raw Survey Data</summary>
+      <pre>{{ surveyData | json }}</pre>
+    </details>
+    <details>
+      <summary>Form Value</summary>
+      <pre>{{ surveyForm.value | json }}</pre>
+    </details>
+  </div>
+</div>
+
+<div class="loading" *ngIf="isLoading">
+  Loading survey...
+</div>
+
+<div class="error" *ngIf="errorMessage && !isLoading">
+  <h2>Error</h2>
+  <p>{{ errorMessage }}</p>
+</div>

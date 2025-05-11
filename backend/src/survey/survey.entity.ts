@@ -1,7 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany  } from 'typeorm';
-import { Response } from './response.entity'; 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { Response } from './response.entity';
 
-@Entity()
+@Entity() // denumire explicită în DB, opțional
 export class Survey {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,6 +24,6 @@ export class Survey {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(() => Response, (response) => response.survey)  // Legătura cu Response
-  responses: Response[]
+  @OneToMany(() => Response, (response) => response.survey, { cascade: true })
+  responses: Response[];
 }
