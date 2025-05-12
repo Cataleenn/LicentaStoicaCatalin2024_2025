@@ -1,43 +1,58 @@
-<!-- Rotate Button -->
 <div class="controls">
   <button (click)="rotateBoard()">🔄 Rotate ({{ currentSide }})</button>
+  
+
 </div>
 
-<!-- Board Container -->
-<div class="board">
-  <!-- Slots for the current side -->
-  <div
-    *ngFor="let slot of visibleSlots"
-    class="slot"
-    [ngStyle]="{
-      top: slot.topPercent * 100 + '%',
-      left: slot.leftPercent * 100 + '%'
-    }"
-    (drop)="onDrop(slot)"
-    (dragover)="allowDrop($event)"
-  ></div>
-
-  <!-- Placed Components -->
-  <ng-container *ngFor="let comp of components.concat(cover)">
+<!-- 3D Flip Board -->
+<div class="flip-wrapper">
+  <div class="board" [ngClass]="{ 'flipped': currentSide === 'back' }">
     <div
-      *ngIf="comp.placedIn"
-      class="component"
-      [ngStyle]="getSlotPosition(comp.placedIn)"
-      [style.backgroundColor]="comp.color"
-      draggable="true"
-      (dragstart)="onDragStart(comp)"
+      *ngFor="let slot of visibleSlots"
+      class="slot"
+      [ngClass]="{ 'highlighted': slot.id === hoveredSlotId, 'capac-slot': slot.id === 'slot-cover' }"
+      [ngStyle]="{
+        top: slot.topPercent * 100 + '%',
+        left: slot.leftPercent * 100 + '%',
+        width: (slot.width || 80) + 'px',
+        height: (slot.height || 80) + 'px'
+      }"
+      (drop)="onDrop(slot)"
+      (dragover)="allowDrop($event, slot)"
+      (dragenter)="hoveredSlotId = slot.id"
+      (dragleave)="hoveredSlotId = null"
     >
-      {{ comp.name }}
+     <span *ngIf="slot.id === 'slot-cover' && !getComponentInSlot(slot.id)" class="slot-text">
+    Insert Cover
+  </span>
+      <div
+        *ngIf="getComponentInSlot(slot.id)"
+        class="component"
+        [ngClass]="{ 'capac': getComponentInSlot(slot.id)?.id === 'cover', 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId,'cover-rotated': getComponentInSlot(slot.id)?.id === 'cover' && currentSide==='back' }"
+        [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
+        [ngStyle]="{
+          width: '100%',
+          height: '100%',
+          lineHeight: (slot.height || 80) + 'px'
+        }"
+        draggable="true"
+        (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
+      >
+        {{ getComponentInSlot(slot.id)?.name }}
+      </div>
     </div>
-  </ng-container>
+  </div>
 </div>
 
-<!-- Component Pool (Unplaced Components) -->
+
+
+<!-- COMPONENT POOL -->
 <div class="component-pool">
   <ng-container *ngFor="let comp of components.concat(cover)">
     <div
       *ngIf="!comp.placedIn"
       class="component"
+      [ngClass]="{ 'capac': comp.id === 'cover' }"
       [style.backgroundColor]="comp.color"
       draggable="true"
       (dragstart)="onDragStart(comp)"
@@ -47,7 +62,12 @@
   </ng-container>
 </div>
 
-<!-- Submit Button -->
+<!-- ERORARE -->
+<div *ngIf="placementError" class="error-message">
+  {{ placementError }}
+</div>
+
+<!-- SUBMIT -->
 <div class="submit">
   <button (click)="submitAssembly()">✅ Confirm Assembly</button>
 </div>
