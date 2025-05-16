@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
   { path: 'creare-chestionar', component: SurveyCreateComponent, canActivate: [AuthGuard] },
-  { path: 'survey/:id', component: SurveyViewComponent, canActivate: [AuthGuard] }  // Adaugă ruta pentru SurveyViewComponent
+  { path: 'survey/:id', component: SurveyViewComponent }  // Adaugă ruta pentru SurveyViewComponent
 ];
 
 bootstrapApplication(AppComponent, {

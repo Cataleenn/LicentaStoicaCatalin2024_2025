@@ -1,0 +1,99 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle, rgba(24,24,173,0.98) 22%, rgba(19,13,128,1) 42%, rgba(86,166,205,1) 82%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.fullscreen-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+.survey-create-container {
+  width: 800px;
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  text-align: center;
+  color: #1a2a6c;
+  margin-bottom: 25px;
+  font-size: 26px;
+}
+
+h2::before {
+  content: "📝";
+  font-size: 22px;
+  margin-right: 10px;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #003366;
+}
+
+input, textarea, select {
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #0072ff;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #00c6ff;
+  box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
+}
+
+button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #0072ff, #005bb5);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #005bb5, #0040a0);
+}
+
+.question-block {
+  border-top: 1px solid #ccc;
+  margin-top: 20px;
+  padding-top: 20px;
+}
