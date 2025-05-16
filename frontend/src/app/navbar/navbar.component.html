@@ -7,6 +7,6 @@
   </div>
 
   <span class="spacer"></span>
-
+  <span *ngIf="username" class="me-3">👤 {{ username }}</span>
   <button mat-button (click)="logout()">Logout</button>
 </mat-toolbar>

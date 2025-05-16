@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,15 @@ export class AuthService {
   // ✅ Login: Trimite cererea la backend și primește un token JWT
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
+  }
+  getUserProfile() {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<{ name: string; email: string }>(
+      'http://localhost:3000/api/auth/me',
+      { headers }
+    );
   }
 
   // ✅ Salvează token-ul în LocalStorage

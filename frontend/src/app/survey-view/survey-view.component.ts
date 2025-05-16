@@ -29,7 +29,9 @@ export class SurveyViewComponent implements OnInit {
   componentsPlaced: { componentId: string; slotId: string }[];
 } | null = null;
   //currentStep = 1; // 1 = instructiuni, 2 = asamblare, 3 = chestionar
-  _currentStep = 1;
+  
+  currentStep = 1;
+
 
 
   constructor(
@@ -69,19 +71,17 @@ export class SurveyViewComponent implements OnInit {
         this.isLoading = false;
       }
     );
-    const savedStep = localStorage.getItem('currentStep');
-     this.currentStep = savedStep ? +savedStep : 1;
+    this.currentStep = 1;
+
+
+     console.log('Step:', this.currentStep);
+console.log('Assembly completed:', this.assemblyCompleted);
+console.log('Questions:', this.questions.value);
+
 
   }
 
-  set currentStep(value: number) {
-  this._currentStep = value;
-  localStorage.setItem('currentStep', value.toString());
-  }
-
-  get currentStep(): number {
-    return this._currentStep;
-  }
+  
 
   onAssemblyComplete(event: {
   rotations: number;

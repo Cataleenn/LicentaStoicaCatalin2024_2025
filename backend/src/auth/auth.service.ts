@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../user/user.entity';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -29,13 +30,18 @@ export class AuthService {
       throw new UnauthorizedException('Access restricted to administrators only');
     }
 
-    return { id: user.id, email: user.email, role: user.role };
+    return { id: user.id, email: user.email, role: user.role,  name: user.name };
   }
 
   async login(user: any) {
-    const payload = { id: user.id, email: user.email, role: user.role };
+    const payload = { id: user.id, email: user.email, role: user.role, name: user.name };
+    console.log('🔍 user.name:', user.name);
+
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
+  
+  
+
 }
