@@ -24,10 +24,12 @@ export class SurveyViewComponent implements OnInit {
   errorMessage: string = '';
   isLoading: boolean = true;
   assemblyCompleted = false;
-assemblyData: {
+  assemblyData: {
   rotations: number;
   componentsPlaced: { componentId: string; slotId: string }[];
 } | null = null;
+  //currentStep = 1; // 1 = instructiuni, 2 = asamblare, 3 = chestionar
+  _currentStep = 1;
 
 
   constructor(
@@ -67,14 +69,28 @@ assemblyData: {
         this.isLoading = false;
       }
     );
+    const savedStep = localStorage.getItem('currentStep');
+     this.currentStep = savedStep ? +savedStep : 1;
+
   }
+
+  set currentStep(value: number) {
+  this._currentStep = value;
+  localStorage.setItem('currentStep', value.toString());
+  }
+
+  get currentStep(): number {
+    return this._currentStep;
+  }
+
   onAssemblyComplete(event: {
   rotations: number;
   componentsPlaced: { componentId: string; slotId: string }[];
-}) {
-  this.assemblyCompleted = true;
-  this.assemblyData = event;
-}
+  }) {
+    this.assemblyCompleted = true;
+    this.assemblyData = event;
+    this.currentStep=3;
+  }
 
 
   get questions(): FormArray {

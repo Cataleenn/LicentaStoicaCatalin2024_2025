@@ -1,67 +1,73 @@
 <div class="survey-container" *ngIf="surveyData">
-  
-  <!-- ✅ Step 1: Product Assembly -->
+  <div *ngIf="currentStep === 1">
+  <h3>Instrucțiuni</h3>
+  <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
+  <button class="btn btn-primary" (click)="currentStep = 2">Start</button>
+  </div>
+
+  <div *ngIf="currentStep === 2">
   <app-product-assembly
     *ngIf="!assemblyCompleted"
     (completed)="onAssemblyComplete($event)">
   </app-product-assembly>
-
+</div>
   <!-- ✅ Step 2: Survey appears only after assembly is done -->
-  <ng-container *ngIf="assemblyCompleted">
-    <h1>{{ getSurveyTitle() }}</h1>
-    <p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>
-    <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
-
-    <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
-      <div *ngIf="questions.controls.length === 0" class="alert">
-        No questions found in this survey.
-      </div>
+  <div *ngIf="currentStep === 3">
+    <ng-container *ngIf="assemblyCompleted">
+      <h1>{{ getSurveyTitle() }}</h1>
+      <p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>
       
-      <div formArrayName="questions">
-        <div *ngFor="let question of questions.controls; let i = index" class="question-container">
-          <div [formGroupName]="i">
-            <h3>{{ question.get('questionText')?.value || 'Question ' + (i+1) }}</h3>
 
-            <!-- Multiple Choice -->
-            <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
-              <div *ngIf="getOptions(i).controls.length === 0" class="alert">
-                No options available for this question.
-              </div>
-              <div *ngFor="let option of getOptions(i).controls; let j = index">
-                <input type="checkbox"
-                       [id]="'q' + i + 'opt' + j"
-                       [value]="option.get('value')?.value"
-                       (change)="onCheckboxChange($event, question)">
-                <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
-              </div>
-            </div>
+      <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="questions.controls.length === 0" class="alert">
+          No questions found in this survey.
+        </div>
+        
+        <div formArrayName="questions">
+          <div *ngFor="let question of questions.controls; let i = index" class="question-container">
+            <div [formGroupName]="i">
+              <h3>{{ question.get('questionText')?.value || 'Question ' + (i+1) }}</h3>
 
-            <!-- Single Choice -->
-            <div *ngIf="question.get('questionType')?.value === 'single-choice'">
-              <div *ngIf="getOptions(i).controls.length === 0" class="alert">
-                No options available for this question.
+              <!-- Multiple Choice -->
+              <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
+                <div *ngIf="getOptions(i).controls.length === 0" class="alert">
+                  No options available for this question.
+                </div>
+                <div *ngFor="let option of getOptions(i).controls; let j = index">
+                  <input type="checkbox"
+                        [id]="'q' + i + 'opt' + j"
+                        [value]="option.get('value')?.value"
+                        (change)="onCheckboxChange($event, question)">
+                  <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
+                </div>
               </div>
-              <div *ngFor="let option of getOptions(i).controls; let j = index">
-                <input type="radio"
-                       [id]="'q' + i + 'opt' + j"
-                       [value]="option.get('value')?.value"
-                       formControlName="response">
-                <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
-              </div>
-            </div>
 
-            <!-- Open Text -->
-            <div *ngIf="question.get('questionType')?.value === 'text'">
-              <input type="text" formControlName="response" class="text-input" placeholder="Enter your answer">
+              <!-- Single Choice -->
+              <div *ngIf="question.get('questionType')?.value === 'single-choice'">
+                <div *ngIf="getOptions(i).controls.length === 0" class="alert">
+                  No options available for this question.
+                </div>
+                <div *ngFor="let option of getOptions(i).controls; let j = index">
+                  <input type="radio"
+                        [id]="'q' + i + 'opt' + j"
+                        [value]="option.get('value')?.value"
+                        formControlName="response">
+                  <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
+                </div>
+              </div>
+
+              <!-- Open Text -->
+              <div *ngIf="question.get('questionType')?.value === 'text'">
+                <input type="text" formControlName="response" class="text-input" placeholder="Enter your answer">
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <button type="submit" class="submit-btn">Submit</button>
-    </form>
-  </ng-container>
-
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </ng-container>
+</div>
   <!-- DEBUG INFO -->
   <div class="debug-info">
     <h3>Debug Information</h3>
