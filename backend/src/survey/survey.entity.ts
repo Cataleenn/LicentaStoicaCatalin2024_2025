@@ -15,8 +15,11 @@ export class Survey {
   @Column()
   formTitle: string;
 
-  @Column({ nullable: true })
-  description: string;
+  @Column({ type: 'text', nullable: true })
+  adminDescription?: string;
+
+  @Column({ type: 'text', nullable: true })
+  userInstructions?: string;
 
   @Column('jsonb')
   questions: any[];

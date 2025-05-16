@@ -9,7 +9,8 @@
   <!-- ✅ Step 2: Survey appears only after assembly is done -->
   <ng-container *ngIf="assemblyCompleted">
     <h1>{{ getSurveyTitle() }}</h1>
-    <p *ngIf="getSurveyDescription()">{{ getSurveyDescription() }}</p>
+    <p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>
+    <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
 
     <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
       <div *ngIf="questions.controls.length === 0" class="alert">

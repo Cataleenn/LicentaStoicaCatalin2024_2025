@@ -5,9 +5,14 @@ export class CreateSurveyDto {
   @IsNotEmpty()
   formTitle: string;
 
-  @IsString()
   @IsOptional()
-  description?: string;
+  @IsString()
+  adminDescription?: string;
+
+  @IsOptional()
+  @IsString()
+  userInstructions?: string;
+
 
   @IsArray()
   questions: any[];

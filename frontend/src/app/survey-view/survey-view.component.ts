@@ -166,10 +166,16 @@ assemblyData: {
     return this.surveyData?.formTitle || this.surveyData?.title || 'Untitled Survey';
   }
 
-  // Get survey description from data
-  getSurveyDescription(): string {
-    return this.surveyData?.description || '';
+  // Get survey adminDescription from data
+  getSurveyAdminDescription(): string {
+    return this.surveyData?.adminDescription || '';
   }
+
+  // Get survey userInstructions from data
+  getSurveyUserInstructions(): string {
+    return this.surveyData?.userInstructions || '';
+  }
+
 
   // Submit the survey responses
   
