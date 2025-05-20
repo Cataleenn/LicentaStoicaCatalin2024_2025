@@ -20,6 +20,7 @@ export class SurveyCreateComponent implements OnInit {
     this.surveyForm = this.fb.group({
       formTitle: ['', Validators.required],
       adminDescription: [''],
+      required: [false],
       userInstructions:[''],
       questions: this.fb.array([this.createQuestion()])
     });
@@ -33,6 +34,7 @@ export class SurveyCreateComponent implements OnInit {
     return this.fb.group({
       questionText: ['', Validators.required],
       questionType: ['single_choice', Validators.required],
+      required: [false],
       options: this.fb.array([]),
       response: this.fb.control([])
     });

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsOptional , IsBoolean} from 'class-validator';
 
 export class CreateSurveyDto {
   @IsString()
@@ -12,6 +12,10 @@ export class CreateSurveyDto {
   @IsOptional()
   @IsString()
   userInstructions?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  required?: boolean;
 
 
   @IsArray()

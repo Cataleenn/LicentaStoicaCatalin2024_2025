@@ -171,3 +171,63 @@ h1, h3 {
   }
 }
 
+.has-error {
+  border: 2px solid red;
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: #ffe5e5;
+}
+.question-container {
+  margin-bottom: 20px;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #fdf5f5;
+  border: 1px solid transparent;
+  transition: border 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question-container.has-error {
+  border: 2px solid red;
+  background-color: #ffeaea;
+}
+
+.text-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border 0.2s ease;
+  box-sizing: border-box;
+}
+
+.has-error .text-input {
+  border: 2px solid red;
+  background-color: #fff5f5;
+}
+.question-container {
+  margin-bottom: 20px;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #fdf5f5;
+  border: 2px solid #0072ff;
+  transition: border 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 800px; /* ✅ limitează lățimea containerului */
+  word-wrap: break-word; /* ✅ rupe cuvintele lungi */
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+.question-container h3 {
+  font-weight: 600;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}

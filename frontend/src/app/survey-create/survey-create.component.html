@@ -22,7 +22,10 @@
 
       <div formArrayName="questions">
         <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i" class="question-block">
-
+               <label>
+                  <input type="checkbox" formControlName="required">
+                  Întrebare obligatorie
+                </label>
           <div class="input-group">
             <label>Întrebare {{ i + 1 }}</label>
             <input formControlName="questionText" type="text" required />

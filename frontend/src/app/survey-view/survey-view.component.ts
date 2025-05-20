@@ -133,6 +133,7 @@ console.log('Questions:', this.questions.value);
           questionType: [mappedType],
           options: optionsArray,
           dependsOn: [question.dependsOn || null],
+          required: [question.required || false],
           response: ['']  // This is where the user's answer is stored
         });
       });
@@ -210,37 +211,60 @@ goToAssembly() {
 onSubmit(): void {
   console.log('Form submitted:', this.surveyForm.value);
 
-  if (this.surveyForm.valid) {
-    const surveyData = this.surveyForm.value;
+  let hasMissingRequired = false;
 
-    // Extragem răspunsurile într-un format cheie => valoare
-    const answers: Record<string, any> = {};
-    surveyData.questions.forEach((q: any, index: number) => {
-      answers[index + 1] = q.response;
-    });
+for (let i = 0; i < this.questions.length; i++) {
+  const question = this.questions.at(i);
+  const isRequired = question.get('required')?.value;
+  const response = question.get('response')?.value;
 
-    const payload = {
-  formId: this.surveyId,
-  userId: 1,
-  answers: answers,
-  isComplete: true,
-  assembly: this.assemblyData
-};
+  const isEmpty =
+    response === null ||
+    response === undefined ||
+    (typeof response === 'string' && response.trim() === '') ||
+    (Array.isArray(response) && response.length === 0);
 
-
-    this.surveyService.submitResponses(this.surveyId, payload).subscribe({
-      next: (res) => {
-        console.log('Responses submitted successfully', res);
-        alert('Chestionar trimis cu succes!');
-      },
-      error: (err) => {
-        console.error('Error submitting responses', err);
-        alert('Eroare la trimiterea răspunsurilor!');
-      }
-    });
+  if (isRequired && isEmpty) {
+    question.get('response')?.setErrors({ required: true }); // 🔴 marchează ca invalid
+    hasMissingRequired = true;
   } else {
-    console.warn('Form is invalid');
+    question.get('response')?.setErrors(null); // ✅ curăță dacă a fost completat ulterior
   }
 }
+
+if (hasMissingRequired) {
+  alert('Te rugăm să completezi toate întrebările obligatorii.');
+  return;
+}
+
+
+  // Construim payload-ul pentru backend
+  const surveyData = this.surveyForm.value;
+  const answers: Record<string, any> = {};
+
+  surveyData.questions.forEach((q: any, index: number) => {
+    answers[index + 1] = q.response;
+  });
+
+  const payload = {
+    formId: this.surveyId,
+    userId: 1, // sau null dacă nu folosești autentificare
+    answers: answers,
+    isComplete: true,
+    assembly: this.assemblyData
+  };
+
+  this.surveyService.submitResponses(this.surveyId, payload).subscribe({
+    next: (res) => {
+      console.log('Responses submitted successfully', res);
+      alert('Chestionar trimis cu succes!');
+    },
+    error: (err) => {
+      console.error('Error submitting responses', err);
+      alert('Eroare la trimiterea răspunsurilor!');
+    }
+  });
+}
+
 
 }

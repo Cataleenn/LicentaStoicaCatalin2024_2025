@@ -21,7 +21,7 @@
   <div *ngIf="currentStep === 3">
     <ng-container *ngIf="assemblyCompleted">
       
-      <p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>
+      <!--<p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>-->
       
 
       <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
@@ -30,9 +30,14 @@
         </div>
         
         <div formArrayName="questions">
-          <div *ngFor="let question of questions.controls; let i = index" class="question-container">
+          <div *ngFor="let question of questions.controls; let i = index"
+     class="question-container"
+     [ngClass]="{ 'has-error': question.get('response')?.errors?.['required'] }">
             <div [formGroupName]="i">
-              <h3>{{ i + 1 }}. {{ question.get('questionText')?.value }}</h3>
+              <h3>
+  <span *ngIf="question.get(['required'])?.value" style="color: red">*</span>
+  {{ i + 1 }}. {{ question.get('questionText')?.value }}
+</h3>
 
 
               <!-- Multiple Choice -->

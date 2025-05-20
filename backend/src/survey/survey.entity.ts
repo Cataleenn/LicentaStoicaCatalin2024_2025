@@ -24,6 +24,9 @@ export class Survey {
   @Column('jsonb')
   questions: any[];
 
+  @Column({ default: false })
+  required: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
