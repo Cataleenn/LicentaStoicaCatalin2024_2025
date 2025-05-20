@@ -64,7 +64,7 @@ export class ProductAssemblyComponent {
       side: 'back',
       topPercent: 0.5,
       leftPercent: 0.5,
-      width: 200,
+      width: 50,
       height: 100
     }
   ];
@@ -81,6 +81,13 @@ export class ProductAssemblyComponent {
   onDragStart(component: ComponentPiece) {
     this.draggedComponent = component;
   }
+  get frontSlots(): Slot[] {
+  return this.slots.filter(s => s.side === 'front');
+}
+
+get backSlots(): Slot[] {
+  return this.slots.filter(s => s.side === 'back');
+}
 
   onDrop(slot: Slot) {
   if (!this.draggedComponent) return;
@@ -147,6 +154,10 @@ export class ProductAssemblyComponent {
   getComponentInSlot(slotId: string): ComponentPiece | undefined {
     return [...this.components, this.cover].find(c => c.placedIn === slotId);
   }
+
+  getComponentById(id: string): ComponentPiece | undefined {
+  return [...this.components, this.cover].find(c => c.id === id);
+}
 
   isAssemblyValid(): boolean {
     const allPlaced = this.components.every(c => c.placedIn);

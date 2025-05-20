@@ -1,73 +1,115 @@
 <div class="controls">
   <button (click)="rotateBoard()">🔄 Rotate ({{ currentSide }})</button>
-  
-
 </div>
+<div class="assembly-layout-grid">
+    <!-- 🎥 VIDEOS LEFT -->
+  <div class="video-column">
+    <video controls loop autoplay muted width="100%" preload="metadata">
+      <source src="assets/tab_rot.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
 
-<!-- 3D Flip Board -->
-<div class="flip-wrapper">
-  <div class="board" [ngClass]="{ 'flipped': currentSide === 'back' }">
-    <div
-      *ngFor="let slot of visibleSlots"
-      class="slot"
-      [ngClass]="{ 'highlighted': slot.id === hoveredSlotId, 'capac-slot': slot.id === 'slot-cover' }"
-      [ngStyle]="{
-        top: slot.topPercent * 100 + '%',
-        left: slot.leftPercent * 100 + '%',
-        width: (slot.width || 80) + 'px',
-        height: (slot.height || 80) + 'px'
-      }"
-      (drop)="onDrop(slot)"
-      (dragover)="allowDrop($event, slot)"
-      (dragenter)="hoveredSlotId = slot.id"
-      (dragleave)="hoveredSlotId = null"
-    >
-     <span *ngIf="slot.id === 'slot-cover' && !getComponentInSlot(slot.id)" class="slot-text">
-    Insert Cover
-  </span>
-      <div
-        *ngIf="getComponentInSlot(slot.id)"
-        class="component"
-        [ngClass]="{ 'capac': getComponentInSlot(slot.id)?.id === 'cover', 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId,'cover-rotated': getComponentInSlot(slot.id)?.id === 'cover' && currentSide==='back' }"
-        [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
-        [ngStyle]="{
-          width: '100%',
-          height: '100%',
-          lineHeight: (slot.height || 80) + 'px'
-        }"
-        draggable="true"
-        (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
-      >
-        {{ getComponentInSlot(slot.id)?.name }}
+    <video controls loop autoplay muted width="100%" preload="metadata" style="margin-top: 16px;">
+      <source src="assets/tab_ass_piese.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="assembly-grid">
+    <!-- 📦 Cover (right of puzzle) -->
+     <div class="flex-group">
+    <!-- 🧩 Puzzle -->
+    <div class="flip-wrapper">
+      <div class="flip-inner" [ngClass]="{ 'flipped': currentSide === 'back' }">
+        <!-- FRONT FACE -->
+        <div class="board face front">
+          <ng-container *ngFor="let slot of frontSlots">
+            <div
+              class="slot"
+              [ngClass]="{ 'highlighted': slot.id === hoveredSlotId }"
+              (drop)="onDrop(slot)"
+              (dragover)="allowDrop($event, slot)"
+              (dragenter)="hoveredSlotId = slot.id"
+              (dragleave)="hoveredSlotId = null"
+            >
+              <div
+                *ngIf="getComponentInSlot(slot.id)"
+                class="component"
+                [ngClass]="{ 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId }"
+                [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
+                draggable="true"
+                (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
+              >
+                {{ getComponentInSlot(slot.id)?.name }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- BACK FACE -->
+        <div class="board face back">
+          <ng-container *ngFor="let slot of backSlots">
+            <div
+              class="slot capac-slot"
+              (drop)="onDrop(slot)"
+              (dragover)="allowDrop($event, slot)"
+              (dragenter)="hoveredSlotId = slot.id"
+              (dragleave)="hoveredSlotId = null"
+            >
+              <span *ngIf="!getComponentInSlot(slot.id)" class="slot-text">Insert Cover</span>
+              <div
+                *ngIf="getComponentInSlot(slot.id)"
+                class="component capac"
+                [ngClass]="{ 'cover-rotated': currentSide === 'back', 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId }"
+                [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
+                draggable="true"
+                (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
+              >
+                {{ getComponentInSlot(slot.id)?.name }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
       </div>
     </div>
+    <div class="cover-area">
+      <div
+        *ngIf="!cover.placedIn"
+        class="component capac"
+        [style.backgroundColor]="cover.color"
+        draggable="true"
+        (dragstart)="onDragStart(cover)"
+      >
+        {{ cover.name }}
+      </div>
+    </div>
+    </div>
+    
+
+    
+
+    <!-- ⬇️ Pool of components under puzzle -->
+    <div class="pool-below">
+    <ng-container *ngFor="let id of ['blue-1', 'blue-2', 'white-1', 'white-2', 'pink-1', 'pink-2']">
+      <div
+        *ngIf="!getComponentById(id)?.placedIn"
+        class="component"
+        [ngClass]="{ 'separator-left': id === 'white-2' }"
+        [style.backgroundColor]="getComponentById(id)?.color"
+        draggable="true"
+        (dragstart)="onDragStart(getComponentById(id)!)"
+      >
+        {{ getComponentById(id)?.name }}
+      </div>
+    </ng-container>
+  </div>
+
+
   </div>
 </div>
 
-
-
-<!-- COMPONENT POOL -->
-<div class="component-pool">
-  <ng-container *ngFor="let comp of components.concat(cover)">
-    <div
-      *ngIf="!comp.placedIn"
-      class="component"
-      [ngClass]="{ 'capac': comp.id === 'cover' }"
-      [style.backgroundColor]="comp.color"
-      draggable="true"
-      (dragstart)="onDragStart(comp)"
-    >
-      {{ comp.name }}
-    </div>
-  </ng-container>
-</div>
-
-<!-- ERORARE -->
-<div *ngIf="placementError" class="error-message">
-  {{ placementError }}
-</div>
-
-<!-- SUBMIT -->
+<!-- ERROR + SUBMIT -->
+<div *ngIf="placementError" class="error-message">{{ placementError }}</div>
 <div class="submit">
   <button (click)="submitAssembly()">✅ Confirm Assembly</button>
 </div>

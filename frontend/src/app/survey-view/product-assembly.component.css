@@ -1,45 +1,86 @@
-/* container pătrat cu perspectivă pentru flip */
+.assembly-layout {
+  display: grid;
+  grid-template-columns: auto 100px;
+  grid-template-rows: auto auto;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 .flip-wrapper {
   perspective: 1000px;
-  width: 400px;
-  height: 300px;
-  margin: auto;
+  width: 360px;
+  height: 260px;
   position: relative;
 }
 
-.board {
+.flip-inner {
   width: 100%;
   height: 100%;
-  background-color: #2e2e2e;
-  border-radius: 16px;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 22px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
   transition: transform 0.8s ease-in-out;
   transform-style: preserve-3d;
 }
 
-.board.flipped {
-  transform: rotateY(180deg); /* doar efect vizual */
+.flip-inner.flipped {
+  transform: rotateY(180deg);
 }
 
+.board.face {
+  position: absolute;
+  width: 355px;
+  height: 230px;
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(2, 100px);
+  gap: 25px;
+  padding: 10px;
+  background-color: #2e2e2e;
+  border-radius: 16px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+  backface-visibility: hidden;
+}
+
+.board.face.back {
+  position: relative;
+  transform: rotateY(180deg);
+}
 
 
 .slot {
-  background-color: #4caf50;
+  width: 100%;
+  height: 100%;
+  background-color: #2e7d32;
   border-radius: 8px;
-  border: 2px solid #388e3c;
+  border: 2px solid #1b5e20;
+  box-shadow: inset 0 0 4px #00000099;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.capac-slot {
+   background-color: #a5d6a7;
+  border: 3px dashed #2e7d32;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* 👇 Controlează dimensiunea */
+  width: 320px;
+  height: 200px;
+
+  /* 👇 Poziționează centrat în grid sau absolut */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .slot.highlighted {
-  box-shadow: 0 0 0 3px #81c784;
+  box-shadow: 0 0 0 4px #81c784;
   transform: scale(1.05);
 }
 
@@ -48,22 +89,42 @@
   height: 100%;
   border-radius: 8px;
   font-weight: bold;
-  text-align: center;
-  line-height: 60px;
-  cursor: grab;
   color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
 }
 
-.component-pool {
-  display:flex;
+.component.capac {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+  border: 2px solid #2e7d32;
+  width: 100%;
+  height: 100%;
+}
+
+.cover-area {
+  
+  width: 203px;
+  height: 100px;
+  margin-left: 100px;
+   /* 🔁 aici controlezi distanța față de placă */
+ 
+}
+
+.pool-below {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
   margin-top: 30px;
-  max-width: 360px;
+}
+.flex-group {
+  display: flex;
 }
 
-.component-pool .component {
+.pool-below .component {
   width: 80px;
   height: 60px;
   line-height: 60px;
@@ -72,7 +133,32 @@
   border-radius: 8px;
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
+.component.separator-left {
+  margin-left: 150px; /* sau cât dorești */
+}
 
+
+.slot-text {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #1b5e20;
+  
+}
+
+.component.animate-drop {
+  animation: dropBounce 0.3s ease;
+}
+
+@keyframes dropBounce {
+  0% { transform: scale(0.8); opacity: 0.2; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
 
 .controls,
 .submit {
@@ -100,53 +186,18 @@ button:hover {
   text-align: center;
   margin-top: 10px;
 }
-
-.slot.capac-slot {
-  background-color: #a5d6a7;
-  border: 3px dashed #2e7d32;
-  border-radius: 12px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.2);
-
-  /* 👇 Centrăm perfect relativ la mijlocul plăcii */
-  position: absolute;
-  transform: translate(-50%, -50%);
+.assembly-layout-grid {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap; /* responsive fallback */
+  margin-top: 20px;
 }
 
-/* componenta "cover" când e plasată */
-.component.capac {
-  background-color: #e8f5e9;
-  color: #1b5e20;
-  font-weight: bold;
-  border: 2px solid #2e7d32;
-  border-radius: 10px;
-  
+.video-column {
+  flex: 0 0 320px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
 }
-
-.component.cover-rotated {
-  transform: rotateY(180deg);
-}
-
-
-.slot-text {
-  position: absolute;
-  color: #2e7d32;
-  font-weight: bold;
-  font-size: 14px;
-  pointer-events: none;
-  text-align: center;
-  width: 100%;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%) rotateY(180deg); /* 👈 fix aici */
-}
-
-.component.animate-drop {
-  animation: dropBounce 0.3s ease;
-}
-
-@keyframes dropBounce {
-  0%   { transform: scale(0.8); opacity: 0.2; }
-  60%  { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); }
-}
-

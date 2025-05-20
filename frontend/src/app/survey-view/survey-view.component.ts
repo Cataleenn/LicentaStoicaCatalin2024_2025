@@ -191,7 +191,19 @@ console.log('Questions:', this.questions.value);
   getSurveyUserInstructions(): string {
     return this.surveyData?.userInstructions || '';
   }
+goToAssembly() {
+  const stepEl = document.getElementById('step-instructions');
+  if (stepEl) {
+    stepEl.classList.remove('fade-in');
+    stepEl.classList.add('fade-out');
 
+    setTimeout(() => {
+      this.currentStep = 2;
+    }, 400); // sincronizat cu CSS
+  } else {
+    this.currentStep = 2;
+  }
+}
 
   // Submit the survey responses
   

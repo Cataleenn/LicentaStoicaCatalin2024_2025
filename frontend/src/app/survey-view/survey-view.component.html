@@ -1,20 +1,26 @@
+<div class="blue-background">
 <div class="survey-container" *ngIf="surveyData">
-  <div *ngIf="currentStep === 1">
-  <h3>Instrucțiuni</h3>
-  <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
-  <button class="btn btn-primary" (click)="currentStep = 2">Start</button>
+  <!-- Step 1: Instrucțiuni -->
+<div *ngIf="currentStep === 1" id="step-instructions" class="step fade-in">
+  <div class="instructions-container">
+    <h3>{{ getSurveyTitle() }}</h3>
+    <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
+    <button class="start-btn" (click)="goToAssembly()">Start</button>
   </div>
+</div>
 
-  <div *ngIf="currentStep === 2">
+  <!-- Step 2: Asamblare -->
+<div *ngIf="currentStep === 2" class="assembly-wrapper pop-in">
   <app-product-assembly
     *ngIf="!assemblyCompleted"
     (completed)="onAssemblyComplete($event)">
   </app-product-assembly>
 </div>
+
   <!-- ✅ Step 2: Survey appears only after assembly is done -->
   <div *ngIf="currentStep === 3">
     <ng-container *ngIf="assemblyCompleted">
-      <h1>{{ getSurveyTitle() }}</h1>
+      
       <p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>
       
 
@@ -26,7 +32,8 @@
         <div formArrayName="questions">
           <div *ngFor="let question of questions.controls; let i = index" class="question-container">
             <div [formGroupName]="i">
-              <h3>{{ question.get('questionText')?.value || 'Question ' + (i+1) }}</h3>
+              <h3>{{ i + 1 }}. {{ question.get('questionText')?.value }}</h3>
+
 
               <!-- Multiple Choice -->
               <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
@@ -69,7 +76,7 @@
     </ng-container>
 </div>
   <!-- DEBUG INFO -->
-  <div class="debug-info">
+  <!-- <div class="debug-info">
     <h3>Debug Information</h3>
     <p><strong>Survey ID:</strong> {{ surveyId }}</p>
     <details>
@@ -81,10 +88,11 @@
       <pre>{{ surveyForm.value | json }}</pre>
     </details>
   </div>
-</div>
+</div> -->
 
 <div class="loading" *ngIf="isLoading">Loading survey...</div>
 <div class="error" *ngIf="errorMessage && !isLoading">
   <h2>Error</h2>
   <p>{{ errorMessage }}</p>
+</div>
 </div>

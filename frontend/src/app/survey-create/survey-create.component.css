@@ -1,11 +1,28 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+}
+.blue-background {
+   min-height: 100vh;
+  width: 100%;
   background: radial-gradient(circle, rgba(24,24,173,0.98) 22%, rgba(19,13,128,1) 42%, rgba(86,166,205,1) 82%);
   background-repeat: no-repeat;
-  background-attachment: fixed;
   background-size: cover;
+  background-attachment: fixed;
+
+  display: flex;
+  justify-content: center;
+  padding: 4rem 1rem; /* adăugăm spațiu și pe vertical */
+  box-sizing: border-box;
+}
+
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  
 }
 
 .fullscreen-wrapper {
