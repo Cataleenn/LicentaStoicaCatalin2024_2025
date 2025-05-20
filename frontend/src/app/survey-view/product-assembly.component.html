@@ -1,5 +1,8 @@
 <div class="controls">
   <button (click)="rotateBoard()">🔄 Rotate ({{ currentSide }})</button>
+  <div class="video-instructions-text">
+    <p><b>Acesta trebuie să fie rezultatul asamblării tale</b></p>
+  </div>
 </div>
 <div class="assembly-layout-grid">
     <!-- 🎥 VIDEOS LEFT -->
@@ -39,6 +42,7 @@
                 [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
                 draggable="true"
                 (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
+                (dragend)="onDragEnd($event)"
               >
                 {{ getComponentInSlot(slot.id)?.name }}
               </div>
@@ -64,6 +68,7 @@
                 [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
                 draggable="true"
                 (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
+                (dragend)="onDragEnd($event)"
               >
                 {{ getComponentInSlot(slot.id)?.name }}
               </div>
@@ -79,6 +84,7 @@
         [style.backgroundColor]="cover.color"
         draggable="true"
         (dragstart)="onDragStart(cover)"
+        (dragend)="onDragEnd($event)"
       >
         {{ cover.name }}
       </div>
@@ -98,6 +104,7 @@
         [style.backgroundColor]="getComponentById(id)?.color"
         draggable="true"
         (dragstart)="onDragStart(getComponentById(id)!)"
+        (dragend)="onDragEnd($event)"
       >
         {{ getComponentById(id)?.name }}
       </div>

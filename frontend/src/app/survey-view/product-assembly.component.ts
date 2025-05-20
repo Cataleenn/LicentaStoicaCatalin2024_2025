@@ -92,7 +92,7 @@ get backSlots(): Slot[] {
   onDrop(slot: Slot) {
   if (!this.draggedComponent) return;
 
-  // ✅ Validare pentru capac
+  // Validare pentru capac
   if (slot.id === 'slot-cover') {
     if (this.draggedComponent.id !== 'cover' || this.currentSide !== 'back') {
       this.placementError = 'Only the Cover can be placed in the designated back slot.';
@@ -106,36 +106,102 @@ get backSlots(): Slot[] {
     return;
   }
 
-  // ✅ Marchează piesa ca plasată în slot
-  this.draggedComponent.placedIn = slot.id;
-  slot.occupiedBy = this.draggedComponent.id;
+  const previousSlotId = this.draggedComponent.placedIn;
 
-  // ✅ Elimină orice înregistrare anterioară cu aceeași componentă
+  if (slot.occupiedBy) {
+    const existing = this.getComponentById(slot.occupiedBy);
+
+    if (existing) {
+      if (previousSlotId) {
+        // 🔁 SWAP
+        const previousSlot = this.slots.find(s => s.id === previousSlotId);
+        if (previousSlot) {
+          this.moveComponentToSlot(existing, previousSlot);
+        } else {
+          // fallback: return existing to pool
+          existing.placedIn = undefined;
+          slot.occupiedBy = undefined;
+        }
+      } else {
+        // draggedComponent vine din pool → eliberează slotul
+        existing.placedIn = undefined;
+        slot.occupiedBy = undefined;
+      }
+    }
+  }
+
+  // ✅ Plasează draggedComponent în slot
+  this.moveComponentToSlot(this.draggedComponent, slot);
+
+  // Actualizează ordinea
   this.placementOrder = this.placementOrder.filter(
     p => p.componentId !== this.draggedComponent!.id
   );
 
-  // ✅ Adaugă noua plasare la finalul ordinii
   this.placementOrder.push({
     componentId: this.draggedComponent.id,
     slotId: slot.id,
-    order: 0, // temporar, va fi reindexat
-  
+    order: 0
   });
 
-  // ✅ Recalculează ordinea 1..N după noua poziționare
   this.placementOrder = this.placementOrder.map((item, index) => ({
     ...item,
     order: index + 1
   }));
 
-  // 🔄 UX vizual
   this.lastDroppedId = this.draggedComponent.id;
-  setTimeout(() => this.lastDroppedId = null, 400);
+  setTimeout(() => (this.lastDroppedId = null), 400);
 
-  // 🧹 Cleanup
   this.draggedComponent = null;
   this.placementError = null;
+}
+
+private moveComponentToSlot(component: ComponentPiece, slot: Slot) {
+  // 1. Eliberează slotul anterior dacă componenta era deja plasată
+  const currentSlot = this.slots.find(s => s.occupiedBy === component.id);
+  if (currentSlot) {
+    currentSlot.occupiedBy = undefined;
+  }
+
+  // 2. Marchează noua poziție
+  component.placedIn = slot.id;
+  slot.occupiedBy = component.id;
+
+  // 3. Actualizează placementOrder (elimină orice intrare veche)
+  this.placementOrder = this.placementOrder.filter(
+    p => p.componentId !== component.id
+  );
+
+  // 4. Adaugă componenta la finalul ordinii (va fi reindexat)
+  this.placementOrder.push({
+    componentId: component.id,
+    slotId: slot.id,
+    order: 0
+  });
+
+  // 5. Recalculează ordinea 1..N
+  this.placementOrder = this.placementOrder.map((item, index) => ({
+    ...item,
+    order: index + 1
+  }));
+}
+
+
+
+onDragEnd(event: DragEvent) {
+  // Dacă piesa a fost luată dintr-un slot dar nu a fost plasată în altul
+  if (this.draggedComponent && this.draggedComponent.placedIn) {
+    const slot = this.slots.find(s => s.occupiedBy === this.draggedComponent!.id);
+
+    // Dacă userul nu a făcut drop (componenta rămâne "în aer")
+    if (slot) {
+      slot.occupiedBy = undefined;
+      this.draggedComponent.placedIn = undefined;
+    }
+  }
+
+  // Cleanup oricum
+  this.draggedComponent = null;
 }
 
 

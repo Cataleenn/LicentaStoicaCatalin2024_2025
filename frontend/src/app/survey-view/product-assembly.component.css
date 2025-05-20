@@ -201,3 +201,8 @@ button:hover {
   display: flex;
   flex-direction: column;
 }
+.video-instructions-text{
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  color: #1565c0;
+}
