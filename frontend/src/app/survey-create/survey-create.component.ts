@@ -72,18 +72,71 @@ export class SurveyCreateComponent implements OnInit {
 
 
   onSubmit() {
-    if (this.surveyForm.valid) {
-      const surveyData = this.surveyForm.value;
-      this.surveyService.createSurvey(surveyData).subscribe(
-        (response) => {
-          console.log('Survey created:', response);
-        },
-        (error) => {
-          console.error('Error creating survey:', error);
-        }
-      );
+    this.questions.controls.forEach((question) => {
+  question.get('questionText')?.markAsTouched();
+});
+
+  this.surveyForm.get('formTitle')?.markAsTouched();
+  let allOptionsValid = true;
+  let allQuestionsHaveText = true;
+
+  this.questions.controls.forEach((question, index) => {
+    const type = question.get('questionType')?.value;
+    const options = question.get('options') as FormArray;
+
+    const needsOptions = type === 'single_choice' || type === 'multiple_choice';
+    const hasNoOptions = options.length === 0;
+
+    const questionText = question.get('questionText')?.value;
+
+    // ✅ Verificare opțiuni pentru întrebări de tip alegere
+    if (needsOptions && hasNoOptions) {
+      allOptionsValid = false;
+      question.setErrors({ ...question.errors, noOptions: true });
+    } else {
+      question.setErrors(null); // curăță eroarea dacă a fost reparată
     }
+
+    // ✅ Verificare text întrebare
+    if (!questionText || questionText.trim() === '') {
+      allQuestionsHaveText = false;
+      question.get('questionText')?.setErrors({ required: true });
+    } else {
+      question.get('questionText')?.setErrors(null);
+    }
+  });
+
+  if (!allOptionsValid) {
+    alert('Toate întrebările de tip alegere trebuie să aibă cel puțin o opțiune.');
+    return;
   }
+
+  if (!allQuestionsHaveText) {
+    alert('Toate întrebările trebuie să aibă text completat.');
+    return;
+  }
+
+  // ✅ Dacă formularul este valid, trimite
+  if (this.surveyForm.valid) {
+    const surveyData = this.surveyForm.value;
+    this.surveyService.createSurvey(surveyData).subscribe(
+      (response) => {
+        console.log('Survey created:', response);
+        alert('✅ Chestionarul a fost creat cu succes!');
+
+        // opțional: reset formularul
+        this.surveyForm.reset();
+        this.questions.clear();
+        this.addQuestion();
+      },
+      (error) => {
+        console.error('Error creating survey:', error);
+        alert('❌ Eroare la crearea chestionarului.');
+      }
+    );
+  }
+}
+
 
   // Fixed method to get options for a specific question
   getOptions(questionIndex: number): FormArray {

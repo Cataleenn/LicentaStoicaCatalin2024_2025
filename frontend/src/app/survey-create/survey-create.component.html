@@ -6,9 +6,18 @@
     <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
 
       <div class="input-group">
-        <label for="formTitle">Titlu Chestionar</label>
-        <input id="formTitle" formControlName="formTitle" required />
-      </div>
+  <label for="formTitle">Titlu Chestionar</label>
+  <input id="formTitle"
+         formControlName="formTitle"
+         [ngClass]="{ 'input-error': surveyForm.get('formTitle')?.invalid && surveyForm.get('formTitle')?.touched }"
+         required />
+
+  <div class="text-danger"
+       *ngIf="surveyForm.get('formTitle')?.invalid && surveyForm.get('formTitle')?.touched">
+    Titlul chestionarului este obligatoriu.
+  </div>
+</div>
+
 
       <div class="input-group">
         <label for="adminDescription">Descriere pentru Administrator</label>
@@ -21,44 +30,77 @@
       </div>
 
       <div formArrayName="questions">
-        <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i" class="question-block">
-               <label>
-                  <input type="checkbox" formControlName="required">
-                  Întrebare obligatorie
-                </label>
-          <div class="input-group">
-            <label>Întrebare {{ i + 1 }}</label>
-            <input formControlName="questionText" type="text" required />
-          </div>
+  <div *ngFor="let question of questions.controls; let i = index"
+       [formGroupName]="i"
+       class="question-block"
+       [ngClass]="{ 'has-error': question.errors?.['noOptions'] }">
 
-          <div class="input-group">
-            <label>Tipul întrebării</label>
-            <select formControlName="questionType">
-              <option value="single_choice">Alegere unică</option>
-              <option value="multiple_choice">Alegere multiplă</option>
-              <option value="open_ended">Text liber</option>
-            </select>
-          </div>
+    <!-- Checkbox pentru întrebare obligatorie -->
+    <label>
+      <input type="checkbox" formControlName="required" />
+      Întrebare obligatorie
+    </label>
 
-          <div *ngIf="question.get('questionType')?.value === 'single_choice' || question.get('questionType')?.value === 'multiple_choice'">
-            <div *ngIf="questionAllowsOptions(question)">
-              <div formArrayName="options">
-                <div *ngFor="let option of getOptions(i).controls; let j = index" [formGroupName]="j" class="input-group">
-                  <label>Opțiune {{ j + 1 }}</label>
-                  <input formControlName="text" type="text" required placeholder="Textul opțiunii" />
-                  <button type="button" (click)="removeOption(i, j)">Șterge opțiune</button>
-                </div>
-              </div>
-              <button type="button" (click)="addOption(i)">Adaugă opțiune</button>
-            </div>
-          </div>
+    <!-- Textul întrebării -->
+    <div class="input-group">
+  <label>Întrebare {{ i + 1 }}</label>
+ <input formControlName="questionText"
+       type="text"
+       [ngClass]="{ 'input-error': question.get('questionText')?.invalid && question.get('questionText')?.touched }"
+       required />
 
-          <button type="button" (click)="removeQuestion(i)">Șterge întrebare</button>
+
+  <!-- Mesaj de eroare sub input -->
+  <div class="text-danger"
+       *ngIf="question.get('questionText')?.invalid && question.get('questionText')?.touched">
+    Textul întrebării este obligatoriu.
+  </div>
+</div>
+
+
+
+    <!-- Select pentru tipul întrebării -->
+    <div class="input-group">
+      <label>Tipul întrebării</label>
+      <select formControlName="questionType">
+        <option value="single_choice">Alegere unică</option>
+        <option value="multiple_choice">Alegere multiplă</option>
+        <option value="open_ended">Text liber</option>
+      </select>
+    </div>
+
+    <!-- Mesaj de eroare dacă lipsesc opțiunile -->
+    <p *ngIf="question.errors?.['noOptions']" class="text-danger">
+      Trebuie să adaugi cel puțin o opțiune pentru această întrebare.
+    </p>
+
+    <!-- Zona de opțiuni -->
+    <div *ngIf="question.get('questionType')?.value === 'single_choice' || question.get('questionType')?.value === 'multiple_choice'">
+      <div formArrayName="options">
+        <div *ngFor="let option of getOptions(i).controls; let j = index"
+             [formGroupName]="j"
+             class="input-group">
+          <label>Opțiune {{ j + 1 }}</label>
+          <input formControlName="text" type="text" required placeholder="Textul opțiunii" />
+          <button type="button" (click)="removeOption(i, j)">Șterge opțiune</button>
         </div>
       </div>
+      <button type="button" (click)="addOption(i)">➕ Adaugă opțiune</button>
+    </div>
+
+    <!-- Buton de ștergere întrebare -->
+    <button type="button" (click)="removeQuestion(i)">🗑️ Șterge întrebare</button>
+
+  </div>
+</div>
+
 
       <button type="button" (click)="addQuestion()">➕ Adaugă întrebare</button>
-      <button type="submit" [disabled]="!surveyForm.valid">✅ Creeaza chestionarul</button>
+      <button type="submit" class="submit-btn">
+  ✅ Creează chestionarul
+</button>
+
+
 
     </form>
   </div>
