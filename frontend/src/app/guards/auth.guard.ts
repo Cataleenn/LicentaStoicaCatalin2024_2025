@@ -8,15 +8,15 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router) {}
 
   canActivate(): boolean {
-    const token = localStorage.getItem('token');  // ✅ Verificăm token-ul JWT
+    const token = localStorage.getItem('token');  //  Verifica token-ul JWT
     console.log('🔹 Verificare autentificare:', token);
 
-    if (token) {  // ✅ Dacă există un token, utilizatorul este considerat autentificat
+    if (token) { 
       console.log('✅ Acces permis la Admin Dashboard');
       return true;
     } else {
       console.warn('❌ Acces interzis! Redirecționare la login.');
-      this.router.navigate(['/login']);  // ✅ Redirecționare către login
+      this.router.navigate(['/login']); // Redirect la login
       return false;
     }
   }

@@ -2,7 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, Routes } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { importProvidersFrom } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';  // ✅ Importă ReactiveFormsModule
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';  
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { AppComponent } from './app/app.component';
@@ -12,13 +12,13 @@ import { authInterceptor } from './app/services/auth-interceptor.service';
 import { AuthGuard } from './app/guards/auth.guard';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { SurveyCreateComponent } from './app/survey-create/survey-create.component';
-import { SurveyViewComponent } from './app/survey-view/survey-view.component';  // Importă SurveyViewComponent
+import { SurveyViewComponent } from './app/survey-view/survey-view.component';  
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
   { path: 'creare-chestionar', component: SurveyCreateComponent, canActivate: [AuthGuard] },
-  { path: 'survey/:id', component: SurveyViewComponent }  // Adaugă ruta pentru SurveyViewComponent
+  { path: 'survey/:id', component: SurveyViewComponent }  
 ];
 
 bootstrapApplication(AppComponent, {
@@ -27,7 +27,7 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(withInterceptors([authInterceptor])),
     importProvidersFrom(
       FormsModule, 
-      ReactiveFormsModule,  // ✅ Adaugă ReactiveFormsModule
+      ReactiveFormsModule,  
       MatToolbarModule,
       MatButtonModule
     ),

@@ -9,11 +9,11 @@ import { JwtHelperService } from '@auth0/angular-jwt';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api/auth'; // Schimbă cu URL-ul backend-ului tău
+  private apiUrl = 'http://localhost:3000/api/auth'; 
   private jwtHelper = new JwtHelperService();
   constructor(private http: HttpClient, private router: Router) {}
 
-  // ✅ Login: Trimite cererea la backend și primește un token JWT
+  // Trimite cererea la backend și primește un token JWT
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
   }

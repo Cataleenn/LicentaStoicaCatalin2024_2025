@@ -23,7 +23,7 @@ export class Response {
   @Column({ default: false })
   isComplete: boolean;
 
-  @Column({ type: 'jsonb', nullable: true }) // ✅ nou!
+  @Column({ type: 'jsonb', nullable: true }) 
   assembly: {
     rotations: number;
     componentsPlaced: { componentId: string; slotId: string }[];
@@ -33,6 +33,6 @@ export class Response {
   createdAt: Date;
 
   @ManyToOne(() => Survey, survey => survey.responses)
-  @JoinColumn({ name: 'survey_id' }) // sau 'form_id' dacă se potrivește
+  @JoinColumn({ name: 'survey_id' }) 
   survey: Survey;
 }

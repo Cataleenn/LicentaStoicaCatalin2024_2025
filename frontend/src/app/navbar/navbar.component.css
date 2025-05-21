@@ -5,13 +5,13 @@
   align-items: center;
   background-color: rgba(24, 24, 173, 0.975);
   color: white;
-  position: fixed;        /* 👈 face bara să fie fixă */
-  top: 0;                 /* 👈 o fixează în partea de sus */
+  position: fixed;        
+  top: 0;                 
   left: 0;
   right: 0;
-  z-index: 1000;          /* 👈 stă deasupra conținutului */
+  z-index: 1000;          
   padding: 0 24px;
-  height: 64px;           /* standard Material height */
+  height: 64px;           
 }
 
 

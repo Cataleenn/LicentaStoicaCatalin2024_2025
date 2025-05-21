@@ -4,7 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Response } from './response.entity';
-import { Survey } from './survey.entity'; // import corect
+import { Survey } from './survey.entity'; 
 import { CreateResponseDto } from './create-response.dto';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class ResponseService {
     userId: dto.userId,
     answers: dto.answers,
     isComplete: dto.isComplete,
-    assembly: dto.assembly, // ✅ salvează și asamblarea
+    assembly: dto.assembly, 
     survey: survey
   });
 

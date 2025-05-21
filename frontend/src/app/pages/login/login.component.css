@@ -1,20 +1,18 @@
-/* Fundal cu gradient modern */
-/* Asigură-te că body ocupă 100% din ecran și aplică gradient */
+
 html, body {
     height: 100%;
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background: rgb(24,24,173);
     background: radial-gradient(circle, rgba(24,24,173,0.9752275910364145) 22%, rgba(19,13,128,1) 42%, rgba(86,166,205,1) 82%);
-    background-repeat: no-repeat; /* 🔹 Evită repetarea */
-    background-attachment: fixed; /* 🔹 Asigură întinderea pe tot ecranul */
-    background-size: cover; /* 🔹 Acoperă întregul ecran fără a crea coloane */
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+    background-size: cover; 
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-  
   /* Containerul formularului */
   .login-container {
     display: flex;
@@ -65,22 +63,22 @@ html, body {
   
   /* Grupul de input-uri */
 .input-group {
-    width: 100%; /* Se asigură că input-urile se aliniază corect */
+    width: 100%; 
     margin-bottom: 15px;
     text-align: left;
     display: flex;
     flex-direction: column;
   }
   
-  /* Input-urile trebuie să ocupe întreaga lățime */
+  
   input {
-    width: 100%;  /* Se asigură că umple containerul */
+    width: 100%;  
     padding: 12px;
     border: 2px solid #0072ff;
     border-radius: 6px;
     font-size: 16px;
     transition: 0.3s;
-    box-sizing: border-box; /* Evită probleme cu margin/padding */
+    box-sizing: border-box; 
   }
   
   input:focus {
@@ -108,10 +106,10 @@ html, body {
   }
   
   .error-message {
-    color: #ff4d4d; /* Roșu aprins pentru vizibilitate */
+    color: #ff4d4d; 
     font-size: 14px;
     font-weight: bold;
-    text-align: center; /* Centrează textul */
+    text-align: center; 
     padding: 10px;
     
     

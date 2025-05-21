@@ -7,7 +7,7 @@ describe('ProductAssemblyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProductAssemblyComponent] // Dacă este standalone
+      imports: [ProductAssemblyComponent] 
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductAssemblyComponent);

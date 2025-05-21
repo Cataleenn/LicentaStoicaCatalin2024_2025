@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 
-import { NavbarComponent } from '../../navbar/navbar.component'; // ajustează dacă e în alt folder
+import { NavbarComponent } from '../../navbar/navbar.component'; 
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [NavbarComponent], // ⬅️ Importă navbarul aici
+  imports: [NavbarComponent], 
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css'] // ⬅️ era greșit: "styleUrl" → "styleUrls"
+  styleUrls: ['./admin-dashboard.component.css'] 
 })
 export class AdminDashboardComponent {
   

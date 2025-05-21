@@ -68,11 +68,11 @@
   justify-content: center;
   align-items: center;
 
-  /* 👇 Controlează dimensiunea */
+ 
   width: 320px;
   height: 200px;
 
-  /* 👇 Poziționează centrat în grid sau absolut */
+  
   position: absolute;
   top: 50%;
   left: 50%;
@@ -109,7 +109,7 @@
   width: 203px;
   height: 100px;
   margin-left: 100px;
-   /* 🔁 aici controlezi distanța față de placă */
+  
  
 }
 
@@ -134,7 +134,7 @@
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
 }
 .component.separator-left {
-  margin-left: 150px; /* sau cât dorești */
+  margin-left: 150px; 
 }
 
 
@@ -191,7 +191,7 @@ button:hover {
   gap: 40px;
   justify-content: center;
   align-items: flex-start;
-  flex-wrap: wrap; /* responsive fallback */
+  flex-wrap: wrap; 
   margin-top: 20px;
 }
 

@@ -7,7 +7,7 @@ describe('SurveyCreateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SurveyCreateComponent] // Utilizează declarations aici
+      declarations: [SurveyCreateComponent] 
     })
     .compileComponents();
 

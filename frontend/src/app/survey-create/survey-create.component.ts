@@ -89,7 +89,7 @@ export class SurveyCreateComponent implements OnInit {
 
     const questionText = question.get('questionText')?.value;
 
-    // ✅ Verificare opțiuni pentru întrebări de tip alegere
+    //  Verificare opțiuni pentru întrebări de tip alegere
     if (needsOptions && hasNoOptions) {
       allOptionsValid = false;
       question.setErrors({ ...question.errors, noOptions: true });
@@ -97,7 +97,7 @@ export class SurveyCreateComponent implements OnInit {
       question.setErrors(null); // curăță eroarea dacă a fost reparată
     }
 
-    // ✅ Verificare text întrebare
+    // Verificare text întrebare
     if (!questionText || questionText.trim() === '') {
       allQuestionsHaveText = false;
       question.get('questionText')?.setErrors({ required: true });
@@ -116,7 +116,7 @@ export class SurveyCreateComponent implements OnInit {
     return;
   }
 
-  // ✅ Dacă formularul este valid, trimite
+  //  Daca formularul este valid, trimite
   if (this.surveyForm.valid) {
     const surveyData = this.surveyForm.value;
     this.surveyService.createSurvey(surveyData).subscribe(
@@ -124,7 +124,7 @@ export class SurveyCreateComponent implements OnInit {
         console.log('Survey created:', response);
         alert('✅ Chestionarul a fost creat cu succes!');
 
-        // opțional: reset formularul
+        
         this.surveyForm.reset();
         this.questions.clear();
         this.addQuestion();
@@ -138,7 +138,7 @@ export class SurveyCreateComponent implements OnInit {
 }
 
 
-  // Fixed method to get options for a specific question
+  
   getOptions(questionIndex: number): FormArray {
     const questionsArray = this.surveyForm.get('questions') as FormArray;
     const question = questionsArray.controls[questionIndex];

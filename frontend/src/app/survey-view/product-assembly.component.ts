@@ -113,27 +113,22 @@ get backSlots(): Slot[] {
 
     if (existing) {
       if (previousSlotId) {
-        // 🔁 SWAP
         const previousSlot = this.slots.find(s => s.id === previousSlotId);
         if (previousSlot) {
           this.moveComponentToSlot(existing, previousSlot);
         } else {
-          // fallback: return existing to pool
           existing.placedIn = undefined;
           slot.occupiedBy = undefined;
         }
       } else {
-        // draggedComponent vine din pool → eliberează slotul
         existing.placedIn = undefined;
         slot.occupiedBy = undefined;
       }
     }
   }
 
-  // ✅ Plasează draggedComponent în slot
   this.moveComponentToSlot(this.draggedComponent, slot);
 
-  // Actualizează ordinea
   this.placementOrder = this.placementOrder.filter(
     p => p.componentId !== this.draggedComponent!.id
   );
