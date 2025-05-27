@@ -9,7 +9,7 @@
 
 .flip-wrapper {
   perspective: 1000px;
-  width: 360px;
+  width: 260px;
   height: 260px;
   position: relative;
 }
@@ -28,14 +28,14 @@
 
 .board.face {
   position: absolute;
-  width: 355px;
-  height: 230px;
+  width: 260px;
+  height: 160px;
   display: grid;
-  grid-template-columns: repeat(3, 100px);
-  grid-template-rows: repeat(2, 100px);
-  gap: 25px;
-  padding: 10px;
-  background-color: #2e2e2e;
+  grid-template-columns: repeat(3, 70px);
+  grid-template-rows: repeat(2, 70px);
+  gap: 20px;
+  padding: 15px;
+  background-color:#292d30;
   border-radius: 16px;
   box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
   backface-visibility: hidden;
@@ -44,9 +44,13 @@
 .board.face.back {
   position: relative;
   transform: rotateY(180deg);
+  background-image: url('/assets/components/hub-back.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-
+/* Hub slots on front side (for modules) - EXACT SIZE WITH OVERFLOW HIDDEN */
 .slot {
   width: 100%;
   height: 100%;
@@ -57,26 +61,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden; /* Hide anything that goes outside slot */
+  position: relative;
 }
 
-.capac-slot {
-   background-color: #a5d6a7;
-  border: 3px dashed #2e7d32;
-  border-radius: 12px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+/* Screen slot on back side of hub - FULL BACK SIZE */
+.screen-slot {
+  background: none;
+  border: none;
   display: flex;
   justify-content: center;
   align-items: center;
-
- 
-  width: 320px;
-  height: 200px;
-
-  
+  width: 100%;
+  height: 100%;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .slot.highlighted {
@@ -84,70 +86,139 @@
   transform: scale(1.05);
 }
 
+/* General component styling - CENTERED IN SLOT */
 .component {
   width: 100%;
   height: 100%;
-  border-radius: 8px;
-  font-weight: bold;
-  color: #000;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: grab;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.component.capac {
-  background-color: #e8f5e9;
-  color: #1b5e20;
-  border: 2px solid #2e7d32;
+/* Component images - LARGER THAN SLOT, CENTERED */
+.slot-image {
+  width: 220%; /* Larger than slot */
+  height: 220%; /* Larger than slot */
+  object-fit: cover; /* Fill and crop if needed */
+  pointer-events: none;
+  display: block;
+}
+
+/* Component text fallback */
+.component-text {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Pool images (components in pool) */
+.pool-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+/* Screen component - COVERS ENTIRE BACK */
+.component.screen {
+  background: none;
+  border: none;
+  width: 100%;
+  height: 110%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.component.screen .slot-image {
+  width: 100%; /* Slightly larger than back */
+  height: 100%; /* Slightly larger than back */
+  object-fit: fit; /* Fill entire back, crop if needed */
+  border-radius: 16px;
+}
+
+/* Hover effects for components */
+.component:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+.component:active {
+  transform: scale(0.95);
+}
+
+/* Dragging state */
+.component:active {
+  opacity: 0.8;
+}
+
+/* Screen area when not placed */
+.screen-area {
+  width: 30%;
+  height: 25%;
+  margin-left: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Screen component in screen area */
+.screen-area .component.screen {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.screen-area .pool-image {
   width: 100%;
   height: 100%;
+  object-fit: cover; /* Fill screen area completely */
 }
 
-.cover-area {
-  
-  width: 203px;
-  height: 100px;
-  margin-left: 100px;
-  
- 
-}
-
+/* Pool of components below hub */
 .pool-below {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 30px;
+  justify-content: left;
+  margin-top: 0px;
 }
+
 .flex-group {
   display: flex;
 }
 
 .pool-below .component {
-  width: 80px;
-  height: 60px;
-  line-height: 60px;
-  text-align: center;
-  font-weight: bold;
-  border-radius: 8px;
-  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+  width: 100px;
+  height: 100px;
+  border: none;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .component.separator-left {
   margin-left: 150px; 
 }
 
-
 .slot-text {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: #1b5e20;
-  
+  display: none;
 }
 
 .component.animate-drop {
@@ -186,6 +257,7 @@ button:hover {
   text-align: center;
   margin-top: 10px;
 }
+
 .assembly-layout-grid {
   display: flex;
   gap: 40px;
@@ -201,6 +273,7 @@ button:hover {
   display: flex;
   flex-direction: column;
 }
+
 .video-instructions-text{
   text-align: left;
   font-family: 'Poppins', sans-serif;

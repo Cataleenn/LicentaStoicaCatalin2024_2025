@@ -1,5 +1,5 @@
 <div class="controls">
-  <button (click)="rotateBoard()">🔄 Rotate ({{ currentSide }})</button>
+  <button (click)="rotateBoard()">🔄 Rotate Hub ({{ currentSide }})</button>
   <div class="video-instructions-text">
     <p><b>Acesta trebuie să fie rezultatul asamblării tale</b></p>
   </div>
@@ -19,14 +19,14 @@
   </div>
 
   <div class="assembly-grid">
-    <!-- 📦 Cover (right of puzzle) -->
+    <!-- 📱 Screen Area (right of hub) -->
      <div class="flex-group">
-    <!-- 🧩 Puzzle -->
+    <!-- 🔧 Hub (Main Board) -->
     <div class="flip-wrapper">
       <div class="flip-inner" [ngClass]="{ 'flipped': currentSide === 'back' }">
-        <!-- FRONT FACE -->
+        <!-- HUB FRONT FACE (for modules) -->
         <div class="board face front">
-          <ng-container *ngFor="let slot of frontSlots">
+          <ng-container *ngFor="let slot of frontSlots; let i = index">
             <div
               class="slot"
               [ngClass]="{ 'highlighted': slot.id === hoveredSlotId }"
@@ -39,54 +39,79 @@
                 *ngIf="getComponentInSlot(slot.id)"
                 class="component"
                 [ngClass]="{ 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId }"
-                [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
+                [style.backgroundColor]="getComponentInSlot(slot.id)?.image ? 'transparent' : getComponentInSlot(slot.id)?.color"
                 draggable="true"
                 (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
                 (dragend)="onDragEnd($event)"
               >
-                {{ getComponentInSlot(slot.id)?.name }}
+                <img 
+                  *ngIf="getComponentInSlot(slot.id)?.image" 
+                  [src]="getComponentInSlot(slot.id)?.image" 
+                  [alt]="getComponentInSlot(slot.id)?.name"
+                  class="component-image slot-image"
+                  [style.transform]="(i >= 3 && getComponentInSlot(slot.id) && getComponentInSlot(slot.id)!.id.includes('flash')) ? 'rotate(180deg)' : 'none'"
+                />
+                <span *ngIf="!getComponentInSlot(slot.id)?.image" class="component-text">
+                  {{ getComponentInSlot(slot.id)?.name }}
+                </span>
               </div>
             </div>
           </ng-container>
         </div>
 
-        <!-- BACK FACE -->
+        <!-- HUB BACK FACE (for screen) -->
         <div class="board face back">
           <ng-container *ngFor="let slot of backSlots">
             <div
-              class="slot capac-slot"
+              class="slot screen-slot"
               (drop)="onDrop(slot)"
               (dragover)="allowDrop($event, slot)"
               (dragenter)="hoveredSlotId = slot.id"
               (dragleave)="hoveredSlotId = null"
             >
-              <span *ngIf="!getComponentInSlot(slot.id)" class="slot-text">Insert Cover</span>
+              <!-- Screen component when placed - covers entire hub -->
               <div
                 *ngIf="getComponentInSlot(slot.id)"
-                class="component capac"
-                [ngClass]="{ 'cover-rotated': currentSide === 'back', 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId }"
-                [style.backgroundColor]="getComponentInSlot(slot.id)?.color"
+                class="component screen"
+                [ngClass]="{ 'screen-attached': currentSide === 'back', 'animate-drop': getComponentInSlot(slot.id)?.id === lastDroppedId }"
                 draggable="true"
                 (dragstart)="onDragStart(getComponentInSlot(slot.id)!)"
                 (dragend)="onDragEnd($event)"
               >
-                {{ getComponentInSlot(slot.id)?.name }}
+                <img 
+                  *ngIf="getComponentInSlot(slot.id)?.image" 
+                  [src]="getComponentInSlot(slot.id)?.image" 
+                  [alt]="getComponentInSlot(slot.id)?.name"
+                  class="component-image slot-image"
+                />
+                <span *ngIf="!getComponentInSlot(slot.id)?.image" class="component-text">
+                  {{ getComponentInSlot(slot.id)?.name }}
+                </span>
               </div>
             </div>
           </ng-container>
         </div>
       </div>
     </div>
-    <div class="cover-area">
+    <!-- Screen Area (when not placed) -->
+    <div class="screen-area">
       <div
-        *ngIf="!cover.placedIn"
-        class="component capac"
-        [style.backgroundColor]="cover.color"
+        *ngIf="!screen.placedIn"
+        class="component screen"
+        [style.backgroundColor]="screen.image ? 'transparent' : screen.color"
         draggable="true"
-        (dragstart)="onDragStart(cover)"
+        (dragstart)="onDragStart(screen)"
         (dragend)="onDragEnd($event)"
       >
-        {{ cover.name }}
+        <img 
+          *ngIf="screen.image" 
+          [src]="screen.image" 
+          [alt]="screen.name"
+          class="component-image slot-image"
+        />
+        <span *ngIf="!screen.image" class="component-text">
+          {{ screen.name }}
+        </span>
       </div>
     </div>
     </div>
@@ -94,19 +119,27 @@
 
     
 
-    <!-- ⬇️ Pool of components under puzzle -->
+    <!-- ⬇️ Pool of modules under hub -->
     <div class="pool-below">
-    <ng-container *ngFor="let id of ['blue-1', 'blue-2', 'white-1', 'white-2', 'pink-1', 'pink-2']">
+    <ng-container *ngFor="let id of ['bluetooth-1', 'bluetooth-2', 'powerbank-1', 'powerbank-2', 'flash-1', 'flash-2']">
       <div
         *ngIf="!getComponentById(id)?.placedIn"
         class="component"
-        [ngClass]="{ 'separator-left': id === 'white-2' }"
-        [style.backgroundColor]="getComponentById(id)?.color"
+        [ngClass]="{ 'separator-left': id === 'powerbank-2' }"
+        [style.backgroundColor]="getComponentById(id)?.image ? 'transparent' : getComponentById(id)?.color"
         draggable="true"
         (dragstart)="onDragStart(getComponentById(id)!)"
         (dragend)="onDragEnd($event)"
       >
-        {{ getComponentById(id)?.name }}
+        <img 
+          *ngIf="getComponentById(id)?.poolImage" 
+          [src]="getComponentById(id)?.poolImage" 
+          [alt]="getComponentById(id)?.name"
+          class="component-image pool-image"
+        />
+        <span *ngIf="!getComponentById(id)?.image" class="component-text">
+          {{ getComponentById(id)?.name }}
+        </span>
       </div>
     </ng-container>
   </div>
