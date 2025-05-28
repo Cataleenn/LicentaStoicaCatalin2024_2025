@@ -293,6 +293,20 @@ export class ProductAssemblyComponent {
     return ['hub-front-slot4', 'hub-front-slot5', 'hub-front-slot6'].includes(slotId);
   }
 
+  // Calculate assembly progress
+  getAssemblyProgress(): number {
+    const totalComponents = this.components.length + 1; // +1 for screen
+    const placedComponents = this.components.filter(c => c.placedIn).length + (this.screen.placedIn ? 1 : 0);
+    return Math.round((placedComponents / totalComponents) * 100);
+  }
+
+  // Get progress status text
+  getProgressStatus(): string {
+    const placedCount = this.components.filter(c => c.placedIn).length + (this.screen.placedIn ? 1 : 0);
+    const totalCount = this.components.length + 1;
+    return `${placedCount}/${totalCount} components placed`;
+  }
+
   isAssemblyValid(): boolean {
     const allModulesPlaced = this.components.every(c => c.placedIn);
     const screenPlacedCorrectly = this.screen.placedIn === 'hub-back-screen-slot';

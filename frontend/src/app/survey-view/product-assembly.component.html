@@ -1,11 +1,24 @@
 <div class="controls">
   <button (click)="rotateBoard()">🔄 Rotate Hub ({{ currentSide }})</button>
-  <div class="video-instructions-text">
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-container">
+  <div class="progress-header">
+    <span class="progress-title">Assembly Progress</span>
+    <span class="progress-percentage">{{ getAssemblyProgress() }}%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="getAssemblyProgress()"></div>
+  </div>
+  <div class="progress-status">{{ getProgressStatus() }}</div>
+</div>
+<div class="video-instructions-text">
     <p><b>Acesta trebuie să fie rezultatul asamblării tale</b></p>
   </div>
-</div>
 <div class="assembly-layout-grid">
     <!-- 🎥 VIDEOS LEFT -->
+     
   <div class="video-column">
     <video controls loop autoplay muted width="100%" preload="metadata">
       <source src="assets/tab_rot.mp4" type="video/mp4" />
