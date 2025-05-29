@@ -3,6 +3,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { SurveyCreateComponent } from './survey-create/survey-create.component';
 import { SurveyViewComponent } from './survey-view/survey-view.component';
+import { UserManagementComponent } from './pages/user-management/user-management.component';
 import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -10,14 +11,22 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 
     path: 'admin-dashboard', 
-    component: AdminDashboardComponent, 
-    canActivate: [AuthGuard] 
+    component: AdminDashboardComponent,
+    canActivate: [AuthGuard]
   },
   { 
     path: 'creare-chestionar', 
-    component: SurveyCreateComponent, 
-    canActivate: [AuthGuard] 
+    component: SurveyCreateComponent,
+    canActivate: [AuthGuard]
   },
-  { path: 'survey/:id', component: SurveyViewComponent },
+  { 
+    path: 'utilizatori', 
+    component: UserManagementComponent,
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'survey/:id', 
+    component: SurveyViewComponent 
+  },
   { path: '**', redirectTo: '/login' }
 ];

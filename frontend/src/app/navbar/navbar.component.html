@@ -2,11 +2,12 @@
   <span class="title">Admin Dashboard</span>
 
   <div class="center-buttons">
-    <button mat-button routerLink="/creare-chestionar">Creare Chestionar</button>
-    <!-- Adaugi alte butoane aici -->
+    <button mat-button routerLink="/admin-dashboard">📊 Dashboard</button>
+    <button mat-button routerLink="/creare-chestionar">📝 Creare Chestionar</button>
+    <button mat-button routerLink="/utilizatori">👥 Utilizatori</button>
   </div>
 
   <span class="spacer"></span>
   <span *ngIf="username" class="me-3">👤 {{ username }}</span>
-  <button mat-button (click)="logout()">Logout</button>
+  <button mat-button (click)="logout()">🚪 Logout</button>
 </mat-toolbar>

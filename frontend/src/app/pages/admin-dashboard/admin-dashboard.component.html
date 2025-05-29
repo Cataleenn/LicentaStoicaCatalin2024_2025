@@ -1,4 +1,44 @@
 <app-navbar></app-navbar>
-<p>admin-dashboard works!</p>
 
+<div class="dashboard-container">
+  <div class="welcome-section">
+    <h1>🎯 Admin Dashboard</h1>
+    <p>Bun venit în panoul de administrare al sistemului de chestionare!</p>
+  </div>
 
+  <div class="quick-actions">
+    <mat-card class="action-card">
+      <mat-card-header>
+        <mat-card-title>⚡ Acțiuni Rapide</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="action-buttons">
+          <button mat-raised-button color="primary" (click)="toggleSurveys()">
+            📊 {{ showSurveys ? 'Ascunde' : 'Vezi' }} Chestionarele
+          </button>
+          <button mat-raised-button color="accent" routerLink="/creare-chestionar">
+            ➕ Crează Chestionar Nou
+          </button>
+          <button mat-raised-button 
+                  (click)="toggleAdminManagement()">
+            👥 {{ showAdminManagement ? 'Ascunde' : 'Gestionează' }} Administratori
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Surveys List Component -->
+  <div *ngIf="showSurveys" class="content-section">
+    <app-surveys-list></app-surveys-list>
+  </div>
+
+  <!-- Admin Management Section -->
+  <div *ngIf="showAdminManagement" class="content-section">
+    <div class="admin-management-container">
+      <app-user-management></app-user-management>
+    </div>
+  </div>
+
+ 
+</div>

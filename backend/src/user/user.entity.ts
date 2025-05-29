@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class User {
@@ -11,7 +11,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column() // Eliminăm select: false pentru a putea încărca parola când avem nevoie
   password: string;
 
   @Column({ default: 'user' }) 
