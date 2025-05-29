@@ -31,7 +31,11 @@ export class SurveyViewComponent implements OnInit {
   //currentStep = 1; // 1 = instructiuni, 2 = asamblare, 3 = chestionar
   
   currentStep = 1;
-
+   scrollProgress: number = 0;
+  questionProgress: number = 0;
+  totalQuestions: number = 0;
+  currentQuestionIndex: number = 0;
+  Math = Math;
 
 
   constructor(
@@ -59,6 +63,8 @@ export class SurveyViewComponent implements OnInit {
         // Check if questions array exists
         if (data && data.questions && Array.isArray(data.questions)) {
           this.setQuestions(data.questions);
+          this.totalQuestions = data.questions.length;
+          this.setupScrollListener();
         } else {
           this.errorMessage = 'Invalid survey data format';
           console.error('Invalid survey data format:', data);
@@ -81,7 +87,61 @@ console.log('Questions:', this.questions.value);
 
   }
 
-  
+  setupScrollListener(): void {
+    // Așteaptă ca DOM-ul să fie complet încărcat
+    setTimeout(() => {
+      window.addEventListener('scroll', () => this.updateProgress());
+      // Calculează progresul inițial
+      this.updateProgress();
+    }, 500);
+  }
+   updateProgress(): void {
+    if (this.currentStep !== 3 || this.totalQuestions === 0) {
+      return;
+    }
+
+    const questionContainers = document.querySelectorAll('.question-container');
+    if (questionContainers.length === 0) {
+      return;
+    }
+
+    const windowHeight = window.innerHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const documentHeight = document.documentElement.scrollHeight - windowHeight;
+    
+    // Calculează progresul general de scroll (0-100%)
+    this.scrollProgress = Math.min(100, Math.max(0, (scrollTop / documentHeight) * 100));
+
+    // Calculează care întrebare este vizibilă în viewport
+    let currentQuestion = 0;
+    questionContainers.forEach((container, index) => {
+      const rect = container.getBoundingClientRect();
+      const isVisible = rect.top < windowHeight * 0.7 && rect.bottom > windowHeight * 0.3;
+      
+      if (isVisible) {
+        currentQuestion = index + 1;
+      }
+    });
+
+    this.currentQuestionIndex = currentQuestion;
+    this.questionProgress = (currentQuestion / this.totalQuestions) * 100;
+  }
+
+  // Metodă pentru a face scroll la o întrebare specifică
+  scrollToQuestion(questionIndex: number): void {
+    const questionElement = document.querySelector(`#question-${questionIndex}`);
+    if (questionElement) {
+      questionElement.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  }
+
+  // Cleanup când componenta se distruge
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', () => this.updateProgress());
+  }
 
   onAssemblyComplete(event: {
   rotations: number;

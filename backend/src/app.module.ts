@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { SurveyModule } from './survey/survey.module';  
 import { Survey } from './survey/survey.entity';  
+import { Response } from './survey/response.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { Survey } from './survey/survey.entity';
       username: process.env.DATABASE_USER || 'survey_admin',
       password: process.env.DATABASE_PASSWORD || 'adminpass',
       database: process.env.DATABASE_NAME || 'survey_data_db',
-      entities: [User, Survey],  
+      entities: [User, Survey, Response],  
       autoLoadEntities: true,
       synchronize: true,  
     }),

@@ -1,103 +1,120 @@
+<!-- Adaugă progress bar-ul în survey-view.component.html -->
+
 <div class="blue-background">
-<div class="survey-container" *ngIf="surveyData">
-  <!-- Step 1: Instrucțiuni -->
-<div *ngIf="currentStep === 1" id="step-instructions" class="step fade-in">
-  <div class="instructions-container">
-    <h3>{{ getSurveyTitle() }}</h3>
-    <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
-    <button class="start-btn" (click)="goToAssembly()">Start</button>
+  <!-- Progress Bar - se afișează doar la step 3 (chestionar) -->
+  <div *ngIf="currentStep === 3" class="progress-container">
+    <div class="progress-info">
+      <span class="progress-text">
+        Întrebarea {{ currentQuestionIndex }} din {{ totalQuestions }}
+      </span>
+      <span class="progress-percentage">{{ Math.round(questionProgress) }}%</span>
+    </div>
+    
+    <!-- Progress bar principal -->
+    <div class="progress-bar">
+      <div class="progress-fill" 
+           [style.width.%]="questionProgress"
+           [ngClass]="{'progress-complete': questionProgress === 100}">
+      </div>
+    </div>
+    
+    <!-- Mini progress dots pentru fiecare întrebare -->
+    <div class="progress-dots" *ngIf="totalQuestions <= 10">
+      <div *ngFor="let question of questions.controls; let i = index"
+           class="progress-dot"
+           [ngClass]="{
+             'dot-current': i + 1 === currentQuestionIndex,
+             'dot-completed': i + 1 < currentQuestionIndex,
+             'dot-pending': i + 1 > currentQuestionIndex
+           }"
+           (click)="scrollToQuestion(i)"
+           [title]="'Întrebarea ' + (i + 1)">
+      </div>
+    </div>
   </div>
-</div>
 
-  <!-- Step 2: Asamblare -->
-<div *ngIf="currentStep === 2" class="assembly-wrapper pop-in">
-  <app-product-assembly
-    *ngIf="!assemblyCompleted"
-    (completed)="onAssemblyComplete($event)">
-  </app-product-assembly>
-</div>
+  <div class="survey-container" *ngIf="surveyData">
+    <!-- Step 1: Instrucțiuni -->
+    <div *ngIf="currentStep === 1" id="step-instructions" class="step fade-in">
+      <div class="instructions-container">
+        <h3>{{ getSurveyTitle() }}</h3>
+        <p *ngIf="getSurveyUserInstructions">{{ getSurveyUserInstructions() }}</p>
+        <button class="start-btn" (click)="goToAssembly()">Start</button>
+      </div>
+    </div>
 
- <!-- Step 3: Chestionar -->
-  <div *ngIf="currentStep === 3">
-    <ng-container *ngIf="assemblyCompleted">
-      
-      <!--<p *ngIf="getSurveyAdminDescription()">{{ getSurveyAdminDescription() }}</p>-->
-      
+    <!-- Step 2: Asamblare -->
+    <div *ngIf="currentStep === 2" class="assembly-wrapper pop-in">
+      <app-product-assembly
+        *ngIf="!assemblyCompleted"
+        (completed)="onAssemblyComplete($event)">
+      </app-product-assembly>
+    </div>
 
-      <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
-        <div *ngIf="questions.controls.length === 0" class="alert">
-          No questions found in this survey.
-        </div>
-        
-        <div formArrayName="questions">
-          <div *ngFor="let question of questions.controls; let i = index"
-     class="question-container"
-     [ngClass]="{ 'has-error': question.get('response')?.errors?.['required'] }">
-            <div [formGroupName]="i">
-              <h3>
-  <span *ngIf="question.get(['required'])?.value" style="color: red">*</span>
-  {{ i + 1 }}. {{ question.get('questionText')?.value }}
-</h3>
+    <!-- Step 3: Chestionar -->
+    <div *ngIf="currentStep === 3">
+      <ng-container *ngIf="assemblyCompleted">
+        <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+          <div *ngIf="questions.controls.length === 0" class="alert">
+            No questions found in this survey.
+          </div>
+          
+          <div formArrayName="questions">
+            <div *ngFor="let question of questions.controls; let i = index"
+                 class="question-container"
+                 [id]="'question-' + i"
+                 [ngClass]="{ 'has-error': question.get('response')?.errors?.['required'] }">
+              <div [formGroupName]="i">
+                <h3>
+                  <span *ngIf="question.get(['required'])?.value" style="color: red">*</span>
+                  {{ i + 1 }}. {{ question.get('questionText')?.value }}
+                </h3>
 
-
-              <!-- Multiple Choice -->
-              <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
-                <div *ngIf="getOptions(i).controls.length === 0" class="alert">
-                  No options available for this question.
+                <!-- Multiple Choice -->
+                <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
+                  <div *ngIf="getOptions(i).controls.length === 0" class="alert">
+                    No options available for this question.
+                  </div>
+                  <div *ngFor="let option of getOptions(i).controls; let j = index">
+                    <input type="checkbox"
+                          [id]="'q' + i + 'opt' + j"
+                          [value]="option.get('value')?.value"
+                          (change)="onCheckboxChange($event, question)">
+                    <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
+                  </div>
                 </div>
-                <div *ngFor="let option of getOptions(i).controls; let j = index">
-                  <input type="checkbox"
-                        [id]="'q' + i + 'opt' + j"
-                        [value]="option.get('value')?.value"
-                        (change)="onCheckboxChange($event, question)">
-                  <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
-                </div>
-              </div>
 
-              <!-- Single Choice -->
-              <div *ngIf="question.get('questionType')?.value === 'single-choice'">
-                <div *ngIf="getOptions(i).controls.length === 0" class="alert">
-                  No options available for this question.
+                <!-- Single Choice -->
+                <div *ngIf="question.get('questionType')?.value === 'single-choice'">
+                  <div *ngIf="getOptions(i).controls.length === 0" class="alert">
+                    No options available for this question.
+                  </div>
+                  <div *ngFor="let option of getOptions(i).controls; let j = index">
+                    <input type="radio"
+                          [id]="'q' + i + 'opt' + j"
+                          [value]="option.get('value')?.value"
+                          formControlName="response">
+                    <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
+                  </div>
                 </div>
-                <div *ngFor="let option of getOptions(i).controls; let j = index">
-                  <input type="radio"
-                        [id]="'q' + i + 'opt' + j"
-                        [value]="option.get('value')?.value"
-                        formControlName="response">
-                  <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
-                </div>
-              </div>
 
-              <!-- Open Text -->
-              <div *ngIf="question.get('questionType')?.value === 'text'">
-                <input type="text" formControlName="response" class="text-input" placeholder="Enter your answer">
+                <!-- Open Text -->
+                <div *ngIf="question.get('questionType')?.value === 'text'">
+                  <input type="text" formControlName="response" class="text-input" placeholder="Enter your answer">
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <button type="submit" class="submit-btn">Submit</button>
-      </form>
-    </ng-container>
-</div>
-  <!-- DEBUG INFO -->
-  <!-- <div class="debug-info">
-    <h3>Debug Information</h3>
-    <p><strong>Survey ID:</strong> {{ surveyId }}</p>
-    <details>
-      <summary>Raw Survey Data</summary>
-      <pre>{{ surveyData | json }}</pre>
-    </details>
-    <details>
-      <summary>Form Value</summary>
-      <pre>{{ surveyForm.value | json }}</pre>
-    </details>
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </ng-container>
+    </div>
+
+    <div class="loading" *ngIf="isLoading">Loading survey...</div>
+    <div class="error" *ngIf="errorMessage && !isLoading">
+      <h2>Error</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
   </div>
-</div> -->
-
-<div class="loading" *ngIf="isLoading">Loading survey...</div>
-<div class="error" *ngIf="errorMessage && !isLoading">
-  <h2>Error</h2>
-  <p>{{ errorMessage }}</p>
-</div>
 </div>

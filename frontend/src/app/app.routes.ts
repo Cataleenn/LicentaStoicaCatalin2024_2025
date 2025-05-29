@@ -1,3 +1,23 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './pages/login/login.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { SurveyCreateComponent } from './survey-create/survey-create.component';
+import { SurveyViewComponent } from './survey-view/survey-view.component';
+import { AuthGuard } from './guards/auth.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { 
+    path: 'admin-dashboard', 
+    component: AdminDashboardComponent, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'creare-chestionar', 
+    component: SurveyCreateComponent, 
+    canActivate: [AuthGuard] 
+  },
+  { path: 'survey/:id', component: SurveyViewComponent },
+  { path: '**', redirectTo: '/login' }
+];
