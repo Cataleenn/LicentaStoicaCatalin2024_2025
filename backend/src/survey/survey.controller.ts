@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, NotFoundException, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Param, NotFoundException, UseGuards, Request } from '@nestjs/common';
 import { SurveyService } from './survey.service';
 import { Survey } from './survey.entity';
 import { CreateSurveyDto } from './create-survey.dto';
@@ -28,6 +28,15 @@ export class SurveyController {
     return this.surveyService.getSurveyById(id);
   }
 
+  @Get(':id/responses')
+  @UseGuards(AdminGuard)
+  async getSurveyResponses(@Param('id') id: number) {
+    if (isNaN(id)) {
+      throw new NotFoundException('Chestionarul nu a fost găsit.');
+    }
+    return this.surveyService.getSurveyResponses(id);
+  }
+
   @Post()
   @UseGuards(AdminGuard)
   async createSurvey(
@@ -36,5 +45,18 @@ export class SurveyController {
   ): Promise<Survey> {
     const userId = req.user?.id;
     return this.surveyService.createSurvey(createSurveyDto, userId);
+  }
+
+  @Delete(':id')
+  @UseGuards(AdminGuard)
+  async deleteSurvey(@Param('id') id: number, @Request() req: any) {
+    if (isNaN(id)) {
+      throw new NotFoundException('Chestionarul nu a fost găsit.');
+    }
+    
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    
+    return this.surveyService.deleteSurvey(id, userId, userRole);
   }
 }

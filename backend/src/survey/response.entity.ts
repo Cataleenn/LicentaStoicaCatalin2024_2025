@@ -1,4 +1,4 @@
-// Enhanced Response Entity pentru backend
+// src/survey/response.entity.ts
 import {
   Entity,
   Column,
@@ -26,19 +26,13 @@ export class Response {
   @Column({ type: 'jsonb', nullable: true }) 
   assembly: {
     rotations: number;
-    componentsPlaced: { componentId: string; slotId: string; order: number }[];
-    piecesRemovedCount: number;        // de câte ori au fost scoase piese
-    piecesSwappedCount: number;        // de câte ori au fost interschimbate
-    wrongPlacementsCount: number;      // câte plasări greșite
-    correctnessPercentage: number;     // procentaj de corectitudine (0-100)
-    totalMoves: number;                // numărul total de mișcări
-    timeSpent: number;                 // timpul petrecut în secunde
+    componentsPlaced: { componentId: string; slotId: string }[];
   };
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => Survey, survey => survey.responses)
+  @ManyToOne(() => Survey, survey => survey.responses, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'survey_id' }) 
   survey: Survey;
 }

@@ -2,5 +2,23 @@
 html, body {
   
   font-family: 'Poppins', sans-serif;
+  /* SnackBar custom styles */
+.success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.success-snackbar .mat-mdc-simple-snack-bar-action {
+  color: white !important;
+}
+
+.error-snackbar .mat-mdc-simple-snack-bar-action {
+  color: white !important;
+}
   
 } 
