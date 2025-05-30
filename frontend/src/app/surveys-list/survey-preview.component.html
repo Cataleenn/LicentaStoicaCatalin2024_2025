@@ -1,0 +1,78 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>👁️ Previzualizare Chestionar</h2>
+  <button mat-icon-button (click)="close()" class="close-button">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="dialog-content">
+  <div class="survey-details">
+    <div class="survey-header">
+      <h3>{{ survey.formTitle }}</h3>
+      <div class="survey-meta">
+        <span class="survey-id">ID: {{ survey.id }}</span>
+        <span class="question-count">{{ survey.questions?.length || 0 }} întrebări</span>
+      </div>
+    </div>
+
+    <div class="survey-info" *ngIf="survey.adminDescription || survey.userInstructions">
+      <div class="info-section" *ngIf="survey.adminDescription">
+        <h4>📝 Descriere Administrator</h4>
+        <p>{{ survey.adminDescription }}</p>
+      </div>
+      
+      <div class="info-section" *ngIf="survey.userInstructions">
+        <h4>📋 Instrucțiuni Utilizator</h4>
+        <p>{{ survey.userInstructions }}</p>
+      </div>
+    </div>
+
+    <div class="questions-section">
+      <h4>❓ Întrebări ({{ survey.questions?.length || 0 }})</h4>
+      
+      <div *ngIf="!survey.questions || survey.questions.length === 0" class="no-questions">
+        Nu există întrebări în acest chestionar.
+      </div>
+
+      <div *ngFor="let question of survey.questions; let i = index" 
+           class="question-item">
+        <div class="question-header">
+          <span class="question-number">{{ i + 1 }}.</span>
+          <span class="question-text">{{ question.questionText }}</span>
+          <mat-chip class="question-type" [color]="getQuestionTypeColor(question.questionType)" selected>
+            {{ getQuestionTypeLabel(question.questionType) }}
+          </mat-chip>
+          <mat-chip *ngIf="question.required" color="warn" selected class="required-chip">
+            Obligatorie
+          </mat-chip>
+        </div>
+
+        <!-- Options for choice questions -->
+        <div *ngIf="hasOptions(question)" class="question-options">
+          <div class="options-label">Opțiuni:</div>
+          <ul class="options-list">
+            <li *ngFor="let option of question.options; let j = index" 
+                class="option-item">
+              <span class="option-label">{{ getOptionLabel(j) }})</span>
+              <span class="option-text">{{ option.text || option.value || option }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Preview for text questions -->
+        <div *ngIf="isTextQuestion(question)" class="text-preview">
+          <div class="text-input-preview">
+            <span class="placeholder">Câmp de text pentru răspuns...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dialog-actions">
+  <button mat-button (click)="close()">Închide</button>
+  <button mat-raised-button color="primary" (click)="openSurvey()">
+    🚀 Deschide Chestionarul
+  </button>
+</mat-dialog-actions>
