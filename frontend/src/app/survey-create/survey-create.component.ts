@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SurveyService } from '../services/survey.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,7 +16,11 @@ export class SurveyCreateComponent implements OnInit {
   surveyForm!: FormGroup;
   isSubmitting = false;
 
-  constructor(private fb: FormBuilder, private surveyService: SurveyService) {}
+  constructor(
+    private fb: FormBuilder, 
+    private surveyService: SurveyService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -203,28 +208,28 @@ export class SurveyCreateComponent implements OnInit {
 
     this.isSubmitting = true;
     
-    // Pregătire date pentru trimitere
+   
     const surveyData = this.prepareSurveyData();
     
     this.surveyService.createSurvey(surveyData).subscribe({
-      next: (response) => {
-        console.log('Survey created:', response);
-        this.showToast('Chestionarul a fost creat cu succes!', 'success');
-        this.resetForm();
-        this.isSubmitting = false;
-      },
-      error: (error) => {
-        console.error('Error creating survey:', error);
-        this.showToast('Eroare la crearea chestionarului. Încercați din nou.', 'error');
-        this.isSubmitting = false;
-      }
-    });
+    next: (response) => {
+      console.log('✅ Survey created successfully:', response);
+      this.showToast('Chestionarul a fost creat cu succes!', 'success');
+      
+      
+      setTimeout(() => {
+        this.router.navigate(['/admin-dashboard']);
+      }, 1500); 
+      
+      this.isSubmitting = false;
+    }
+  });
   }
 
   private prepareSurveyData(): any {
     const formValue = this.surveyForm.value;
     
-    // Curăță și validează opțiunile
+    
     const cleanedQuestions = formValue.questions.map((question: any) => {
       const cleanedQuestion = { ...question };
       
