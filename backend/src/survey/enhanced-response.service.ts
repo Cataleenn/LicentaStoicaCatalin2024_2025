@@ -112,12 +112,12 @@ export class EnhancedResponseService {
     };
 
     // ✅ MAPARE DIRECTĂ PENTRU STRUCTURA TA DE CHESTIONAR:
-    // Întrebările 6-10 sunt demografice în structura ta
-    const ageAnswer = getAnswerValue('1');        // Întrebarea 6: Vârstă
-    const genderAnswer = getAnswerValue('2');     // Întrebarea 7: Gen  
-    const educationAnswer = getAnswerValue('3');  // Întrebarea 8: Educație
-    const occupationAnswer = getAnswerValue('4'); // Întrebarea 9: Ocupație
-    const stemAnswer = getAnswerValue('5');      // Întrebarea 10: STEM
+    // Întrebările 1-5 sunt demografice în structura ta
+    const ageAnswer = getAnswerValue('1');        // Întrebarea 1: Vârstă
+    const genderAnswer = getAnswerValue('2');     // Întrebarea 2: Gen  
+    const educationAnswer = getAnswerValue('3');  // Întrebarea 3: Educație
+    const occupationAnswer = getAnswerValue('4'); // Întrebarea 4: Ocupație
+    const stemAnswer = getAnswerValue('5');      // Întrebarea 5: STEM
 
     console.log('📝 FIXED mapping - extracted values:', {
       age: ageAnswer,
@@ -159,12 +159,12 @@ export class EnhancedResponseService {
     };
 
     // ✅ MAPARE DIRECTĂ PENTRU STRUCTURA TA DE CHESTIONAR:
-    // Întrebările 1-5 sunt comportamentale în structura ta
-    const problemSolvingAnswer = getAnswerValue('6');   // Întrebarea 1: Stil rezolvare probleme
-    const techComfortAnswer = getAnswerValue('7');     // Întrebarea 2: Comfort tehnologic
-    const assemblyExpAnswer = getAnswerValue('8');     // Întrebarea 3: Experiență asamblare
-    const errorHandlingAnswer = getAnswerValue('9');   // Întrebarea 4: Gestionarea erorilor
-    const gamingAnswer = getAnswerValue('10');          // Întrebarea 5: Gaming
+    // Întrebările 6-10 sunt comportamentale în structura ta
+    const problemSolvingAnswer = getAnswerValue('6');   // Întrebarea 6: Stil rezolvare probleme
+    const techComfortAnswer = getAnswerValue('7');     // Întrebarea 7: Comfort tehnologic
+    const assemblyExpAnswer = getAnswerValue('8');     // Întrebarea 8: Experiență asamblare
+    const errorHandlingAnswer = getAnswerValue('9');   // Întrebarea 9: Gestionarea erorilor
+    const gamingAnswer = getAnswerValue('10');          // Întrebarea 10: Gaming
 
     console.log('📝 FIXED behavioral mapping - extracted values:', {
       problemSolving: problemSolvingAnswer,
@@ -225,7 +225,7 @@ export class EnhancedResponseService {
     }
     if (value.includes('peste 55') || value.includes('over 55')) {
       console.log('✅ FIXED age mapping result: over_55');
-      return 'over_55'; // ✅ FIXAT!
+      return 'over_55';
     }
     
     console.log('⚠️ No age match found, using default: 19_25');
@@ -261,8 +261,8 @@ export class EnhancedResponseService {
     console.log('🔍 FIXED mapping education from:', `"${value}"`);
     
     if (!value) {
-      console.log('⚠️ Empty education value, using default: highschool_completed');
-      return 'highschool_completed';
+      console.log('⚠️ Empty education value, using default: bachelor');
+      return 'bachelor';
     }
 
     if (value.includes('școala generală')) {
@@ -287,7 +287,7 @@ export class EnhancedResponseService {
     }
     if (value.includes('studii de doctorat') || value.includes('phd')) {
       console.log('✅ FIXED education mapping result: phd');
-      return 'phd'; // ✅ FIXAT!
+      return 'phd';
     }
     
     console.log('⚠️ No education match found, using default: bachelor');
@@ -328,7 +328,7 @@ export class EnhancedResponseService {
     }
     if (value.includes('pensionar')) {
       console.log('✅ FIXED occupation mapping result: retired');
-      return 'retired'; // ✅ FIXAT!
+      return 'retired';
     }
     if (value.includes('altceva')) {
       console.log('✅ FIXED occupation mapping result: other');
@@ -365,11 +365,11 @@ export class EnhancedResponseService {
     }
     if (value.includes('fără cunoștințe stem')) {
       console.log('✅ FIXED STEM mapping result: stem_none');
-      return 'stem_none'; // ✅ FIXAT!
+      return 'stem_none';
     }
     
-    console.log('⚠️ No STEM match found, using default: stem_none');
-    return 'stem_none'; // Default pentru "fără cunoștințe"
+    console.log('⚠️ No STEM match found, using default: stem_moderate');
+    return 'stem_moderate';
   }
 
   private mapProblemSolvingStyleFixed(value: string): string {
@@ -394,7 +394,7 @@ export class EnhancedResponseService {
     }
     if (value.includes('colaborativ')) {
       console.log('✅ FIXED problem solving mapping result: collaborative');
-      return 'collaborative'; // ✅ FIXAT!
+      return 'collaborative';
     }
     
     console.log('⚠️ No problem solving match found, using default: balanced');
@@ -423,7 +423,7 @@ export class EnhancedResponseService {
     }
     if (value.includes('de bază cu tehnologia')) {
       console.log('✅ FIXED tech comfort mapping result: tech_basic');
-      return 'tech_basic'; // ✅ FIXAT!
+      return 'tech_basic';
     }
     if (value.includes('neconfortabil cu tehnologia')) {
       console.log('✅ FIXED tech comfort mapping result: tech_uncomfortable');
@@ -452,7 +452,7 @@ export class EnhancedResponseService {
     }
     if (value.includes('experiență rară')) {
       console.log('✅ FIXED assembly experience mapping result: assembly_rare');
-      return 'assembly_rare'; // ✅ FIXAT!
+      return 'assembly_rare';
     }
     if (value.includes('fără experiență')) {
       console.log('✅ FIXED assembly experience mapping result: assembly_none');
@@ -485,15 +485,15 @@ export class EnhancedResponseService {
     }
     if (value.includes('caut ajutor')) {
       console.log('✅ FIXED error handling mapping result: seek_help');
-      return 'seek_help'; // ✅ FIXAT!
+      return 'seek_help';
     }
     if (value.includes('mă frustrez')) {
       console.log('✅ FIXED error handling mapping result: frustrated');
       return 'frustrated';
     }
     
-    console.log('⚠️ No error handling match found, using default: seek_help');
-    return 'seek_help'; // Default pentru "caut ajutor"
+    console.log('⚠️ No error handling match found, using default: analytical');
+    return 'analytical';
   }
 
   private mapGamingFrequencyFixed(value: string): string {
@@ -506,7 +506,7 @@ export class EnhancedResponseService {
 
     if (value.includes('zilnic, multe ore')) {
       console.log('✅ FIXED gaming frequency mapping result: gaming_heavy');
-      return 'gaming_heavy'; // ✅ FIXAT!
+      return 'gaming_heavy';
     }
     if (value.includes('zilnic, moderat')) {
       console.log('✅ FIXED gaming frequency mapping result: gaming_daily');
@@ -564,10 +564,93 @@ export class EnhancedResponseService {
   }
 
   /**
+   * ✅ NEW: Recompute ALL responses with FIXED categories
+   */
+  async recomputeAllResponsesWithFixedCategories(): Promise<{ success: boolean; message: string; processedCount: number; categoriesFixed: number }> {
+    console.log('🔧 COMPLETE recomputation of ALL responses with FIXED categories...');
+    
+    try {
+      const responses = await this.responseRepo.find({
+        where: { isComplete: true },
+        relations: ['survey']
+      });
+
+      console.log(`Found ${responses.length} total responses to process`);
+
+      let processedCount = 0;
+      let categoriesFixed = 0;
+      
+      for (const response of responses) {
+        try {
+          console.log(`\n🔄 Processing response ${response.id}...`);
+          
+          // Store original profiles for comparison
+          const originalDemo = JSON.stringify(response.demographicProfile);
+          const originalBehav = JSON.stringify(response.behavioralProfile);
+          
+          // Re-extract profiles with FIXED mapping
+          const demographicProfile = this.extractDemographicProfile(response.answers);
+          const behavioralProfile = this.extractBehavioralProfile(response.answers);
+          const assemblyData = this.extractAssemblyData(response.assembly);
+
+          // Recompute metrics
+          const computedMetrics = this.featureEngineering.computeBehavioralMetrics(
+            assemblyData,
+            behavioralProfile,
+            demographicProfile
+          );
+
+          // Update the response
+          await this.responseRepo.update(response.id, {
+            demographicProfile,
+            behavioralProfile,
+            computedMetrics
+          });
+
+          processedCount++;
+          
+          // Check if categories were actually changed
+          const newDemo = JSON.stringify(demographicProfile);
+          const newBehav = JSON.stringify(behavioralProfile);
+          
+          if (originalDemo !== newDemo || originalBehav !== newBehav) {
+            categoriesFixed++;
+            console.log(`✅ FIXED categories for response ${response.id}`);
+            console.log(`   Old demo: ${originalDemo}`);
+            console.log(`   New demo: ${newDemo}`);
+            console.log(`   Old behav: ${originalBehav}`);
+            console.log(`   New behav: ${newBehav}`);
+          } else {
+            console.log(`✓ Categories already consistent for response ${response.id}`);
+          }
+          
+        } catch (error) {
+          console.error(`❌ Error processing response ${response.id}:`, error);
+        }
+      }
+
+      return {
+        success: true,
+        message: `Successfully recomputed ALL responses with FIXED categories. Fixed ${categoriesFixed}/${processedCount} responses.`,
+        processedCount,
+        categoriesFixed
+      };
+    } catch (error) {
+      console.error('❌ Error during complete recomputation:', error);
+      return {
+        success: false,
+        message: `Error during recomputation: ${error.message}`,
+        processedCount: 0,
+        categoriesFixed: 0
+      };
+    }
+  }
+
+  /**
    * Method to recompute metrics for existing responses
    */
   async recomputeMetricsForSurvey(surveyId: number): Promise<{ success: boolean; message: string; processedCount: number }> {
-    console.log(`🔄 Recomputing metrics for survey ${surveyId}...`);
+    console.log(`🔄 Recomputing metrics for survey ${surveyId} with FIXED mapping...`);
     
     try {
       const responses = await this.responseRepo.find({
@@ -896,106 +979,5 @@ export class EnhancedResponseService {
     
     const denominator = Math.sqrt(sumXSquared * sumYSquared);
     return denominator === 0 ? 0 : numerator / denominator;
-  }
-
-  private createDistribution(values: number[], bins: number = 10): any {
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const binSize = (max - min) / bins;
-    const binCounts = new Array(bins).fill(0);
-    
-    values.forEach(value => {
-      const binIndex = Math.min(Math.floor((value - min) / binSize), bins - 1);
-      binCounts[binIndex]++;
-    });
-    
-    return {
-      bins: binCounts,
-      binEdges: Array.from({length: bins + 1}, (_, i) => min + i * binSize),
-      min,
-      max
-    };
-  }
-
-  private identifyTopPerformers(responses: Response[], percentile: number = 0.1): any[] {
-    const sortedByPerformance = responses
-      .filter(r => r.computedMetrics)
-      .sort((a, b) => (b.computedMetrics?.technicalAptitude || 0) - (a.computedMetrics?.technicalAptitude || 0))
-      .slice(0, Math.ceil(responses.length * percentile));
-    
-    return sortedByPerformance.map(response => ({
-      userId: response.userId,
-      technicalAptitude: response.computedMetrics?.technicalAptitude,
-      speedIndex: response.computedMetrics?.speedIndex,
-      precisionIndex: response.computedMetrics?.precisionIndex,
-      confidenceIndex: response.computedMetrics?.confidenceIndex,
-      demographicProfile: response.demographicProfile,
-      behavioralProfile: response.behavioralProfile
-    }));
-  }
-
-  private analyzePerformanceTrends(responses: Response[]): any[] {
-    // Sort by submission time
-    const sortedResponses = responses.sort((a, b) => 
-      new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime()
-    );
-    
-    // Calculate rolling averages
-    const windowSize = Math.max(5, Math.floor(responses.length / 10));
-    const trends: any[] = [];
-    
-    for (let i = windowSize - 1; i < sortedResponses.length; i++) {
-      const window = sortedResponses.slice(i - windowSize + 1, i + 1);
-      const avgPerformance = this.average(window.map(r => r.computedMetrics?.technicalAptitude || 0));
-      
-      trends.push({
-        timestamp: sortedResponses[i].submittedAt,
-        avgPerformance,
-        windowSize: window.length
-      });
-    }
-    
-    return trends;
-  }
-
-  private analyzePerformanceByDemographic(responses: Response[]): any {
-    const analysis: Record<string, any> = {};
-    
-    // Performance by age group
-    const ageGroups = this.groupBy(responses, r => r.demographicProfile?.ageGroup);
-    analysis.byAge = Object.keys(ageGroups).map(ageGroup => ({
-      ageGroup,
-      count: ageGroups[ageGroup].length,
-      avgPerformance: this.average(ageGroups[ageGroup].map(r => r.computedMetrics?.technicalAptitude || 0))
-    }));
-    
-    // Performance by occupation
-    const occupations = this.groupBy(responses, r => r.demographicProfile?.occupation);
-    analysis.byOccupation = Object.keys(occupations).map(occupation => ({
-      occupation,
-      count: occupations[occupation].length,
-      avgPerformance: this.average(occupations[occupation].map(r => r.computedMetrics?.technicalAptitude || 0))
-    }));
-    
-    // Performance by STEM familiarity
-    const stemLevels = this.groupBy(responses, r => r.demographicProfile?.stemFamiliarity);
-    analysis.byStemFamiliarity = Object.keys(stemLevels).map(stemLevel => ({
-      stemLevel,
-      count: stemLevels[stemLevel].length,
-      avgPerformance: this.average(stemLevels[stemLevel].map(r => r.computedMetrics?.technicalAptitude || 0))
-    }));
-    
-    return analysis;
-  }
-
-  private groupBy<T>(array: T[], keyFn: (item: T) => string | undefined): Record<string, T[]> {
-    return array.reduce((groups, item) => {
-      const key = keyFn(item) || 'unknown';
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-      groups[key].push(item);
-      return groups;
-    }, {} as Record<string, T[]>);
   }
 }

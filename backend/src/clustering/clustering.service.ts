@@ -25,6 +25,7 @@ export interface ClusterCenter {
     dominantStemLevel: string;
     genderDistribution: Record<string, number>;
     educationDistribution: Record<string, number>;
+    ageDistribution: Record<string, number>;  
     occupationDistribution: Record<string, number>;
     stemDistribution: Record<string, number>;
   };
@@ -37,6 +38,8 @@ export interface ClusterCenter {
     problemSolvingDistribution: Record<string, number>;
     techComfortDistribution: Record<string, number>;
     errorHandlingDistribution: Record<string, number>;
+     assemblyExperienceDistribution: Record<string, number>; // ✅ ADĂUGAT
+    gamingDistribution: Record<string, number>;  
   };
   clusterName: string;
   clusterDescription: string;
@@ -187,57 +190,61 @@ export class ClusteringService {
   /**
    * Calculate DETAILED demographic profile with all distributions
    */
-  private calculateDetailedDemographicProfile(responses: Response[]): any {
-    const demographics = responses
-      .map(r => r.demographicProfile)
-      .filter((d): d is NonNullable<typeof d> => d !== null && d !== undefined);
-    
-    const ageDistribution = this.calculateDistribution(demographics.map(d => d.ageGroup));
-    const genderDistribution = this.calculateDistribution(demographics.map(d => d.gender));
-    const educationDistribution = this.calculateDistribution(demographics.map(d => d.educationLevel));
-    const occupationDistribution = this.calculateDistribution(demographics.map(d => d.occupation));
-    const stemDistribution = this.calculateDistribution(demographics.map(d => d.stemFamiliarity));
-    
-    return {
-      dominantAgeGroup: this.findMostCommon(demographics.map(d => d.ageGroup)),
-      dominantGender: this.findMostCommon(demographics.map(d => d.gender)),
-      dominantEducation: this.findMostCommon(demographics.map(d => d.educationLevel)),
-      dominantOccupation: this.findMostCommon(demographics.map(d => d.occupation)),
-      dominantStemLevel: this.findMostCommon(demographics.map(d => d.stemFamiliarity)),
-      genderDistribution,
-      educationDistribution,
-      occupationDistribution,
-      stemDistribution: stemDistribution
-    };
-  }
-
   /**
-   * Calculate DETAILED behavioral profile with all distributions
-   */
-  private calculateDetailedBehavioralProfile(responses: Response[]): any {
-    const behavioral = responses
-      .map(r => r.behavioralProfile)
-      .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined);
-    
-    const problemSolvingDistribution = this.calculateDistribution(behavioral.map(b => b.problemSolvingStyle));
-    const techComfortDistribution = this.calculateDistribution(behavioral.map(b => b.techComfort));
-    const errorHandlingDistribution = this.calculateDistribution(behavioral.map(b => b.errorHandlingStyle));
-    const assemblyExpDistribution = this.calculateDistribution(behavioral.map(b => b.assemblyExperience));
-    const gamingDistribution = this.calculateDistribution(behavioral.map(b => b.gamingFrequency));
-    
-    return {
-      dominantProblemSolvingStyle: this.findMostCommon(behavioral.map(b => b.problemSolvingStyle)),
-      dominantTechComfort: this.findMostCommon(behavioral.map(b => b.techComfort)),
-      dominantErrorHandling: this.findMostCommon(behavioral.map(b => b.errorHandlingStyle)),
-      dominantAssemblyExperience: this.findMostCommon(behavioral.map(b => b.assemblyExperience)),
-      dominantGamingFrequency: this.findMostCommon(behavioral.map(b => b.gamingFrequency)),
-      problemSolvingDistribution,
-      techComfortDistribution,
-      errorHandlingDistribution,
-      assemblyExperienceDistribution: assemblyExpDistribution,
-      gamingDistribution
-    };
-  }
+ * Calculate DETAILED demographic profile with all distributions
+ */
+private calculateDetailedDemographicProfile(responses: Response[]): any {
+  const demographics = responses
+    .map(r => r.demographicProfile)
+    .filter((d): d is NonNullable<typeof d> => d !== null && d !== undefined);
+  
+  const ageDistribution = this.calculateDistribution(demographics.map(d => d.ageGroup));
+  const genderDistribution = this.calculateDistribution(demographics.map(d => d.gender));
+  const educationDistribution = this.calculateDistribution(demographics.map(d => d.educationLevel));
+  const occupationDistribution = this.calculateDistribution(demographics.map(d => d.occupation));
+  const stemDistribution = this.calculateDistribution(demographics.map(d => d.stemFamiliarity));
+  
+  return {
+    dominantAgeGroup: this.findMostCommon(demographics.map(d => d.ageGroup)),
+    dominantGender: this.findMostCommon(demographics.map(d => d.gender)),
+    dominantEducation: this.findMostCommon(demographics.map(d => d.educationLevel)),
+    dominantOccupation: this.findMostCommon(demographics.map(d => d.occupation)),
+    dominantStemLevel: this.findMostCommon(demographics.map(d => d.stemFamiliarity)),
+    ageDistribution,        // ✅ ADĂUGAT: distribuția de vârstă
+    genderDistribution,
+    educationDistribution,
+    occupationDistribution,
+    stemDistribution
+  };
+}
+
+/**
+ * Calculate DETAILED behavioral profile with all distributions
+ */
+private calculateDetailedBehavioralProfile(responses: Response[]): any {
+  const behavioral = responses
+    .map(r => r.behavioralProfile)
+    .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined);
+  
+  const problemSolvingDistribution = this.calculateDistribution(behavioral.map(b => b.problemSolvingStyle));
+  const techComfortDistribution = this.calculateDistribution(behavioral.map(b => b.techComfort));
+  const errorHandlingDistribution = this.calculateDistribution(behavioral.map(b => b.errorHandlingStyle));
+  const assemblyExpDistribution = this.calculateDistribution(behavioral.map(b => b.assemblyExperience));
+  const gamingDistribution = this.calculateDistribution(behavioral.map(b => b.gamingFrequency));
+  
+  return {
+    dominantProblemSolvingStyle: this.findMostCommon(behavioral.map(b => b.problemSolvingStyle)),
+    dominantTechComfort: this.findMostCommon(behavioral.map(b => b.techComfort)),
+    dominantErrorHandling: this.findMostCommon(behavioral.map(b => b.errorHandlingStyle)),
+    dominantAssemblyExperience: this.findMostCommon(behavioral.map(b => b.assemblyExperience)),
+    dominantGamingFrequency: this.findMostCommon(behavioral.map(b => b.gamingFrequency)),
+    problemSolvingDistribution,
+    techComfortDistribution,
+    errorHandlingDistribution,
+    assemblyExperienceDistribution: assemblyExpDistribution, // ✅ CORECTARE: numele corect
+    gamingDistribution
+  };
+}
 
   /**
    * IMPROVED algorithm to assign UNIQUE cluster names - each category only once
@@ -372,34 +379,37 @@ export class ClusteringService {
    * Generate DETAILED profile description for display
    */
   private generateDetailedProfile(cluster: ClusterCenter): string {
-    const demo = cluster.demographicProfile;
-    const behavioral = cluster.behavioralProfile;
-    const profile = cluster.profile;
-    
-    let detailedProfile = `**Profil demografic dominant:**\n`;
-    detailedProfile += `• Vârstă: ${this.formatDemographic(demo.dominantAgeGroup)} (${this.getPercentage(demo.genderDistribution, demo.dominantAgeGroup, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Gen: ${this.formatDemographic(demo.dominantGender)} (${this.getPercentage(demo.genderDistribution, demo.dominantGender, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Educație: ${this.formatDemographic(demo.dominantEducation)} (${this.getPercentage(demo.educationDistribution, demo.dominantEducation, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Ocupație: ${this.formatDemographic(demo.dominantOccupation)} (${this.getPercentage(demo.occupationDistribution, demo.dominantOccupation, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Nivel STEM: ${this.formatDemographic(demo.dominantStemLevel)} (${this.getPercentage(demo.stemDistribution, demo.dominantStemLevel, cluster.memberCount)}%)\n\n`;
-    
-    detailedProfile += `**Profil comportamental dominant:**\n`;
-    detailedProfile += `• Stil rezolvare probleme: ${this.formatBehavioral(behavioral.dominantProblemSolvingStyle)} (${this.getPercentage(behavioral.problemSolvingDistribution, behavioral.dominantProblemSolvingStyle, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Confort tehnologic: ${this.formatBehavioral(behavioral.dominantTechComfort)} (${this.getPercentage(behavioral.techComfortDistribution, behavioral.dominantTechComfort, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Gestionare erori: ${this.formatBehavioral(behavioral.dominantErrorHandling)} (${this.getPercentage(behavioral.errorHandlingDistribution, behavioral.dominantErrorHandling, cluster.memberCount)}%)\n`;
-    detailedProfile += `• Experiență asamblare: ${this.formatBehavioral(behavioral.dominantAssemblyExperience)}\n`;
-    detailedProfile += `• Frecvență gaming: ${this.formatBehavioral(behavioral.dominantGamingFrequency)}\n\n`;
-    
-    detailedProfile += `**Metrici de performanță:**\n`;
-    detailedProfile += `• Aptitudine tehnică: ${(profile.avgTechnicalAptitude * 100).toFixed(1)}%\n`;
-    detailedProfile += `• Index viteză: ${(profile.avgSpeedIndex * 100).toFixed(1)}%\n`;
-    detailedProfile += `• Index precizie: ${(profile.avgPrecisionIndex * 100).toFixed(1)}%\n`;
-    detailedProfile += `• Index încredere: ${(profile.avgConfidenceIndex * 100).toFixed(1)}%\n`;
-    detailedProfile += `• Index sistematic: ${(profile.avgSystematicIndex * 100).toFixed(1)}%\n`;
-    detailedProfile += `• Index persistență: ${(profile.avgPersistenceIndex * 100).toFixed(1)}%`;
-    
-    return detailedProfile;
-  }
+  const demo = cluster.demographicProfile;
+  const behavioral = cluster.behavioralProfile;
+  const profile = cluster.profile;
+  
+  let detailedProfile = `**Profil demografic dominant:**\n`;
+  
+  // ✅ CORECTARE: Folosește distribuția corectă pentru fiecare câmp
+  detailedProfile += `• Vârstă: ${this.formatDemographic(demo.dominantAgeGroup)} (${this.getPercentage(demo.ageDistribution, demo.dominantAgeGroup, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Gen: ${this.formatDemographic(demo.dominantGender)} (${this.getPercentage(demo.genderDistribution, demo.dominantGender, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Educație: ${this.formatDemographic(demo.dominantEducation)} (${this.getPercentage(demo.educationDistribution, demo.dominantEducation, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Ocupație: ${this.formatDemographic(demo.dominantOccupation)} (${this.getPercentage(demo.occupationDistribution, demo.dominantOccupation, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Nivel STEM: ${this.formatDemographic(demo.dominantStemLevel)} (${this.getPercentage(demo.stemDistribution, demo.dominantStemLevel, cluster.memberCount)}%)\n\n`;
+  
+  detailedProfile += `**Profil comportamental dominant:**\n`;
+  detailedProfile += `• Stil rezolvare probleme: ${this.formatBehavioral(behavioral.dominantProblemSolvingStyle)} (${this.getPercentage(behavioral.problemSolvingDistribution, behavioral.dominantProblemSolvingStyle, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Confort tehnologic: ${this.formatBehavioral(behavioral.dominantTechComfort)} (${this.getPercentage(behavioral.techComfortDistribution, behavioral.dominantTechComfort, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Gestionare erori: ${this.formatBehavioral(behavioral.dominantErrorHandling)} (${this.getPercentage(behavioral.errorHandlingDistribution, behavioral.dominantErrorHandling, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Experiență asamblare: ${this.formatBehavioral(behavioral.dominantAssemblyExperience)} (${this.getPercentage(behavioral.assemblyExperienceDistribution, behavioral.dominantAssemblyExperience, cluster.memberCount)}%)\n`;
+  detailedProfile += `• Frecvență gaming: ${this.formatBehavioral(behavioral.dominantGamingFrequency)} (${this.getPercentage(behavioral.gamingDistribution, behavioral.dominantGamingFrequency, cluster.memberCount)}%)\n\n`;
+  
+  detailedProfile += `**Metrici de performanță:**\n`;
+  detailedProfile += `• Aptitudine tehnică: ${(profile.avgTechnicalAptitude * 100).toFixed(1)}%\n`;
+  detailedProfile += `• Index viteză: ${(profile.avgSpeedIndex * 100).toFixed(1)}%\n`;
+  detailedProfile += `• Index precizie: ${(profile.avgPrecisionIndex * 100).toFixed(1)}%\n`;
+  detailedProfile += `• Index încredere: ${(profile.avgConfidenceIndex * 100).toFixed(1)}%\n`;
+  detailedProfile += `• Index sistematic: ${(profile.avgSystematicIndex * 100).toFixed(1)}%\n`;
+  detailedProfile += `• Index persistență: ${(profile.avgPersistenceIndex * 100).toFixed(1)}%`;
+  
+  return detailedProfile;
+}
+
 
   /**
    * Helper method to calculate percentage for distributions

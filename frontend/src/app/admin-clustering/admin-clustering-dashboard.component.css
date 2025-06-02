@@ -1,4 +1,4 @@
-/* Improved Admin Clustering Dashboard Styles - frontend/src/app/admin-clustering/admin-clustering-dashboard.component.css */
+/* Updated Admin Clustering Dashboard CSS - frontend/src/app/admin-clustering/admin-clustering-dashboard.component.css */
 
 .clustering-dashboard {
   padding-top: 80px;
@@ -31,6 +31,127 @@
   font-size: 1.2rem;
   margin: 0;
   font-weight: 300;
+}
+
+/* ✅ NEW: Category Consistency Section Styles */
+.category-consistency-section {
+  margin-bottom: 3rem;
+}
+
+.consistency-card {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border-left: 6px solid #ff9800;
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.consistency-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 152, 0, 0.2);
+}
+
+.consistency-actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.consistency-actions button {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  min-width: 220px;
+}
+
+.consistency-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.consistency-actions button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.consistency-results {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.consistency-results h4 {
+  color: #e65100;
+  margin: 0 0 1rem 0;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.consistency-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  padding: 1rem;
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #ff9800;
+}
+
+.stat-item strong {
+  color: #e65100;
+  font-weight: 600;
+}
+
+.category-details {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+.category-details h5 {
+  color: #e65100;
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.category-details h5:first-child {
+  margin-top: 0;
+}
+
+.category-list {
+  margin-bottom: 1.5rem;
+}
+
+.category-list div {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 152, 0, 0.05);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.category-list strong {
+  color: #bf360c;
+  font-weight: 600;
+  min-width: 100px;
+  display: inline-block;
 }
 
 .main-tabs {
@@ -511,6 +632,15 @@
   .metrics-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
+  
+  .consistency-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .consistency-actions button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -571,6 +701,14 @@
   .cluster-actions {
     flex-direction: column;
   }
+
+  .consistency-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .category-details {
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -588,6 +726,11 @@
 
   .profile-content {
     padding: 1.5rem;
+  }
+
+  .consistency-actions button {
+    min-width: auto;
+    padding: 10px 16px;
   }
 }
 
@@ -622,4 +765,24 @@
 ::ng-deep .mat-card-subtitle {
   color: #666 !important;
   font-size: 0.95rem !important;
+}
+
+/* ✅ Special Highlighting for Fixed Categories */
+.fixed-categories-indicator {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 0.5rem;
+}
+
+.consistency-warning {
+  background: linear-gradient(135deg, #fff3e0, #ffcc02);
+  border-left: 6px solid #ff9800;
+  color: #e65100;
 }

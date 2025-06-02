@@ -1,4 +1,4 @@
-// Frontend Clustering Service - frontend/src/app/services/clustering.service.ts
+// Updated Clustering Service - frontend/src/app/services/clustering.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -15,6 +15,32 @@ export class ClusteringService {
     const token = localStorage.getItem('token');
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
+
+  // ===================================================================
+  // ✅ NEW METHODS FOR CATEGORY CONSISTENCY MANAGEMENT
+  // ===================================================================
+
+  /**
+   * ✅ Check category consistency across all responses
+   */
+  checkCategoryConsistency(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/responses/debug/category-consistency`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * ✅ Fix ALL categories to use consistent mapping
+   */
+  fixAllCategories(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/responses/fix-all-categories`, {}, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // ===================================================================
+  // EXISTING METHODS REMAIN THE SAME
+  // ===================================================================
 
   /**
    * Get all available surveys for clustering analysis
@@ -91,7 +117,7 @@ export class ClusteringService {
   }
 
   /**
-   * Recompute metrics for existing responses
+   * Recompute metrics for existing responses (now with FIXED categories)
    */
   recomputeMetrics(surveyId: number): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/responses/recompute-metrics/${surveyId}`, {}, {
