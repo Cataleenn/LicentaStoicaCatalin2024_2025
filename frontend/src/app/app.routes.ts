@@ -1,4 +1,4 @@
-// frontend/src/app/app.routes.ts
+// Updated App Routes - frontend/src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
@@ -27,7 +27,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   { 
-    path: 'analiza-clustering',  // 🆕 Ruta pentru clustering
+    path: 'clustering-analysis', 
     component: AdminClusteringDashboardComponent,
     canActivate: [AuthGuard]
   },
