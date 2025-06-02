@@ -1,0 +1,262 @@
+.viz-container {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  min-height: 600px;
+}
+
+.controls-panel {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.controls-card, .legend-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.control-group {
+  margin-bottom: 1.2rem;
+}
+
+.control-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.slider-value {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.legend-items {
+  margin-top: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.legend-item:hover {
+  background: #f8f9fa;
+}
+
+.legend-item.selected {
+  background: #e3f2fd;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.legend-info {
+  flex: 1;
+}
+
+.legend-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.legend-size {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.viz-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.viz-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viz-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1a2a6c;
+}
+
+.viz-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.svg-container {
+  flex: 1;
+  background: #fafafa;
+  position: relative;
+  min-height: 400px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.loading-overlay p {
+  margin-top: 1rem;
+  color: #666;
+}
+
+.details-panel {
+  position: absolute;
+  top: 64px;
+  right: 0;
+  width: 300px;
+  max-height: calc(100% - 64px);
+  overflow-y: auto;
+  background: white;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.detail-section {
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+}
+
+.detail-section h4 {
+  margin: 0 0 0.8rem 0;
+  font-size: 1rem;
+  color: #1a2a6c;
+}
+
+.cluster-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.confidence-bar {
+  margin-top: 0.5rem;
+}
+
+.confidence-bar span {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.bar {
+  height: 8px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECDC4, #45B7D1);
+  border-radius: 4px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.metric {
+  font-size: 0.9rem;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.metric-value {
+  margin-left: 0.3rem;
+  color: #1976d2;
+}
+
+.assembly-stats, .demo-info, .behavioral-info {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .viz-container {
+    flex-direction: column;
+  }
+
+  .controls-panel {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .details-panel {
+    position: static;
+    width: 100%;
+    max-height: none;
+    box-shadow: none;
+    border-top: 1px solid #eee;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .viz-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

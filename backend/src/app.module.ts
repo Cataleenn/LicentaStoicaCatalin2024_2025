@@ -1,14 +1,22 @@
+// Updated App Module - backend/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+// Controllers
 import { AppController } from './app.controller';
+
+// Entities
 import { User } from './user/user.entity';
+import { Survey } from './survey/survey.entity';
+import { Response } from './survey/response.entity';
+
+// Modules
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
-import { SurveyModule } from './survey/survey.module';  
-import { Survey } from './survey/survey.entity';  
-import { Response } from './survey/response.entity';
+import { SurveyModule } from './survey/survey.module';
+import { ClusteringModule } from './clustering/clustering.module';
 
 @Module({
   imports: [
@@ -22,16 +30,18 @@ import { Response } from './survey/response.entity';
       username: process.env.DATABASE_USER || 'survey_admin',
       password: process.env.DATABASE_PASSWORD || 'adminpass',
       database: process.env.DATABASE_NAME || 'survey_data_db',
-      entities: [User, Survey, Response],  
+      entities: [User, Survey, Response],
       autoLoadEntities: true,
-      synchronize: true,  
+      synchronize: true, // Set to false in production
+      logging: false // Set to true for debugging SQL queries
     }),
     AuthModule,
     UserModule,
-    SurveyModule,  
-    AdminModule
+    SurveyModule,
+    AdminModule,
+    ClusteringModule // Add clustering module
   ],
-  controllers: [AppController],  
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
