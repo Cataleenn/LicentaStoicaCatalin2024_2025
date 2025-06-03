@@ -1,0 +1,237 @@
+<app-navbar></app-navbar>
+
+<div class="clustering-dashboard">
+  <div class="dashboard-header">
+    <h1>🧠 Analiza Comportamentală Avansată</h1>
+    <p>Recunoașterea pattern-urilor comportamentale și insight-uri demografice detaliate</p>
+  </div>
+
+  <mat-tab-group class="main-tabs">
+    <!-- Tab 1: Survey Selection & Overview -->
+    <mat-tab label="📊 Prezentare Generală">
+      <div class="tab-content">
+        <!-- Survey Selection Card -->
+        <div class="survey-selection">
+          <mat-card class="selection-card">
+            <mat-card-header>
+              <mat-card-title>Selectează Chestionarul pentru Analiză</mat-card-title>
+              <mat-card-subtitle>Alege un chestionar cu răspunsuri complete pentru a analiza pattern-urile comportamentale</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- Loading State -->
+              <div *ngIf="isLoadingSurveys" class="loading-container">
+                <mat-spinner diameter="30"></mat-spinner>
+                <p>Se încarcă chestionarele...</p>
+              </div>
+              
+              <!-- Survey Selection Controls -->
+              <div *ngIf="!isLoadingSurveys" class="selection-controls">
+                <mat-select 
+                  [(value)]="selectedSurveyId" 
+                  placeholder="Selectează un chestionar..."
+                  (selectionChange)="onSurveySelected($event.value)">
+                  <mat-option *ngFor="let survey of availableSurveys" [value]="survey.id">
+                    {{ survey.formTitle }} 
+                    <span style="color: #666; margin-left: 8px;">
+                      ({{ survey.responseCount || 0 }} răspunsuri)
+                    </span>
+                  </mat-option>
+                </mat-select>
+                
+                <!-- Analysis Button -->
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  [disabled]="!selectedSurveyId || isAnalyzing"
+                  (click)="startClusteringAnalysis()">
+                  <span *ngIf="!isAnalyzing">🔬 Pornește Analiza</span>
+                  <span *ngIf="isAnalyzing">
+                    <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+                    Se analizează...
+                  </span>
+                </button>
+                
+                <!-- Recompute Metrics Button -->
+                <button 
+                  mat-raised-button 
+                  color="accent"
+                  [disabled]="!selectedSurveyId || isRecomputing"
+                  (click)="recomputeMetrics()">
+                  <span *ngIf="!isRecomputing">⚙️ Recalculează Metricile</span>
+                  <span *ngIf="isRecomputing">
+                    <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+                    Se recalculează...
+                  </span>
+                </button>
+              </div>
+              
+              <!-- Error Message -->
+              <div *ngIf="errorMessage" class="error-container">
+                <mat-icon color="warn">error</mat-icon>
+                <span>{{ errorMessage }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Analysis Results Section -->
+        <div *ngIf="clusteringSummary" class="analysis-results">
+          <!-- Overview Statistics -->
+          <div class="overview-stats">
+            <mat-card class="summary-card">
+              <mat-card-header>
+                <mat-card-title>Rezultatele Analizei</mat-card-title>
+                <mat-card-subtitle>Scorul de calitate: {{ (clusteringSummary.qualityScore * 100).toFixed(1) }}%</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="summary-stats">
+                  <div class="stat">
+                    <div class="stat-number">{{ clusteringSummary.totalClusters }}</div>
+                    <div class="stat-label">Grupuri Comportamentale</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-number">{{ clusteringSummary.totalParticipants }}</div>
+                    <div class="stat-label">Participanți Analizați</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-number">{{ getUniqueOccupations() }}</div>
+                    <div class="stat-label">Ocupații Diferite</div>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+
+            <!-- Insights Card -->
+            <mat-card class="insights-card" *ngIf="clusteringSummary.insights && clusteringSummary.insights.length > 0">
+              <mat-card-header>
+                <mat-card-title>💡 Insight-uri Cheie</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <ul class="insights-list">
+                  <li *ngFor="let insight of clusteringSummary.insights">{{ insight }}</li>
+                </ul>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <!-- Detailed Clusters Section -->
+          <div class="clusters-detailed">
+            <h2>🎯 Profilurile Comportamentale Identificate</h2>
+            
+            <mat-accordion class="clusters-accordion">
+              <mat-expansion-panel 
+                *ngFor="let cluster of clusteringSummary.clusters; let i = index"
+                class="cluster-panel"
+                [ngClass]="'cluster-panel-' + i">
+                
+                <!-- Cluster Header -->
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <div class="cluster-header">
+                      <div class="cluster-icon">{{ getClusterIcon(cluster.name) }}</div>
+                      <div class="cluster-basic-info">
+                        <h3>{{ cluster.name }}</h3>
+                        <div class="cluster-stats">
+                          <span class="participant-count">{{ cluster.size }} participanți</span>
+                          <span class="percentage">({{ cluster.percentage.toFixed(1) }}%)</span>
+                          <span class="performance-badge" [ngClass]="getPerformanceBadgeClass(cluster.performanceMetrics.technicalAptitude)">
+                            {{ getPerformanceLabel(cluster.performanceMetrics.technicalAptitude) }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{ cluster.description }}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <!-- Cluster Detailed Content -->
+                <div class="cluster-detailed-content">
+                  <!-- Performance Metrics -->
+                  <div class="metrics-section">
+                    <h4>📊 Metrici de Performanță</h4>
+                    <div class="metrics-grid">
+                      <div class="metric-item">
+                        <div class="metric-label">Aptitudine Tehnică</div>
+                        <div class="metric-bar">
+                          <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.technicalAptitude * 100"></div>
+                          <span class="metric-value">{{ (cluster.performanceMetrics.technicalAptitude * 100).toFixed(1) }}%</span>
+                        </div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Index Viteză</div>
+                        <div class="metric-bar">
+                          <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.speedIndex * 100"></div>
+                          <span class="metric-value">{{ (cluster.performanceMetrics.speedIndex * 100).toFixed(1) }}%</span>
+                        </div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Index Precizie</div>
+                        <div class="metric-bar">
+                          <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.precisionIndex * 100"></div>
+                          <span class="metric-value">{{ (cluster.performanceMetrics.precisionIndex * 100).toFixed(1) }}%</span>
+                        </div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Index Încredere</div>
+                        <div class="metric-bar">
+                          <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.confidenceIndex * 100"></div>
+                          <span class="metric-value">{{ (cluster.performanceMetrics.confidenceIndex * 100).toFixed(1) }}%</span>
+                        </div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Index Sistematic</div>
+                        <div class="metric-bar">
+                          <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.systematicIndex * 100"></div>
+                          <span class="metric-value">{{ (cluster.performanceMetrics.systematicIndex * 100).toFixed(1) }}%</span>
+                        </div>
+                      </div>
+                      <div class="metric-item">
+                        <div class="metric-label">Index Persistență</div>
+                        <div class="metric-bar">
+                          <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.persistenceIndex * 100"></div>
+                          <span class="metric-value">{{ (cluster.performanceMetrics.persistenceIndex * 100).toFixed(1) }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Detailed Profile -->
+                  <div class="profile-section">
+                    <h4>👤 Profil Demografic și Comportamental Detaliat</h4>
+                    <div class="profile-content" [innerHTML]="formatProfileForDisplay(cluster.detailedProfile)"></div>
+                  </div>
+
+                  <!-- Key Characteristics -->
+                  <div class="characteristics-section" *ngIf="cluster.characteristics && cluster.characteristics.length > 0">
+                    <h4>🏷️ Caracteristici Cheie</h4>
+                    <div class="characteristics-tags">
+                      <span 
+                        *ngFor="let char of cluster.characteristics" 
+                        class="characteristic-tag">
+                        {{ char }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Cluster Actions -->
+                  <div class="cluster-actions">
+                    <button 
+                      mat-stroked-button 
+                      color="primary"
+                      (click)="viewClusterDetails(cluster.id)">
+                      👁️ Vezi Participanții
+                    </button>
+                    <button 
+                      mat-stroked-button 
+                      color="accent"
+                      (click)="exportClusterData(cluster.id)">
+                      📊 Exportă Date
+                    </button>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+        </div>
