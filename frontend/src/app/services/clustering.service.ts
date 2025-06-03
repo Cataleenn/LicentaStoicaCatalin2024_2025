@@ -338,4 +338,20 @@ export class ClusteringService {
       headers: this.getAuthHeaders()
     });
   }
+   getQuestionImpact(surveyId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/clustering/survey/${surveyId}/question-impact`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /**
+   * NEW: Get detailed explanations for significant questions
+   */
+  getClusterQuestionExplanations(surveyId: number, clusterId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/clustering/survey/${surveyId}/cluster/${clusterId}/explanations`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 }

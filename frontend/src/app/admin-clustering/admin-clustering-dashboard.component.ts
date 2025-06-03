@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { ClusteringService } from '../services/clustering.service';
+import { FisherTestService } from '../services/fisher-test.service';
 
 interface Survey {
   id: number;
@@ -81,7 +82,8 @@ export class AdminClusteringDashboardComponent implements OnInit {
   constructor(
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private clusteringService: ClusteringService
+    private clusteringService: ClusteringService,
+    private fisherTestService: FisherTestService
   ) {}
 
   ngOnInit(): void {
@@ -416,4 +418,19 @@ export class AdminClusteringDashboardComponent implements OnInit {
   onTabChange(event: any): void {
     console.log('Tab changed:', event.index);
   }
+  runFisherTest(): void {
+  if (!this.selectedSurveyId) return;
+  
+  this.fisherTestService.getFisherTestSummary(this.selectedSurveyId).subscribe({
+    next: (response) => {
+      if (response.success) {
+        console.log('Fisher test results:', response.data);
+        // Display results in your UI
+      }
+    },
+    error: (error) => {
+      console.error('Fisher test failed:', error);
+    }
+  });
+}
 }

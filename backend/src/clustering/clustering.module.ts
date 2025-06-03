@@ -1,4 +1,4 @@
-// Clean Clustering Module - backend/src/clustering/clustering.module.ts
+// Updated Clustering Module - backend/src/clustering/clustering.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
@@ -10,9 +10,11 @@ import { Survey } from '../survey/survey.entity';
 // Services
 import { ClusteringService } from './clustering.service';
 import { FeatureEngineeringService } from './feature-engineering.service';
+import { SimpleFisherService } from './simple-fisher.service';
 
 // Controllers
 import { ClusteringController } from './clustering.controller';
+import { SimpleFisherController } from './simple-fisher.controller';
 
 // Guards
 import { AdminGuard } from '../admin/admin.guard';
@@ -24,15 +26,20 @@ import { AdminGuard } from '../admin/admin.guard';
       secret: 'my_secret_key',
     }),
   ],
-  controllers: [ClusteringController],
+  controllers: [
+    ClusteringController,
+    SimpleFisherController
+  ],
   providers: [
     ClusteringService,
     FeatureEngineeringService,
+    SimpleFisherService,
     AdminGuard
   ],
   exports: [
     ClusteringService,
-    FeatureEngineeringService
+    FeatureEngineeringService,
+    SimpleFisherService
   ]
 })
 export class ClusteringModule {}

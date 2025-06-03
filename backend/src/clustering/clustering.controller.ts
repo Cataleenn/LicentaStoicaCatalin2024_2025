@@ -322,7 +322,7 @@ export class ClusteringController {
   }
 
   /**
-   * Helper method to generate cluster-specific insights
+   * Helper methods
    */
   private generateClusterSpecificInsights(cluster: any): string[] {
     const insights: string[] = [];
@@ -350,22 +350,11 @@ export class ClusteringController {
       insights.push('Accuracy-focused group - prioritizes precision over speed');
     }
     
-    // Confidence insights
-    if (profile.avgConfidenceIndex > 0.7) {
-      insights.push('High-confidence users who start quickly and decisively');
-    } else if (profile.avgConfidenceIndex < 0.4) {
-      insights.push('Lower-confidence users who may need encouragement and guidance');
-    }
-    
     return insights;
   }
 
-  /**
-   * Generate explanation for why a participant was assigned to a cluster
-   */
   private generateAssignmentExplanation(assignment: any, cluster: any): string {
     const confidence = assignment.confidence;
-    const distance = assignment.distanceToCenter;
     
     let explanation = `This participant was assigned to "${cluster.clusterName}" `;
     
@@ -377,20 +366,9 @@ export class ClusteringController {
       explanation += 'with lower confidence - they may exhibit mixed characteristics. ';
     }
     
-    if (distance < 0.3) {
-      explanation += 'Their behavioral pattern closely matches the cluster center.';
-    } else if (distance < 0.6) {
-      explanation += 'Their behavioral pattern moderately matches the cluster center.';
-    } else {
-      explanation += 'Their behavioral pattern shows some variation from the typical cluster member.';
-    }
-    
     return explanation;
   }
 
-  /**
-   * Generate insights for cross-survey analysis
-   */
   private generateCrossSurveyInsights(clusteringResult: any): string[] {
     const insights: string[] = [];
     
@@ -408,21 +386,9 @@ export class ClusteringController {
       insights.push('Lower clustering quality - participants show diverse, overlapping behaviors');
     }
     
-    // Demographic insights
-    const techClusters = clusteringResult.clusters.filter(c => 
-      c.demographicProfile.occupationDistribution?.tech > c.memberCount * 0.3
-    );
-    
-    if (techClusters.length > 0) {
-      insights.push(`${techClusters.length} cluster(s) are dominated by technical professionals`);
-    }
-    
     return insights;
   }
 
-  /**
-   * Generate comparison summary across surveys
-   */
   private generateComparisonSummary(comparisons: SurveyComparison[]): any {
     const validComparisons = comparisons.filter(c => !c.error);
     
@@ -443,9 +409,6 @@ export class ClusteringController {
     };
   }
 
-  /**
-   * Calculate feature importance for clustering
-   */
   private calculateFeatureImportance(clusters: any[]): any {
     const featureNames = [
       'Speed Index', 'Precision Index', 'Efficiency Index',
@@ -464,7 +427,7 @@ export class ClusteringController {
       return {
         feature: name,
         variance: variance,
-        importance: variance // Simplified importance measure
+        importance: variance
       };
     });
     
@@ -479,11 +442,7 @@ export class ClusteringController {
     }));
   }
 
-  /**
-   * Calculate consistency score across surveys
-   */
   private calculateConsistencyScore(comparisons: SurveyComparison[]): string {
-    // Simple consistency measure based on cluster count variance
     const clusterCounts = comparisons.map(c => c.clusterCount || 0);
     const mean = this.calculateAverage(clusterCounts);
     const variance = this.calculateAverage(clusterCounts.map(c => Math.pow(c - mean, 2)));
@@ -492,13 +451,8 @@ export class ClusteringController {
     return (consistency * 100).toFixed(1) + '%';
   }
 
-  /**
-   * Helper method to calculate average
-   */
   private calculateAverage(values: number[]): number {
     if (values.length === 0) return 0;
     return values.reduce((sum, val) => sum + (val || 0), 0) / values.length;
   }
-
-  
 }
