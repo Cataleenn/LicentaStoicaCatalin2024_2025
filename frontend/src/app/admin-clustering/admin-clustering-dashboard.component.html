@@ -6,117 +6,7 @@
     <p>Recunoașterea pattern-urilor comportamentale și insight-uri demografice detaliate</p>
   </div>
 
-  <!-- ✅ NEW: Category Consistency Section -->
-  <div class="category-consistency-section">
-    <mat-card class="consistency-card">
-      <mat-card-header>
-        <mat-card-title>🔧 Consistența Categoriilor</mat-card-title>
-        <mat-card-subtitle>Verifică și standardizează categoriile pentru analiză precisă</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="consistency-actions">
-          <button 
-            mat-raised-button 
-            color="primary"
-            [disabled]="isCheckingConsistency"
-            (click)="checkCategoryConsistency()">
-            <span *ngIf="!isCheckingConsistency">🔍 Verifică Consistența</span>
-            <span *ngIf="isCheckingConsistency">
-              <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-              Se verifică...
-            </span>
-          </button>
-          
-          <button 
-            mat-raised-button 
-            color="warn"
-            [disabled]="isFixingCategories"
-            (click)="fixAllCategories()">
-            <span *ngIf="!isFixingCategories">🔧 Standardizează Toate Categoriile</span>
-            <span *ngIf="isFixingCategories">
-              <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-              Se standardizează...
-            </span>
-          </button>
-        </div>
-
-        <!-- Category Consistency Results -->
-        <div *ngIf="categoryConsistencyResults" class="consistency-results">
-          <h4>📊 Rezultatele Verificării</h4>
-          <div class="consistency-stats">
-            <div class="stat-item">
-              <strong>Total răspunsuri:</strong> {{ categoryConsistencyResults.data.totalResponses }}
-            </div>
-            <div class="stat-item">
-              <strong>Variații demografice:</strong> {{ categoryConsistencyResults.summary.totalDemographicVariations }}
-            </div>
-            <div class="stat-item">
-              <strong>Variații comportamentale:</strong> {{ categoryConsistencyResults.summary.totalBehavioralVariations }}
-            </div>
-            <div class="stat-item">
-              <strong>Stare:</strong> 
-              <span [ngStyle]="{
-                color: getCategoryConsistencyStatus() === 'good' ? '#4caf50' : 
-                       getCategoryConsistencyStatus() === 'fair' ? '#ff9800' : '#f44336'
-              }">
-                {{ getCategoryConsistencyStatus() === 'good' ? 'Bună' : 
-                   getCategoryConsistencyStatus() === 'fair' ? 'Acceptabilă' : 'Necesită îmbunătățire' }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Warning if categories need fixing -->
-          <div *ngIf="shouldShowCategoryWarning()" class="category-details">
-            <h5>⚠️ Atenție: Categorii Inconsistente Detectate</h5>
-            <p>S-au detectat prea multe variații în categoriile demografice și comportamentale. 
-               Aceasta poate afecta calitatea analizei de clustering. Se recomandă folosirea butonului 
-               "Standardizează Toate Categoriile" pentru a corecta aceste inconsistențe.</p>
-          </div>
-
-          <!-- Details about category variations -->
-          <div class="category-details">
-            <h5>📋 Detalii Demografice</h5>
-            <div class="category-list">
-              <div><strong>Grupe de vârstă:</strong> {{ categoryConsistencyResults.data.demographicCategories.ageGroups.join(', ') }}</div>
-              <div><strong>Genuri:</strong> {{ categoryConsistencyResults.data.demographicCategories.genders.join(', ') }}</div>
-              <div><strong>Nivele educație:</strong> {{ categoryConsistencyResults.data.demographicCategories.educationLevels.join(', ') }}</div>
-              <div><strong>Ocupații:</strong> {{ categoryConsistencyResults.data.demographicCategories.occupations.join(', ') }}</div>
-              <div><strong>Nivele STEM:</strong> {{ categoryConsistencyResults.data.demographicCategories.stemLevels.join(', ') }}</div>
-            </div>
-
-            <h5>🧠 Detalii Comportamentale</h5>
-            <div class="category-list">
-              <div><strong>Stiluri rezolvare probleme:</strong> {{ categoryConsistencyResults.data.behavioralCategories.problemSolvingStyles.join(', ') }}</div>
-              <div><strong>Nivele comfort tehnic:</strong> {{ categoryConsistencyResults.data.behavioralCategories.techComfortLevels.join(', ') }}</div>
-              <div><strong>Stiluri gestionare erori:</strong> {{ categoryConsistencyResults.data.behavioralCategories.errorHandlingStyles.join(', ') }}</div>
-              <div><strong>Experiență asamblare:</strong> {{ categoryConsistencyResults.data.behavioralCategories.assemblyExperience.join(', ') }}</div>
-              <div><strong>Frecvență gaming:</strong> {{ categoryConsistencyResults.data.behavioralCategories.gamingFrequencies.join(', ') }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fix Categories Results -->
-        <div *ngIf="fixCategoriesResults" class="consistency-results">
-          <h4>🔧 Rezultatele Standardizării</h4>
-          <div class="consistency-stats">
-            <div class="stat-item">
-              <strong>Răspunsuri procesate:</strong> {{ fixCategoriesResults.data.processedCount }}
-            </div>
-            <div class="stat-item">
-              <strong>Categorii corectate:</strong> {{ fixCategoriesResults.data.categoriesFixed }}
-            </div>
-            <div class="stat-item">
-              <strong>Procentaj îmbunătățire:</strong> {{ fixCategoriesResults.data.fixPercentage }}
-            </div>
-          </div>
-          <p><strong>Recomandare:</strong> {{ fixCategoriesResults.recommendation }}</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- Fisher Test Component -->
-  <app-fisher-test [surveyId]="selectedSurveyId"></app-fisher-test>
+ 
 
   <mat-tab-group class="main-tabs">
     <!-- Tab 1: Survey Selection & Overview -->
@@ -348,34 +238,20 @@
           </div>
         </div>
 
-        <!-- Placeholder when no analysis is available -->
-        <div *ngIf="!clusteringSummary && !isAnalyzing" class="placeholder-message">
+        <!-- Placeholder when no analysis results -->
+        <div *ngIf="!clusteringSummary && !isAnalyzing && !errorMessage" class="placeholder-message">
           <mat-icon>analytics</mat-icon>
-          <h3>Pregătit pentru Analiză</h3>
-          <p>Selectează un chestionar și pornește analiza pentru a descoperi pattern-urile comportamentale ale participanților.</p>
+          <h3>Selectează un chestionar pentru a începe analiza</h3>
+          <p>Alege un chestionar din lista de mai sus și pornește analiza comportamentală pentru a identifica pattern-urile participanților.</p>
         </div>
       </div>
     </mat-tab>
 
-    <!-- Tab 2: Advanced Analytics -->
-    <mat-tab label="📈 Analiză Avansată">
+    <!-- Tab 2: Advanced Analytics (opțional pentru viitor) -->
+    <mat-tab label="📈 Analize Avansate">
       <div class="tab-content">
-        <div class="placeholder-message">
-          <mat-icon>assessment</mat-icon>
-          <h3>Analiză Avansată</h3>
-          <p>Funcționalitate în dezvoltare - analize detaliate și comparații între chestionare.</p>
-        </div>
-      </div>
-    </mat-tab>
-
-    <!-- Tab 3: Insights & Reports -->
-    <mat-tab label="📋 Rapoarte & Insight-uri">
-      <div class="tab-content">
-        <div class="placeholder-message">
-          <mat-icon>description</mat-icon>
-          <h3>Rapoarte & Insight-uri</h3>
-          <p>Funcționalitate în dezvoltare - generare automată de rapoarte și insight-uri acționabile.</p>
-        </div>
+         <!-- ✅ Fisher Test Component - păstrat -->
+  <app-fisher-test [surveyId]="selectedSurveyId"></app-fisher-test>
       </div>
     </mat-tab>
   </mat-tab-group>

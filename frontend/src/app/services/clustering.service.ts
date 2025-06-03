@@ -1,4 +1,4 @@
-// Updated Clustering Service - frontend/src/app/services/clustering.service.ts
+// Updated Clustering Service (FĂRĂ consistență categorii) - frontend/src/app/services/clustering.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -17,29 +17,7 @@ export class ClusteringService {
   }
 
   // ===================================================================
-  // ✅ NEW METHODS FOR CATEGORY CONSISTENCY MANAGEMENT
-  // ===================================================================
-
-  /**
-   * ✅ Check category consistency across all responses
-   */
-  checkCategoryConsistency(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/responses/debug/category-consistency`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * ✅ Fix ALL categories to use consistent mapping
-   */
-  fixAllCategories(): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/responses/fix-all-categories`, {}, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  // ===================================================================
-  // EXISTING METHODS REMAIN THE SAME
+  // CORE CLUSTERING METHODS
   // ===================================================================
 
   /**
@@ -89,6 +67,28 @@ export class ClusteringService {
   }
 
   /**
+   * Export clustering data for external analysis
+   */
+  exportClusteringData(surveyId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/clustering/export/${surveyId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Recompute metrics for existing responses
+   */
+  recomputeMetrics(surveyId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/responses/recompute-metrics/${surveyId}`, {}, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // ===================================================================
+  // ADVANCED ANALYTICS METHODS
+  // ===================================================================
+
+  /**
    * Perform cross-survey clustering analysis
    */
   performCrossSurveyAnalysis(options?: { forcedK?: number }): Observable<any> {
@@ -103,24 +103,6 @@ export class ClusteringService {
   getClusteringComparison(surveyIds: number[]): Observable<any> {
     const surveyIdsParam = surveyIds.join(',');
     return this.http.get<any>(`${this.apiUrl}/clustering/comparison?surveyIds=${surveyIdsParam}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Export clustering data for external analysis
-   */
-  exportClusteringData(surveyId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/clustering/export/${surveyId}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Recompute metrics for existing responses (now with FIXED categories)
-   */
-  recomputeMetrics(surveyId: number): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/responses/recompute-metrics/${surveyId}`, {}, {
       headers: this.getAuthHeaders()
     });
   }
@@ -206,6 +188,10 @@ export class ClusteringService {
     });
   }
 
+  // ===================================================================
+  // QUALITY & VALIDATION METHODS
+  // ===================================================================
+
   /**
    * Test the clustering functionality with sample data
    */
@@ -252,6 +238,28 @@ export class ClusteringService {
   }
 
   /**
+   * Validate clustering configuration
+   */
+  validateClusteringConfig(config: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/clustering/validate-config`, config, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Get recommended number of clusters
+   */
+  getRecommendedClusterCount(surveyId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/clustering/survey/${surveyId}/recommended-k`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // ===================================================================
+  // REPORTING & EXPORT METHODS
+  // ===================================================================
+
+  /**
    * Generate clustering report
    */
   generateClusteringReport(surveyId: number, format: 'pdf' | 'excel' | 'json' = 'json'): Observable<any> {
@@ -277,24 +285,6 @@ export class ClusteringService {
   }
 
   /**
-   * Validate clustering configuration
-   */
-  validateClusteringConfig(config: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/clustering/validate-config`, config, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
-   * Get recommended number of clusters
-   */
-  getRecommendedClusterCount(surveyId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/clustering/survey/${surveyId}/recommended-k`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  /**
    * Compare two clustering results
    */
   compareClusteringResults(surveyId1: number, surveyId2: number): Observable<any> {
@@ -311,6 +301,10 @@ export class ClusteringService {
       headers: this.getAuthHeaders()
     });
   }
+
+  // ===================================================================
+  // CONFIGURATION METHODS
+  // ===================================================================
 
   /**
    * Save clustering configuration
@@ -338,7 +332,15 @@ export class ClusteringService {
       headers: this.getAuthHeaders()
     });
   }
-   getQuestionImpact(surveyId: number): Observable<any> {
+
+  // ===================================================================
+  // FISHER TEST & QUESTION IMPACT METHODS
+  // ===================================================================
+
+  /**
+   * Get question impact analysis for clustering
+   */
+  getQuestionImpact(surveyId: number): Observable<any> {
     return this.http.get<any>(
       `${this.apiUrl}/clustering/survey/${surveyId}/question-impact`,
       { headers: this.getAuthHeaders() }
@@ -346,7 +348,7 @@ export class ClusteringService {
   }
 
   /**
-   * NEW: Get detailed explanations for significant questions
+   * Get detailed explanations for significant questions
    */
   getClusterQuestionExplanations(surveyId: number, clusterId: number): Observable<any> {
     return this.http.get<any>(
