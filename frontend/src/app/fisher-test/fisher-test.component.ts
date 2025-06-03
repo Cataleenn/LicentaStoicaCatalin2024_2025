@@ -1,12 +1,42 @@
-// Fisher Test Component Example - frontend/src/app/fisher-test/fisher-test.component.ts
-import { Component, Input, OnInit } from '@angular/core';
+// Simple Fisher Test Component - frontend/src/app/fisher-test/fisher-test.component.ts
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
-import { FisherTestService, FisherTestSummary, AllClustersResult } from '../services/fisher-test.service';
+import { FisherTestService } from '../services/fisher-test.service';
+
+interface SimpleQuestionResult {
+  questionNumber: string;
+  questionText: string;
+  answerValue: string;
+  pValue: number;
+  isSignificant: boolean;
+  explanation: string;
+}
+
+interface FisherTestSummary {
+  totalClusters: number;
+  totalSignificantQuestions: number;
+  mostSignificantQuestions: SimpleQuestionResult[];
+  questionImportanceRanking: Array<{
+    questionNumber: string;
+    questionText: string;
+    timesSignificant: number;
+    avgPValue: number;
+    importance: 'high' | 'medium' | 'low';
+  }>;
+}
+
+interface AllClustersResult {
+  surveyId: number;
+  clusters: Array<{
+    clusterId: number;
+    significantQuestions: SimpleQuestionResult[];
+  }>;
+}
 
 @Component({
   selector: 'app-fisher-test',
@@ -20,10 +50,10 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
     MatChipsModule
   ],
   template: `
-    <mat-card>
+    <mat-card *ngIf="surveyId">
       <mat-card-header>
         <mat-card-title>🔬 Analiză Fisher's Exact Test</mat-card-title>
-        <mat-card-subtitle>Identifică întrebările care definesc fiecare cluster</mat-card-subtitle>
+        <mat-card-subtitle>Identifică întrebările care definesc fiecare cluster pentru chestionarul selectat</mat-card-subtitle>
       </mat-card-header>
       
       <mat-card-content>
@@ -43,8 +73,14 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
 
         <!-- Error Message -->
         <div *ngIf="errorMessage" class="error-message">
-          <mat-icon color="warn">error</mat-icon>
+          <span style="color: #c62828;">⚠️</span>
           <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Info Message when no survey selected -->
+        <div *ngIf="!surveyId" class="info-message">
+          <span style="color: #2196f3;">ℹ️</span>
+          <span>Selectează mai întâi un chestionar pentru a rula analiza Fisher Test.</span>
         </div>
 
         <!-- Fisher Test Results -->
@@ -65,7 +101,7 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
           </div>
 
           <!-- Most Important Questions Overall -->
-          <div class="important-questions-section">
+          <div class="important-questions-section" *ngIf="fisherResults.data.questionImportanceRanking && fisherResults.data.questionImportanceRanking.length > 0">
             <h3>🎯 Întrebările Cele Mai Importante</h3>
             <div class="question-importance-list">
               <mat-card 
@@ -91,7 +127,7 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
           </div>
 
           <!-- Detailed Results by Cluster -->
-          <div class="cluster-details-section">
+          <div class="cluster-details-section" *ngIf="allClustersResult && allClustersResult.data && allClustersResult.data.clusters">
             <h3>🔍 Detalii pe Clustere</h3>
             <mat-accordion>
               <mat-expansion-panel 
@@ -144,15 +180,23 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
       text-align: center;
     }
 
-    .error-message {
+    .error-message, .info-message {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       margin: 1rem 0;
       padding: 1rem;
-      background-color: #ffebee;
       border-radius: 8px;
+    }
+
+    .error-message {
+      background-color: #ffebee;
       color: #c62828;
+    }
+
+    .info-message {
+      background-color: #e3f2fd;
+      color: #1976d2;
     }
 
     .fisher-results {
@@ -313,7 +357,7 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
     }
   `]
 })
-export class FisherTestComponent implements OnInit {
+export class FisherTestComponent implements OnInit, OnChanges {
   @Input() surveyId: number | null = null;
   
   isAnalyzing = false;
@@ -326,6 +370,13 @@ export class FisherTestComponent implements OnInit {
   ngOnInit(): void {
     // Auto-run analysis if surveyId is provided
     if (this.surveyId) {
+      this.runFisherAnalysis();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Run analysis when surveyId changes
+    if (changes['surveyId'] && changes['surveyId'].currentValue && !changes['surveyId'].firstChange) {
       this.runFisherAnalysis();
     }
   }
@@ -346,12 +397,14 @@ export class FisherTestComponent implements OnInit {
     // Get summary first
     this.fisherTestService.getFisherTestSummary(this.surveyId).subscribe({
       next: (summaryResponse) => {
+        console.log('📊 Fisher summary response:', summaryResponse);
         if (summaryResponse.success) {
           this.fisherResults = summaryResponse;
           
           // Then get detailed results
           this.fisherTestService.getAllClustersSignificantQuestions(this.surveyId!).subscribe({
             next: (detailResponse) => {
+              console.log('📋 Fisher details response:', detailResponse);
               if (detailResponse.success) {
                 this.allClustersResult = detailResponse;
                 console.log('✅ Fisher analysis completed successfully');

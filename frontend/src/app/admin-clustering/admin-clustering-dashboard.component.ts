@@ -1,4 +1,4 @@
-// Admin Clustering Dashboard Component - TypeScript
+// Fixed Admin Clustering Dashboard Component - TypeScript
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { ClusteringService } from '../services/clustering.service';
 import { FisherTestService } from '../services/fisher-test.service';
+import { FisherTestComponent } from '../fisher-test/fisher-test.component';
 
 interface Survey {
   id: number;
@@ -49,6 +50,32 @@ interface ClusteringSummary {
   insights: string[];
 }
 
+// ✅ NEW: Category consistency interfaces
+interface CategoryConsistencyResult {
+  success: boolean;
+  data: {
+    totalResponses: number;
+    demographicCategories: any;
+    behavioralCategories: any;
+  };
+  summary: {
+    totalDemographicVariations: number;
+    totalBehavioralVariations: number;
+  };
+  recommendation: string;
+}
+
+interface FixCategoriesResult {
+  success: boolean;
+  message: string;
+  data: {
+    processedCount: number;
+    categoriesFixed: number;
+    fixPercentage: string;
+  };
+  recommendation: string;
+}
+
 @Component({
   selector: 'app-admin-clustering-dashboard',
   standalone: true,
@@ -64,7 +91,8 @@ interface ClusteringSummary {
     MatExpansionModule,
     MatIconModule,
     FormsModule,
-    NavbarComponent
+    NavbarComponent,
+    FisherTestComponent  // ✅ ADD FISHER TEST COMPONENT TO IMPORTS
   ],
   templateUrl: './admin-clustering-dashboard.component.html',
   styleUrls: ['./admin-clustering-dashboard.component.css']
@@ -79,6 +107,12 @@ export class AdminClusteringDashboardComponent implements OnInit {
   clusteringSummary: ClusteringSummary | null = null;
   errorMessage: string = '';
   
+  // ✅ NEW: Category consistency properties
+  categoryConsistencyResults: CategoryConsistencyResult | null = null;
+  isCheckingConsistency: boolean = false;
+  isFixingCategories: boolean = false;
+  fixCategoriesResults: FixCategoriesResult | null = null;
+  
   constructor(
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
@@ -89,7 +123,115 @@ export class AdminClusteringDashboardComponent implements OnInit {
   ngOnInit(): void {
     console.log('Clustering dashboard initialized');
     this.loadAvailableSurveys();
+    // ✅ Automatically check category consistency on load
+    this.checkCategoryConsistency();
   }
+
+  // ===================================================================
+  // ✅ NEW METHODS FOR CATEGORY CONSISTENCY MANAGEMENT
+  // ===================================================================
+
+  /**
+   * ✅ Check category consistency across all responses
+   */
+  checkCategoryConsistency(): void {
+    this.isCheckingConsistency = true;
+    this.categoryConsistencyResults = null;
+    
+    console.log('🔍 Checking category consistency...');
+    
+    this.clusteringService.checkCategoryConsistency().subscribe({
+      next: (response) => {
+        console.log('✅ Category consistency check completed:', response);
+        this.categoryConsistencyResults = response;
+        this.isCheckingConsistency = false;
+        
+        if (response.success) {
+          const totalVariations = response.summary.totalDemographicVariations + response.summary.totalBehavioralVariations;
+          if (totalVariations > 20) { // Threshold for "too many variations"
+            this.snackBar.open(
+              `Detectate ${totalVariations} variații în categorii - se recomandă standardizarea`,
+              'OK',
+              { duration: 5000 }
+            );
+          }
+        }
+      },
+      error: (error) => {
+        console.error('❌ Category consistency check failed:', error);
+        this.isCheckingConsistency = false;
+        this.snackBar.open('Eroare la verificarea consistenței categoriilor', 'Închide', { duration: 3000 });
+      }
+    });
+  }
+
+  /**
+   * ✅ Fix all categories to use consistent mapping
+   */
+  fixAllCategories(): void {
+    this.isFixingCategories = true;
+    this.fixCategoriesResults = null;
+    
+    console.log('🔧 Fixing all categories with consistent mapping...');
+    
+    this.clusteringService.fixAllCategories().subscribe({
+      next: (response) => {
+        console.log('✅ Category fix completed:', response);
+        this.fixCategoriesResults = response;
+        this.isFixingCategories = false;
+        
+        if (response.success) {
+          this.snackBar.open(
+            `Categorii standardizate cu succes! ${response.data.categoriesFixed} răspunsuri au fost actualizate.`,
+            'OK',
+            { duration: 8000 }
+          );
+          
+          // Refresh consistency check after fixing
+          setTimeout(() => {
+            this.checkCategoryConsistency();
+          }, 1000);
+        } else {
+          this.snackBar.open('Eroarea la standardizarea categoriilor', 'Închide', { duration: 3000 });
+        }
+      },
+      error: (error) => {
+        console.error('❌ Category fix failed:', error);
+        this.isFixingCategories = false;
+        this.snackBar.open('Eroare la standardizarea categoriilor', 'Închide', { duration: 5000 });
+      }
+    });
+  }
+
+  /**
+   * ✅ Get category consistency status for display
+   */
+  getCategoryConsistencyStatus(): string {
+    if (!this.categoryConsistencyResults) return 'unknown';
+    
+    const totalVariations = this.categoryConsistencyResults.summary.totalDemographicVariations + 
+                           this.categoryConsistencyResults.summary.totalBehavioralVariations;
+    
+    if (totalVariations <= 15) return 'good';
+    if (totalVariations <= 25) return 'fair';
+    return 'poor';
+  }
+
+  /**
+   * ✅ Check if categories need fixing
+   */
+  shouldShowCategoryWarning(): boolean {
+    if (!this.categoryConsistencyResults) return false;
+    
+    const totalVariations = this.categoryConsistencyResults.summary.totalDemographicVariations + 
+                           this.categoryConsistencyResults.summary.totalBehavioralVariations;
+    
+    return totalVariations > 20; // Show warning if too many variations
+  }
+
+  // ===================================================================
+  // EXISTING METHODS REMAIN THE SAME
+  // ===================================================================
 
   // Load all surveys that can be analyzed
   loadAvailableSurveys(): void {
@@ -418,19 +560,20 @@ export class AdminClusteringDashboardComponent implements OnInit {
   onTabChange(event: any): void {
     console.log('Tab changed:', event.index);
   }
+
   runFisherTest(): void {
-  if (!this.selectedSurveyId) return;
-  
-  this.fisherTestService.getFisherTestSummary(this.selectedSurveyId).subscribe({
-    next: (response) => {
-      if (response.success) {
-        console.log('Fisher test results:', response.data);
-        // Display results in your UI
+    if (!this.selectedSurveyId) return;
+    
+    this.fisherTestService.getFisherTestSummary(this.selectedSurveyId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          console.log('Fisher test results:', response.data);
+          // Display results in your UI
+        }
+      },
+      error: (error) => {
+        console.error('Fisher test failed:', error);
       }
-    },
-    error: (error) => {
-      console.error('Fisher test failed:', error);
-    }
-  });
-}
+    });
+  }
 }
