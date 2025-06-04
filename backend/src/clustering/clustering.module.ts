@@ -11,6 +11,7 @@ import { Survey } from '../survey/survey.entity';
 import { ClusteringService } from './clustering.service';
 import { FeatureEngineeringService } from './feature-engineering.service';
 import { SimpleFisherService } from './simple-fisher.service';
+import { EnhancedResponseService } from '../survey/enhanced-response.service';
 
 // Controllers
 import { ClusteringController } from './clustering.controller';
@@ -34,6 +35,7 @@ import { AdminGuard } from '../admin/admin.guard';
     ClusteringService,
     FeatureEngineeringService,
     SimpleFisherService,
+    EnhancedResponseService,
     AdminGuard
   ],
   exports: [

@@ -3,6 +3,27 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface OptimizationOptions {
+  forcedK?: number;
+  maxIterations?: number;  // Default: 3
+  qualityThreshold?: number;  // Default: 0.5
+}
+
+export interface OptimizationResult {
+  iterations: Array<{
+    iteration: number;
+    action: string;
+    qualityScore: number;
+    clusterCount: number;
+    duration: number;
+  }>;
+  totalDuration: number;
+  qualityImprovement: number;
+  finalQualityScore: number;
+  initialQualityScore: number;
+  optimizationSummary: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -356,4 +377,62 @@ export class ClusteringService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+   performOptimizedClusteringAnalysis(
+    surveyId: number, 
+    options?: OptimizationOptions
+  ): Observable<{
+    success: boolean;
+    data: {
+      clusters: any[];
+      metadata: any;
+      insights: string[];
+      optimization: OptimizationResult;
+    };
+    message: string;
+    timestamp: Date;
+  }> {
+    const url = `${this.apiUrl}/clustering/survey/${surveyId}/analyze-optimized`;
+    const requestOptions = {
+      forcedK: options?.forcedK,
+      maxIterations: options?.maxIterations || 3,
+      qualityThreshold: options?.qualityThreshold || 0.5
+    };
+
+    return this.http.post<any>(url, requestOptions, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * ✅ ENHANCED: Smart clustering analysis - tries optimized first, fallback to standard
+   */
+  performSmartClusteringAnalysis(
+    surveyId: number, 
+    options?: OptimizationOptions
+  ): Observable<any> {
+    console.log('🧠 Starting smart clustering analysis...');
+    
+    // Always use optimized analysis for best results
+    return this.performOptimizedClusteringAnalysis(surveyId, options);
+  }
+
+   /**
+   * Check category consistency across all responses
+   */
+  checkCategoryConsistency(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/responses/debug/category-consistency`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  /**
+   * Fix ALL categories to use consistent mapping
+   */
+  fixAllCategories(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/responses/fix-all-categories`, {}, {
+      headers: this.getAuthHeaders()
+    });
+  }
+  
 }

@@ -1,23 +1,24 @@
+<!-- Optimized Dashboard Template - admin-clustering-dashboard.component.html -->
 <app-navbar></app-navbar>
 
 <div class="clustering-dashboard">
   <div class="dashboard-header">
     <h1>🧠 Analiza Comportamentală Avansată</h1>
-    <p>Recunoașterea pattern-urilor comportamentale și insight-uri demografice detaliate</p>
+    <p>Recunoașterea pattern-urilor comportamentale cu optimizare automată pentru rezultate de calitate maximă</p>
   </div>
-
- 
 
   <mat-tab-group class="main-tabs">
     <!-- Tab 1: Survey Selection & Overview -->
-    <mat-tab label="📊 Prezentare Generală">
+    <mat-tab label="📊 Analiză Optimizată">
       <div class="tab-content">
         <!-- Survey Selection Card -->
         <div class="survey-selection">
           <mat-card class="selection-card">
             <mat-card-header>
-              <mat-card-title>Selectează Chestionarul pentru Analiză</mat-card-title>
-              <mat-card-subtitle>Alege un chestionar cu răspunsuri complete pentru a analiza pattern-urile comportamentale</mat-card-subtitle>
+              <mat-card-title>Selectează Chestionarul pentru Analiză Optimizată</mat-card-title>
+              <mat-card-subtitle>
+                🚀 Noul sistem optimizează automat calitatea clustering-ului prin multiple iterații
+              </mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
               <!-- Loading State -->
@@ -40,31 +41,43 @@
                   </mat-option>
                 </mat-select>
                 
-                <!-- Analysis Button -->
+                <!-- ✅ MODIFIED: Single optimized analysis button -->
                 <button 
                   mat-raised-button 
                   color="primary"
                   [disabled]="!selectedSurveyId || isAnalyzing"
                   (click)="startClusteringAnalysis()">
-                  <span *ngIf="!isAnalyzing">🔬 Pornește Analiza</span>
+                  <span *ngIf="!isAnalyzing">🚀 Pornește Analiza Optimizată</span>
                   <span *ngIf="isAnalyzing">
                     <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-                    Se analizează...
+                    Se optimizează...
                   </span>
                 </button>
+              </div>
+              
+              <!-- ✅ NEW: Optimization Progress Display -->
+              <div *ngIf="optimizationProgress" class="optimization-progress">
+                <div class="progress-header">
+                  <h4>🔄 Optimizare în Curs</h4>
+                  <span class="progress-time">{{ formatDuration(optimizationProgress.timeElapsed) }}</span>
+                </div>
                 
-                <!-- Recompute Metrics Button -->
-                <button 
-                  mat-raised-button 
-                  color="accent"
-                  [disabled]="!selectedSurveyId || isRecomputing"
-                  (click)="recomputeMetrics()">
-                  <span *ngIf="!isRecomputing">⚙️ Recalculează Metricile</span>
-                  <span *ngIf="isRecomputing">
-                    <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-                    Se recalculează...
+                <div class="progress-status">
+                  <span>{{ getOptimizationStatusText() }}</span>
+                  <span class="iteration-info">
+                    (Iterația {{ optimizationProgress.currentIteration }} din {{ optimizationProgress.totalIterations }})
                   </span>
-                </button>
+                </div>
+                
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="getOptimizationProgress()"
+                  class="optimization-progress-bar">
+                </mat-progress-bar>
+                
+                <div class="progress-stats" *ngIf="optimizationProgress.bestQualityScore > 0">
+                  <span>Cel mai bun scor până acum: {{ (optimizationProgress.bestQualityScore * 100).toFixed(1) }}%</span>
+                </div>
               </div>
               
               <!-- Error Message -->
@@ -76,14 +89,85 @@
           </mat-card>
         </div>
 
+        <!-- ✅ NEW: Optimization Results Display -->
+        <div *ngIf="optimizationResult && !isAnalyzing" class="optimization-results">
+          <mat-card class="optimization-summary-card">
+            <mat-card-header>
+              <mat-card-title>
+                🎯 Rezultatul Optimizării
+                <span class="quality-badge" [ngClass]="getOptimizationQualityBadgeClass()">
+                  {{ getOptimizationQualityBadge() }}
+                </span>
+              </mat-card-title>
+              <mat-card-subtitle>{{ optimizationResult.optimizationSummary }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="optimization-metrics">
+                <div class="metric">
+                  <span class="metric-label">Calitate Inițială:</span>
+                  <span class="metric-value">{{ (optimizationResult.initialQualityScore * 100).toFixed(1) }}%</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-label">Calitate Finală:</span>
+                  <span class="metric-value final">{{ (optimizationResult.finalQualityScore * 100).toFixed(1) }}%</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-label">Îmbunătățire:</span>
+                  <span class="metric-value improvement" 
+                        [ngClass]="{'positive': optimizationResult.qualityImprovement > 0, 'neutral': optimizationResult.qualityImprovement <= 0}">
+                    {{ optimizationResult.qualityImprovement > 0 ? '+' : '' }}{{ optimizationResult.qualityImprovement.toFixed(1) }}%
+                  </span>
+                </div>
+                <div class="metric">
+                  <span class="metric-label">Timp Total:</span>
+                  <span class="metric-value">{{ formatDuration(optimizationResult.totalDuration) }}</span>
+                </div>
+              </div>
+              
+              <!-- Optimization Details Toggle -->
+              <div class="optimization-details-toggle">
+                <button 
+                  mat-button 
+                  (click)="showOptimizationDetails = !showOptimizationDetails">
+                  {{ showOptimizationDetails ? '🔼 Ascunde' : '🔽 Vezi' }} Detaliile Optimizării
+                </button>
+              </div>
+              
+              <!-- Detailed Optimization Steps -->
+              <div *ngIf="showOptimizationDetails" class="optimization-details">
+                <h5>📋 Pașii Optimizării:</h5>
+                <div class="iteration-list">
+                  <div 
+                    *ngFor="let iteration of optimizationResult.iterations; let i = index"
+                    class="iteration-item"
+                    [ngClass]="{'best-iteration': iteration.qualityScore === optimizationResult.finalQualityScore}">
+                    <div class="iteration-header">
+                      <span class="iteration-number">{{ iteration.iteration }}</span>
+                      <span class="iteration-action">{{ getIterationActionLabel(iteration.action) }}</span>
+                      <span class="iteration-quality">{{ (iteration.qualityScore * 100).toFixed(1) }}%</span>
+                      <span class="iteration-duration">{{ formatDuration(iteration.duration) }}</span>
+                    </div>
+                    <div class="iteration-clusters">{{ iteration.clusterCount }} clustere</div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
         <!-- Analysis Results Section -->
         <div *ngIf="clusteringSummary" class="analysis-results">
           <!-- Overview Statistics -->
           <div class="overview-stats">
             <mat-card class="summary-card">
               <mat-card-header>
-                <mat-card-title>Rezultatele Analizei</mat-card-title>
-                <mat-card-subtitle>Scorul de calitate: {{ (clusteringSummary.qualityScore * 100).toFixed(1) }}%</mat-card-subtitle>
+                <mat-card-title>📊 Rezultatele Analizei Optimizate</mat-card-title>
+                <mat-card-subtitle>
+                  Scorul de calitate: {{ (clusteringSummary.qualityScore * 100).toFixed(1) }}%
+                  <span *ngIf="optimizationResult" class="optimization-indicator">
+                    ✨ OPTIMIZAT
+                  </span>
+                </mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
                 <div class="summary-stats">
@@ -238,20 +322,28 @@
           </div>
         </div>
 
-        <!-- Placeholder when no analysis results -->
-        <div *ngIf="!clusteringSummary && !isAnalyzing && !errorMessage" class="placeholder-message">
+        <!-- Placeholder when no analysis has been run -->
+        <div *ngIf="!clusteringSummary && !isAnalyzing && !optimizationProgress" class="placeholder-message">
           <mat-icon>analytics</mat-icon>
-          <h3>Selectează un chestionar pentru a începe analiza</h3>
-          <p>Alege un chestionar din lista de mai sus și pornește analiza comportamentală pentru a identifica pattern-urile participanților.</p>
+          <h3>Analiza Comportamentală Optimizată</h3>
+          <p>
+            Selectează un chestionar și pornește analiza optimizată pentru a descoperi 
+            pattern-urile comportamentale cu cea mai bună calitate posibilă.
+          </p>
+          <p>
+            <strong>Noul sistem optimizează automat:</strong><br>
+            ✅ Recalculează metricile pentru consistență<br>
+            ✅ Testează diferite numere de clustere<br>
+            ✅ Returnează rezultatul cu calitatea maximă
+          </p>
         </div>
       </div>
     </mat-tab>
 
-    <!-- Tab 2: Advanced Analytics (opțional pentru viitor) -->
-    <mat-tab label="📈 Analize Avansate">
+    <!-- Tab 2: Fisher Test (existing) -->
+    <mat-tab label="🔬 Analiză Fisher">
       <div class="tab-content">
-         <!-- ✅ Fisher Test Component - păstrat -->
-  <app-fisher-test [surveyId]="selectedSurveyId"></app-fisher-test>
+        <app-fisher-test [surveyId]="selectedSurveyId"></app-fisher-test>
       </div>
     </mat-tab>
   </mat-tab-group>

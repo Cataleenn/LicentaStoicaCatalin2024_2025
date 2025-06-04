@@ -1,0 +1,208 @@
+/* Fisher Test Component Styles - frontend/src/app/fisher-test/fisher-test.component.css */
+
+.fisher-controls {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #ffebee;
+  border-radius: 8px;
+  color: #c62828;
+}
+
+.fisher-results {
+  margin-top: 2rem;
+}
+
+.summary-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.summary-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.important-questions-section {
+  margin-bottom: 2rem;
+}
+
+.question-importance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.importance-card {
+  transition: transform 0.2s ease;
+}
+
+.importance-card:hover {
+  transform: translateY(-2px);
+}
+
+.importance-high {
+  border-left: 6px solid #4caf50;
+}
+
+.importance-medium {
+  border-left: 6px solid #2196f3;
+}
+
+.importance-low {
+  border-left: 6px solid #ff9800;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.question-header h4 {
+  margin: 0;
+  color: #1a2a6c;
+}
+
+.question-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.cluster-details-section {
+  margin-bottom: 2rem;
+}
+
+.cluster-panel {
+  margin-bottom: 1rem;
+}
+
+.question-count-chip {
+  margin-left: 1rem;
+}
+
+.cluster-content {
+  padding: 1rem;
+}
+
+.no-significant {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.question-result {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+}
+
+.question-info h5 {
+  margin: 0 0 0.5rem 0;
+  color: #1a2a6c;
+}
+
+.answer-info {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.statistical-info {
+  margin-bottom: 0.5rem;
+}
+
+.explanation {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .summary-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .question-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .question-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Special styling pentru title panel */
+::ng-deep .cluster-panel .mat-expansion-panel-header-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Styling pentru clusters cu nume diferite */
+.cluster-panel:nth-child(1) {
+  border-left: 4px solid #FF6B6B;
+}
+
+.cluster-panel:nth-child(2) {
+  border-left: 4px solid #4ECDC4;
+}
+
+.cluster-panel:nth-child(3) {
+  border-left: 4px solid #45B7D1;
+}
+
+.cluster-panel:nth-child(4) {
+  border-left: 4px solid #96CEB4;
+}
+
+.cluster-panel:nth-child(5) {
+  border-left: 4px solid #FFEAA7;
+}
+
+.cluster-panel:nth-child(6) {
+  border-left: 4px solid #DDA0DD;
+}
