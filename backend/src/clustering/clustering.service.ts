@@ -1,4 +1,4 @@
-// Updated Clustering Service with Improved Naming - backend/src/clustering/clustering.service.ts
+// Updated Clustering Service - DIRECT OPTIMAL RESULTS - backend/src/clustering/clustering.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -38,25 +38,17 @@ export interface ClusterCenter {
     problemSolvingDistribution: Record<string, number>;
     techComfortDistribution: Record<string, number>;
     errorHandlingDistribution: Record<string, number>;
-     assemblyExperienceDistribution: Record<string, number>; // ✅ ADĂUGAT
+    assemblyExperienceDistribution: Record<string, number>;
     gamingDistribution: Record<string, number>;  
   };
   clusterName: string;
   clusterDescription: string;
-  detailedProfile: string; // Profil complet pentru afișare
-}
-
-export interface ClusterAssignment {
-  participantId: string;
-  clusterId: number;
-  confidence: number;
-  distanceToCenter: number;
-  nearestClusters: number[];
+  detailedProfile: string;
 }
 
 export interface ClusteringResult {
   clusters: ClusterCenter[];
-  assignments: ClusterAssignment[];
+  assignments: any[];
   metadata: {
     totalParticipants: number;
     optimalClusterCount: number;
@@ -76,10 +68,11 @@ export class ClusteringService {
   ) {}
 
   /**
-   * Perform K-means clustering on survey responses
+   * ✅ SIMPLIFIED: Perform K-means clustering with AUTOMATIC optimal K determination
+   * Returns DIRECTLY the best possible clustering result without showing optimization steps
    */
   async performClustering(surveyId?: number, forcedK?: number): Promise<ClusteringResult> {
-    console.log('🔬 Starting clustering analysis...');
+    console.log('🔬 Starting AUTOMATIC OPTIMAL clustering analysis...');
     
     // Get responses with computed metrics
     const responses = await this.getResponsesForClustering(surveyId);
@@ -88,7 +81,6 @@ export class ClusteringService {
       throw new Error('Need at least 3 responses for meaningful clustering');
     }
 
-    // Filter responses to only include those with computed metrics
     const responsesWithMetrics = responses.filter(r => r.computedMetrics);
 
     if (responsesWithMetrics.length < 3) {
@@ -100,29 +92,23 @@ export class ClusteringService {
       FeatureEngineeringService.metricsToFeatureVector(response.computedMetrics!)
     );
 
-    // Determine optimal number of clusters
-    const optimalK = forcedK || await this.determineOptimalK(featureVectors);
-    console.log(`📊 Using ${optimalK} clusters for ${responsesWithMetrics.length} responses`);
+    // ✅ AUTOMATIC OPTIMIZATION: Try different K values and automatically select the best one
+    const optimalResult = await this.findOptimalClusteringAutomatically(featureVectors, forcedK);
+    console.log(`📊 AUTOMATICALLY selected optimal K=${optimalResult.optimalK} with quality score: ${optimalResult.bestQuality.toFixed(3)}`);
 
-    // Perform K-means clustering
-    const clusteringResults = await this.kMeansClustering(featureVectors, optimalK);
-    
-    // Create cluster profiles
+    // Create cluster profiles using the optimal clustering
     const clusters = await this.createClusterProfiles(
-      clusteringResults.assignments,
+      optimalResult.bestAssignments,
       responsesWithMetrics,
-      clusteringResults.centroids
+      optimalResult.bestCentroids
     );
 
-    // Assign UNIQUE cluster names and descriptions with improved algorithm
+    // Assign unique cluster names and descriptions
     const namedClusters = this.assignUniqueClusterNames(clusters);
 
     // Update database with cluster assignments
-    await this.updateClusterAssignments(responsesWithMetrics, clusteringResults.assignments);
+    await this.updateClusterAssignments(responsesWithMetrics, optimalResult.bestAssignments);
 
-    // Calculate clustering quality metrics
-    const silhouetteScore = this.calculateSilhouetteScore(featureVectors, clusteringResults.assignments);
-    
     // Generate insights
     const insights = this.generateClusteringInsights(namedClusters, responsesWithMetrics.length);
 
@@ -130,387 +116,119 @@ export class ClusteringService {
       clusters: namedClusters,
       assignments: responsesWithMetrics.map((response, index) => ({
         participantId: response.id.toString(),
-        clusterId: clusteringResults.assignments[index],
-        confidence: this.calculateAssignmentConfidence(featureVectors[index], clusteringResults.centroids, clusteringResults.assignments[index]),
-        distanceToCenter: this.euclideanDistance(featureVectors[index], clusteringResults.centroids[clusteringResults.assignments[index]]),
-        nearestClusters: this.findNearestClusters(featureVectors[index], clusteringResults.centroids, clusteringResults.assignments[index])
+        clusterId: optimalResult.bestAssignments[index],
+        confidence: this.calculateAssignmentConfidence(featureVectors[index], optimalResult.bestCentroids, optimalResult.bestAssignments[index]),
+        distanceToCenter: this.euclideanDistance(featureVectors[index], optimalResult.bestCentroids[optimalResult.bestAssignments[index]]),
+        nearestClusters: this.findNearestClusters(featureVectors[index], optimalResult.bestCentroids, optimalResult.bestAssignments[index])
       })),
       metadata: {
         totalParticipants: responsesWithMetrics.length,
-        optimalClusterCount: optimalK,
-        silhouetteScore: silhouetteScore,
-        inertia: clusteringResults.inertia,
-        convergenceIterations: clusteringResults.iterations
+        optimalClusterCount: optimalResult.optimalK,
+        silhouetteScore: optimalResult.bestQuality,
+        inertia: optimalResult.bestInertia,
+        convergenceIterations: optimalResult.iterations
       },
       insights
     };
   }
 
   /**
-   * Create detailed profiles for each cluster with complete demographic and behavioral info
+   * ✅ NEW: Automatically find the optimal clustering by testing multiple K values
+   * Returns the clustering configuration with the highest quality score
    */
-  private async createClusterProfiles(
-    assignments: number[],
-    responses: Response[],
-    centroids: number[][]
-  ): Promise<ClusterCenter[]> {
-    const clusters: ClusterCenter[] = [];
-    const k = centroids.length;
+  private async findOptimalClusteringAutomatically(
+    featureVectors: number[][], 
+    forcedK?: number
+  ): Promise<{
+    optimalK: number;
+    bestQuality: number;
+    bestAssignments: number[];
+    bestCentroids: number[][];
+    bestInertia: number;
+    iterations: number;
+  }> {
     
-    for (let clusterId = 0; clusterId < k; clusterId++) {
-      const clusterResponses = responses.filter((_, index) => assignments[index] === clusterId);
+    if (forcedK) {
+      console.log(`🎯 Using forced K=${forcedK}`);
+      const result = await this.kMeansClustering(featureVectors, forcedK);
+      const quality = this.calculateSilhouetteScore(featureVectors, result.assignments);
       
-      if (clusterResponses.length === 0) continue;
-      
-      // Calculate average behavioral metrics
-      const avgMetrics = this.calculateAverageMetrics(clusterResponses);
-      
-      // Calculate DETAILED demographic distribution
-      const demographicProfile = this.calculateDetailedDemographicProfile(clusterResponses);
-      
-      // Calculate DETAILED behavioral distribution
-      const behavioralProfile = this.calculateDetailedBehavioralProfile(clusterResponses);
-      
-      clusters.push({
-        id: clusterId,
-        centroid: centroids[clusterId],
-        memberCount: clusterResponses.length,
-        profile: avgMetrics,
-        demographicProfile,
-        behavioralProfile,
-        clusterName: '', // Will be filled by assignUniqueClusterNames
-        clusterDescription: '',
-        detailedProfile: '' // Will be filled by assignUniqueClusterNames
-      });
+      return {
+        optimalK: forcedK,
+        bestQuality: quality,
+        bestAssignments: result.assignments,
+        bestCentroids: result.centroids,
+        bestInertia: result.inertia,
+        iterations: result.iterations
+      };
     }
+
+    // Define K range to test
+    const minK = 2;
+    const maxK = Math.min(6, Math.floor(featureVectors.length / 2)); // Max 6 clusters, min 2 points per cluster
     
-    return clusters;
-  }
+    console.log(`🔍 Testing K values from ${minK} to ${maxK} to find optimal clustering...`);
 
-  /**
-   * Calculate DETAILED demographic profile with all distributions
-   */
-  /**
- * Calculate DETAILED demographic profile with all distributions
- */
-private calculateDetailedDemographicProfile(responses: Response[]): any {
-  const demographics = responses
-    .map(r => r.demographicProfile)
-    .filter((d): d is NonNullable<typeof d> => d !== null && d !== undefined);
-  
-  const ageDistribution = this.calculateDistribution(demographics.map(d => d.ageGroup));
-  const genderDistribution = this.calculateDistribution(demographics.map(d => d.gender));
-  const educationDistribution = this.calculateDistribution(demographics.map(d => d.educationLevel));
-  const occupationDistribution = this.calculateDistribution(demographics.map(d => d.occupation));
-  const stemDistribution = this.calculateDistribution(demographics.map(d => d.stemFamiliarity));
-  
-  return {
-    dominantAgeGroup: this.findMostCommon(demographics.map(d => d.ageGroup)),
-    dominantGender: this.findMostCommon(demographics.map(d => d.gender)),
-    dominantEducation: this.findMostCommon(demographics.map(d => d.educationLevel)),
-    dominantOccupation: this.findMostCommon(demographics.map(d => d.occupation)),
-    dominantStemLevel: this.findMostCommon(demographics.map(d => d.stemFamiliarity)),
-    ageDistribution,        // ✅ ADĂUGAT: distribuția de vârstă
-    genderDistribution,
-    educationDistribution,
-    occupationDistribution,
-    stemDistribution
-  };
-}
+    let bestK = minK;
+    let bestQuality = -1;
+    let bestResult: any = null;
 
-/**
- * Calculate DETAILED behavioral profile with all distributions
- */
-private calculateDetailedBehavioralProfile(responses: Response[]): any {
-  const behavioral = responses
-    .map(r => r.behavioralProfile)
-    .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined);
-  
-  const problemSolvingDistribution = this.calculateDistribution(behavioral.map(b => b.problemSolvingStyle));
-  const techComfortDistribution = this.calculateDistribution(behavioral.map(b => b.techComfort));
-  const errorHandlingDistribution = this.calculateDistribution(behavioral.map(b => b.errorHandlingStyle));
-  const assemblyExpDistribution = this.calculateDistribution(behavioral.map(b => b.assemblyExperience));
-  const gamingDistribution = this.calculateDistribution(behavioral.map(b => b.gamingFrequency));
-  
-  return {
-    dominantProblemSolvingStyle: this.findMostCommon(behavioral.map(b => b.problemSolvingStyle)),
-    dominantTechComfort: this.findMostCommon(behavioral.map(b => b.techComfort)),
-    dominantErrorHandling: this.findMostCommon(behavioral.map(b => b.errorHandlingStyle)),
-    dominantAssemblyExperience: this.findMostCommon(behavioral.map(b => b.assemblyExperience)),
-    dominantGamingFrequency: this.findMostCommon(behavioral.map(b => b.gamingFrequency)),
-    problemSolvingDistribution,
-    techComfortDistribution,
-    errorHandlingDistribution,
-    assemblyExperienceDistribution: assemblyExpDistribution, // ✅ CORECTARE: numele corect
-    gamingDistribution
-  };
-}
-
-  /**
-   * IMPROVED algorithm to assign UNIQUE cluster names - each category only once
-   */
-  private assignUniqueClusterNames(clusters: ClusterCenter[]): ClusterCenter[] {
-    // Sort clusters by technical aptitude to assign better names first
-    const sortedClusters = [...clusters].sort((a, b) => 
-      b.profile.avgTechnicalAptitude - a.profile.avgTechnicalAptitude
-    );
-
-    const usedNames = new Set<string>();
-    const namedClusters: ClusterCenter[] = [];
-
-    // Predefined cluster archetypes - each unique
-    const clusterArchetypes = [
-      {
-        name: 'Elite Performers',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgTechnicalAptitude > 0.75 && 
-          c.profile.avgSpeedIndex > 0.7 && 
-          c.profile.avgPrecisionIndex > 0.7,
-        description: 'Exceptional users with high performance across all metrics'
-      },
-      {
-        name: 'Speed Champions',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgSpeedIndex > 0.8 && 
-          c.profile.avgConfidenceIndex > 0.7 &&
-          c.profile.avgPrecisionIndex < 0.7,
-        description: 'Fast, confident users who prioritize speed over precision'
-      },
-      {
-        name: 'Precision Masters',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgPrecisionIndex > 0.8 && 
-          c.profile.avgSystematicIndex > 0.7,
-        description: 'Methodical users who excel in accuracy and systematic approaches'
-      },
-      {
-        name: 'Tech Experts',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgTechnicalAptitude > 0.7 &&
-          c.demographicProfile.dominantOccupation === 'tech',
-        description: 'Technology professionals with strong technical background'
-      },
-      {
-        name: 'Systematic Planners',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgSystematicIndex > 0.75 && 
-          c.behavioralProfile.dominantProblemSolvingStyle === 'systematic',
-        description: 'Organized users who plan before acting and follow methodical approaches'
-      },
-      {
-        name: 'Confident Explorers',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgConfidenceIndex > 0.7 && 
-          c.behavioralProfile.dominantProblemSolvingStyle === 'exploratory',
-        description: 'Self-assured users who learn through experimentation'
-      },
-      {
-        name: 'Persistent Learners',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgPersistenceIndex > 0.75 && 
-          c.profile.avgConfidenceIndex < 0.6,
-        description: 'Determined users who overcome challenges through persistence'
-      },
-      {
-        name: 'Balanced Achievers',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgTechnicalAptitude > 0.5 && 
-          c.profile.avgTechnicalAptitude < 0.75 &&
-          Math.abs(c.profile.avgSpeedIndex - c.profile.avgPrecisionIndex) < 0.2,
-        description: 'Well-rounded users with balanced performance across metrics'
-      },
-      {
-        name: 'Cautious Beginners',
-        condition: (c: ClusterCenter) => 
-          c.profile.avgConfidenceIndex < 0.5 && 
-          c.profile.avgTechnicalAptitude < 0.6,
-        description: 'Careful users who approach tasks with caution and need guidance'
-      },
-      {
-        name: 'Gaming Veterans',
-        condition: (c: ClusterCenter) => 
-          c.behavioralProfile.dominantGamingFrequency === 'gaming_heavy' ||
-          c.behavioralProfile.dominantGamingFrequency === 'gaming_daily',
-        description: 'Experienced gamers who bring gaming skills to technical tasks'
-      }
-    ];
-
-    // Assign names ensuring each archetype is used only once
-    for (const cluster of sortedClusters) {
-      let assigned = false;
-      
-      for (const archetype of clusterArchetypes) {
-        if (!usedNames.has(archetype.name) && archetype.condition(cluster)) {
-          cluster.clusterName = archetype.name;
-          cluster.clusterDescription = archetype.description;
-          cluster.detailedProfile = this.generateDetailedProfile(cluster);
-          usedNames.add(archetype.name);
-          assigned = true;
-          break;
-        }
-      }
-      
-      // Fallback for remaining clusters
-      if (!assigned) {
-        const fallbackNames = [
-          'Emerging Users', 'Adaptive Workers', 'Steady Performers', 
-          'Technical Novices', 'Creative Problem Solvers', 'Standard Users'
-        ];
+    // Test each K value and find the one with highest silhouette score
+    for (let k = minK; k <= maxK; k++) {
+      try {
+        console.log(`🧮 Testing K=${k}...`);
         
-        for (const fallbackName of fallbackNames) {
-          if (!usedNames.has(fallbackName)) {
-            cluster.clusterName = fallbackName;
-            cluster.clusterDescription = 'Mixed characteristics users with unique patterns';
-            cluster.detailedProfile = this.generateDetailedProfile(cluster);
-            usedNames.add(fallbackName);
-            break;
+        // Run clustering multiple times and take the best result
+        let bestKResult: any = null;
+        let bestKQuality = -1;
+        
+        for (let run = 0; run < 3; run++) { // 3 runs per K to account for randomness
+          const result = await this.kMeansClustering(featureVectors, k);
+          const quality = this.calculateSilhouetteScore(featureVectors, result.assignments);
+          
+          if (quality > bestKQuality) {
+            bestKQuality = quality;
+            bestKResult = result;
           }
         }
+        
+        console.log(`   K=${k}: Quality = ${bestKQuality.toFixed(3)}`);
+        
+        // Check if this is the best K so far
+        if (bestKQuality > bestQuality) {
+          bestQuality = bestKQuality;
+          bestK = k;
+          bestResult = bestKResult;
+          bestResult.silhouetteScore = bestKQuality;
+        }
+        
+      } catch (error) {
+        console.error(`   ❌ K=${k} failed:`, error.message);
+        continue;
       }
-      
-      namedClusters.push(cluster);
     }
 
-    // Sort back by original cluster ID
-    return namedClusters.sort((a, b) => a.id - b.id);
-  }
+    if (!bestResult) {
+      throw new Error('Failed to find any valid clustering configuration');
+    }
 
-  /**
-   * Generate DETAILED profile description for display
-   */
-  private generateDetailedProfile(cluster: ClusterCenter): string {
-  const demo = cluster.demographicProfile;
-  const behavioral = cluster.behavioralProfile;
-  const profile = cluster.profile;
-  
-  let detailedProfile = `**Profil demografic dominant:**\n`;
-  
-  // ✅ CORECTARE: Folosește distribuția corectă pentru fiecare câmp
-  detailedProfile += `• Vârstă: ${this.formatDemographic(demo.dominantAgeGroup)} (${this.getPercentage(demo.ageDistribution, demo.dominantAgeGroup, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Gen: ${this.formatDemographic(demo.dominantGender)} (${this.getPercentage(demo.genderDistribution, demo.dominantGender, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Educație: ${this.formatDemographic(demo.dominantEducation)} (${this.getPercentage(demo.educationDistribution, demo.dominantEducation, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Ocupație: ${this.formatDemographic(demo.dominantOccupation)} (${this.getPercentage(demo.occupationDistribution, demo.dominantOccupation, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Nivel STEM: ${this.formatDemographic(demo.dominantStemLevel)} (${this.getPercentage(demo.stemDistribution, demo.dominantStemLevel, cluster.memberCount)}%)\n\n`;
-  
-  detailedProfile += `**Profil comportamental dominant:**\n`;
-  detailedProfile += `• Stil rezolvare probleme: ${this.formatBehavioral(behavioral.dominantProblemSolvingStyle)} (${this.getPercentage(behavioral.problemSolvingDistribution, behavioral.dominantProblemSolvingStyle, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Confort tehnologic: ${this.formatBehavioral(behavioral.dominantTechComfort)} (${this.getPercentage(behavioral.techComfortDistribution, behavioral.dominantTechComfort, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Gestionare erori: ${this.formatBehavioral(behavioral.dominantErrorHandling)} (${this.getPercentage(behavioral.errorHandlingDistribution, behavioral.dominantErrorHandling, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Experiență asamblare: ${this.formatBehavioral(behavioral.dominantAssemblyExperience)} (${this.getPercentage(behavioral.assemblyExperienceDistribution, behavioral.dominantAssemblyExperience, cluster.memberCount)}%)\n`;
-  detailedProfile += `• Frecvență gaming: ${this.formatBehavioral(behavioral.dominantGamingFrequency)} (${this.getPercentage(behavioral.gamingDistribution, behavioral.dominantGamingFrequency, cluster.memberCount)}%)\n\n`;
-  
-  detailedProfile += `**Metrici de performanță:**\n`;
-  detailedProfile += `• Aptitudine tehnică: ${(profile.avgTechnicalAptitude * 100).toFixed(1)}%\n`;
-  detailedProfile += `• Index viteză: ${(profile.avgSpeedIndex * 100).toFixed(1)}%\n`;
-  detailedProfile += `• Index precizie: ${(profile.avgPrecisionIndex * 100).toFixed(1)}%\n`;
-  detailedProfile += `• Index încredere: ${(profile.avgConfidenceIndex * 100).toFixed(1)}%\n`;
-  detailedProfile += `• Index sistematic: ${(profile.avgSystematicIndex * 100).toFixed(1)}%\n`;
-  detailedProfile += `• Index persistență: ${(profile.avgPersistenceIndex * 100).toFixed(1)}%`;
-  
-  return detailedProfile;
-}
+    console.log(`✅ OPTIMAL K=${bestK} selected with quality score: ${bestQuality.toFixed(3)}`);
 
-
-  /**
-   * Helper method to calculate percentage for distributions
-   */
-  private getPercentage(distribution: Record<string, number>, key: string, total: number): number {
-    const count = distribution[key] || 0;
-    return Math.round((count / total) * 100);
-  }
-
-  /**
-   * Format demographic values for display
-   */
-  private formatDemographic(value: string): string {
-    const demographicMap: Record<string, string> = {
-      // Age groups
-      'under_16': 'Sub 16 ani',
-      '16_18': '16-18 ani',
-      '19_25': '19-25 ani',
-      '26_35': '26-35 ani',
-      '36_45': '36-45 ani',
-      '46_55': '46-55 ani',
-      'over_55': 'Peste 55 ani',
-      
-      // Gender
-      'M': 'Masculin',
-      'F': 'Feminin',
-      'N/A': 'Nespecificat',
-      
-      // Education
-      'elementary': 'Școala generală',
-      'highschool_completed': 'Liceu finalizat',
-      'highschool_tech': 'Liceu profil real',
-      'highschool_general': 'Liceu profil uman',
-      'bachelor': 'Licență',
-      'master': 'Master',
-      'phd': 'Doctorat',
-      
-      // Occupation
-      'tech': 'IT/Tehnologie',
-      'engineering': 'Inginerie',
-      'education': 'Educație',
-      'student': 'Student',
-      'healthcare': 'Sănătate',
-      'business': 'Business',
-      'retired': 'Pensionar',
-      'other': 'Altele',
-      
-      // STEM
-      'stem_expert': 'Expert STEM',
-      'stem_familiar': 'Familiar cu STEM',
-      'stem_moderate': 'Moderat familiar',
-      'stem_basic': 'Cunoștințe de bază',
-      'stem_none': 'Fără cunoștințe STEM'
+    return {
+      optimalK: bestK,
+      bestQuality: bestQuality,
+      bestAssignments: bestResult.assignments,
+      bestCentroids: bestResult.centroids,
+      bestInertia: bestResult.inertia,
+      iterations: bestResult.iterations
     };
-    
-    return demographicMap[value] || value;
   }
 
   /**
-   * Format behavioral values for display
+   * All other existing methods remain the same...
+   * (keeping the existing implementation for cluster profile creation, naming, etc.)
    */
-  private formatBehavioral(value: string): string {
-    const behavioralMap: Record<string, string> = {
-      // Problem solving
-      'systematic': 'Sistematic',
-      'exploratory': 'Exploratoriu',
-      'balanced': 'Echilibrat',
-      'collaborative': 'Colaborativ',
-      
-      // Tech comfort
-      'tech_expert': 'Expert tehnologic',
-      'tech_comfortable': 'Confortabil cu tehnologia',
-      'tech_moderate': 'Moderat cu tehnologia',
-      'tech_basic': 'Cunoștințe de bază',
-      'tech_uncomfortable': 'Neconfortabil cu tehnologia',
-      
-      // Error handling
-      'quick_retry': 'Încearcă rapid din nou',
-      'analytical': 'Analizează metodic',
-      'restart': 'Reîncepe de la început',
-      'seek_help': 'Caută ajutor',
-      'frustrated': 'Se frustrează',
-      
-      // Assembly experience
-      'assembly_expert': 'Expert în asamblare',
-      'assembly_some': 'Ceva experiență',
-      'assembly_rare': 'Experiență rară',
-      'assembly_none': 'Fără experiență',
-      
-      // Gaming frequency
-      'gaming_heavy': 'Gaming intens (zilnic, multe ore)',
-      'gaming_daily': 'Gaming zilnic moderat',
-      'gaming_weekly': 'Gaming săptămânal',
-      'gaming_occasional': 'Gaming ocazional',
-      'gaming_never': 'Niciodată gaming'
-    };
-    
-    return behavioralMap[value] || value;
-  }
 
-  // Keep all other existing methods unchanged...
   private async getResponsesForClustering(surveyId?: number): Promise<Response[]> {
     const queryBuilder = this.responseRepo.createQueryBuilder('response')
       .leftJoinAndSelect('response.survey', 'survey')
@@ -522,37 +240,6 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
     }
     
     return await queryBuilder.getMany();
-  }
-
-  private async determineOptimalK(featureVectors: number[][]): Promise<number> {
-    const maxK = Math.min(6, Math.floor(featureVectors.length / 3)); // Max 6 clusters, min 3 points per cluster
-    const minK = Math.min(3, featureVectors.length);
-    
-    if (minK >= maxK) return minK;
-    
-    const inertias: number[] = [];
-    
-    for (let k = minK; k <= maxK; k++) {
-      const result = await this.kMeansClustering(featureVectors, k);
-      inertias.push(result.inertia);
-    }
-
-    // Find elbow point
-    let optimalK = minK;
-    let maxImprovement = 0;
-    
-    for (let i = 1; i < inertias.length - 1; i++) {
-      const improvement = inertias[i-1] - inertias[i];
-      const nextImprovement = inertias[i] - inertias[i+1];
-      const elbowScore = improvement - nextImprovement;
-      
-      if (elbowScore > maxImprovement) {
-        maxImprovement = elbowScore;
-        optimalK = minK + i;
-      }
-    }
-
-    return optimalK;
   }
 
   private async kMeansClustering(data: number[][], k: number): Promise<{
@@ -575,7 +262,6 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
       const inertia = this.calculateInertia(data, newAssignments, newCentroids);
       
       if (Math.abs(prevInertia - inertia) < tolerance) {
-        console.log(`✅ K-means converged after ${iterations + 1} iterations`);
         break;
       }
       
@@ -594,6 +280,9 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
     };
   }
 
+  // ... (keep all existing helper methods: initializeCentroids, findNearestCentroid, etc.)
+  // ... (keep all existing methods for cluster profile creation, naming, etc.)
+  
   private initializeCentroids(data: number[][], k: number): number[][] {
     const centroids: number[][] = [];
     
@@ -690,32 +379,6 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
     return Math.sqrt(sumSquaredDiffs);
   }
 
-  private calculateAverageMetrics(responses: Response[]): any {
-    const metrics = responses
-      .map(r => r.computedMetrics)
-      .filter((m): m is NonNullable<typeof m> => m !== null && m !== undefined);
-    
-    if (metrics.length === 0) {
-      return {
-        avgSpeedIndex: 0,
-        avgPrecisionIndex: 0,
-        avgConfidenceIndex: 0,
-        avgSystematicIndex: 0,
-        avgPersistenceIndex: 0,
-        avgTechnicalAptitude: 0
-      };
-    }
-    
-    return {
-      avgSpeedIndex: this.average(metrics.map(m => m.speedIndex)),
-      avgPrecisionIndex: this.average(metrics.map(m => m.precisionIndex)),
-      avgConfidenceIndex: this.average(metrics.map(m => m.confidenceIndex)),
-      avgSystematicIndex: this.average(metrics.map(m => m.systematicIndex)),
-      avgPersistenceIndex: this.average(metrics.map(m => m.persistenceIndex)),
-      avgTechnicalAptitude: this.average(metrics.map(m => m.technicalAptitude))
-    };
-  }
-
   private calculateSilhouetteScore(data: number[][], assignments: number[]): number {
     const n = data.length;
     let totalScore = 0;
@@ -747,6 +410,267 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
     }
     
     return totalScore / n;
+  }
+
+  private async createClusterProfiles(
+    assignments: number[],
+    responses: Response[],
+    centroids: number[][]
+  ): Promise<ClusterCenter[]> {
+    const clusters: ClusterCenter[] = [];
+    const k = centroids.length;
+    
+    for (let clusterId = 0; clusterId < k; clusterId++) {
+      const clusterResponses = responses.filter((_, index) => assignments[index] === clusterId);
+      
+      if (clusterResponses.length === 0) continue;
+      
+      const avgMetrics = this.calculateAverageMetrics(clusterResponses);
+      const demographicProfile = this.calculateDetailedDemographicProfile(clusterResponses);
+      const behavioralProfile = this.calculateDetailedBehavioralProfile(clusterResponses);
+      
+      clusters.push({
+        id: clusterId,
+        centroid: centroids[clusterId],
+        memberCount: clusterResponses.length,
+        profile: avgMetrics,
+        demographicProfile,
+        behavioralProfile,
+        clusterName: '',
+        clusterDescription: '',
+        detailedProfile: ''
+      });
+    }
+    
+    return clusters;
+  }
+
+  private calculateDetailedDemographicProfile(responses: Response[]): any {
+    const demographics = responses
+      .map(r => r.demographicProfile)
+      .filter((d): d is NonNullable<typeof d> => d !== null && d !== undefined);
+    
+    const ageDistribution = this.calculateDistribution(demographics.map(d => d.ageGroup));
+    const genderDistribution = this.calculateDistribution(demographics.map(d => d.gender));
+    const educationDistribution = this.calculateDistribution(demographics.map(d => d.educationLevel));
+    const occupationDistribution = this.calculateDistribution(demographics.map(d => d.occupation));
+    const stemDistribution = this.calculateDistribution(demographics.map(d => d.stemFamiliarity));
+    
+    return {
+      dominantAgeGroup: this.findMostCommon(demographics.map(d => d.ageGroup)),
+      dominantGender: this.findMostCommon(demographics.map(d => d.gender)),
+      dominantEducation: this.findMostCommon(demographics.map(d => d.educationLevel)),
+      dominantOccupation: this.findMostCommon(demographics.map(d => d.occupation)),
+      dominantStemLevel: this.findMostCommon(demographics.map(d => d.stemFamiliarity)),
+      ageDistribution,
+      genderDistribution,
+      educationDistribution,
+      occupationDistribution,
+      stemDistribution
+    };
+  }
+
+  private calculateDetailedBehavioralProfile(responses: Response[]): any {
+    const behavioral = responses
+      .map(r => r.behavioralProfile)
+      .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined);
+    
+    const problemSolvingDistribution = this.calculateDistribution(behavioral.map(b => b.problemSolvingStyle));
+    const techComfortDistribution = this.calculateDistribution(behavioral.map(b => b.techComfort));
+    const errorHandlingDistribution = this.calculateDistribution(behavioral.map(b => b.errorHandlingStyle));
+    const assemblyExpDistribution = this.calculateDistribution(behavioral.map(b => b.assemblyExperience));
+    const gamingDistribution = this.calculateDistribution(behavioral.map(b => b.gamingFrequency));
+    
+    return {
+      dominantProblemSolvingStyle: this.findMostCommon(behavioral.map(b => b.problemSolvingStyle)),
+      dominantTechComfort: this.findMostCommon(behavioral.map(b => b.techComfort)),
+      dominantErrorHandling: this.findMostCommon(behavioral.map(b => b.errorHandlingStyle)),
+      dominantAssemblyExperience: this.findMostCommon(behavioral.map(b => b.assemblyExperience)),
+      dominantGamingFrequency: this.findMostCommon(behavioral.map(b => b.gamingFrequency)),
+      problemSolvingDistribution,
+      techComfortDistribution,
+      errorHandlingDistribution,
+      assemblyExperienceDistribution: assemblyExpDistribution,
+      gamingDistribution
+    };
+  }
+
+  private assignUniqueClusterNames(clusters: ClusterCenter[]): ClusterCenter[] {
+    const sortedClusters = [...clusters].sort((a, b) => 
+      b.profile.avgTechnicalAptitude - a.profile.avgTechnicalAptitude
+    );
+
+    const usedNames = new Set<string>();
+    const namedClusters: ClusterCenter[] = [];
+
+    const clusterArchetypes = [
+      {
+        name: 'Elite Performers',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgTechnicalAptitude > 0.75 && 
+          c.profile.avgSpeedIndex > 0.7 && 
+          c.profile.avgPrecisionIndex > 0.7,
+        description: 'Exceptional users with high performance across all metrics'
+      },
+      {
+        name: 'Speed Champions',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgSpeedIndex > 0.8 && 
+          c.profile.avgConfidenceIndex > 0.7 &&
+          c.profile.avgPrecisionIndex < 0.7,
+        description: 'Fast, confident users who prioritize speed over precision'
+      },
+      {
+        name: 'Precision Masters',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgPrecisionIndex > 0.8 && 
+          c.profile.avgSystematicIndex > 0.7,
+        description: 'Methodical users who excel in accuracy and systematic approaches'
+      },
+      {
+        name: 'Tech Experts',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgTechnicalAptitude > 0.7 &&
+          c.demographicProfile.dominantOccupation === 'tech',
+        description: 'Technology professionals with strong technical background'
+      },
+      {
+        name: 'Systematic Planners',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgSystematicIndex > 0.75 && 
+          c.behavioralProfile.dominantProblemSolvingStyle === 'systematic',
+        description: 'Organized users who plan before acting and follow methodical approaches'
+      },
+      {
+        name: 'Confident Explorers',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgConfidenceIndex > 0.7 && 
+          c.behavioralProfile.dominantProblemSolvingStyle === 'exploratory',
+        description: 'Self-assured users who learn through experimentation'
+      },
+      {
+        name: 'Persistent Learners',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgPersistenceIndex > 0.75 && 
+          c.profile.avgConfidenceIndex < 0.6,
+        description: 'Determined users who overcome challenges through persistence'
+      },
+      {
+        name: 'Balanced Achievers',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgTechnicalAptitude > 0.5 && 
+          c.profile.avgTechnicalAptitude < 0.75 &&
+          Math.abs(c.profile.avgSpeedIndex - c.profile.avgPrecisionIndex) < 0.2,
+        description: 'Well-rounded users with balanced performance across metrics'
+      },
+      {
+        name: 'Cautious Beginners',
+        condition: (c: ClusterCenter) => 
+          c.profile.avgConfidenceIndex < 0.5 && 
+          c.profile.avgTechnicalAptitude < 0.6,
+        description: 'Careful users who approach tasks with caution and need guidance'
+      },
+      {
+        name: 'Gaming Veterans',
+        condition: (c: ClusterCenter) => 
+          c.behavioralProfile.dominantGamingFrequency === 'gaming_heavy' ||
+          c.behavioralProfile.dominantGamingFrequency === 'gaming_daily',
+        description: 'Experienced gamers who bring gaming skills to technical tasks'
+      }
+    ];
+
+    for (const cluster of sortedClusters) {
+      let assigned = false;
+      
+      for (const archetype of clusterArchetypes) {
+        if (!usedNames.has(archetype.name) && archetype.condition(cluster)) {
+          cluster.clusterName = archetype.name;
+          cluster.clusterDescription = archetype.description;
+          cluster.detailedProfile = this.generateDetailedProfile(cluster);
+          usedNames.add(archetype.name);
+          assigned = true;
+          break;
+        }
+      }
+      
+      if (!assigned) {
+        const fallbackNames = [
+          'Emerging Users', 'Adaptive Workers', 'Steady Performers', 
+          'Technical Novices', 'Creative Problem Solvers', 'Standard Users'
+        ];
+        
+        for (const fallbackName of fallbackNames) {
+          if (!usedNames.has(fallbackName)) {
+            cluster.clusterName = fallbackName;
+            cluster.clusterDescription = 'Mixed characteristics users with unique patterns';
+            cluster.detailedProfile = this.generateDetailedProfile(cluster);
+            usedNames.add(fallbackName);
+            break;
+          }
+        }
+      }
+      
+      namedClusters.push(cluster);
+    }
+
+    return namedClusters.sort((a, b) => a.id - b.id);
+  }
+
+  private generateDetailedProfile(cluster: ClusterCenter): string {
+    const demo = cluster.demographicProfile;
+    const behavioral = cluster.behavioralProfile;
+    const profile = cluster.profile;
+    
+    let detailedProfile = `**Profil demografic dominant:**\n`;
+    detailedProfile += `• Vârstă: ${this.formatDemographic(demo.dominantAgeGroup)} (${this.getPercentage(demo.ageDistribution, demo.dominantAgeGroup, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Gen: ${this.formatDemographic(demo.dominantGender)} (${this.getPercentage(demo.genderDistribution, demo.dominantGender, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Educație: ${this.formatDemographic(demo.dominantEducation)} (${this.getPercentage(demo.educationDistribution, demo.dominantEducation, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Ocupație: ${this.formatDemographic(demo.dominantOccupation)} (${this.getPercentage(demo.occupationDistribution, demo.dominantOccupation, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Nivel STEM: ${this.formatDemographic(demo.dominantStemLevel)} (${this.getPercentage(demo.stemDistribution, demo.dominantStemLevel, cluster.memberCount)}%)\n\n`;
+    
+    detailedProfile += `**Profil comportamental dominant:**\n`;
+    detailedProfile += `• Stil rezolvare probleme: ${this.formatBehavioral(behavioral.dominantProblemSolvingStyle)} (${this.getPercentage(behavioral.problemSolvingDistribution, behavioral.dominantProblemSolvingStyle, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Confort tehnologic: ${this.formatBehavioral(behavioral.dominantTechComfort)} (${this.getPercentage(behavioral.techComfortDistribution, behavioral.dominantTechComfort, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Gestionare erori: ${this.formatBehavioral(behavioral.dominantErrorHandling)} (${this.getPercentage(behavioral.errorHandlingDistribution, behavioral.dominantErrorHandling, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Experiență asamblare: ${this.formatBehavioral(behavioral.dominantAssemblyExperience)} (${this.getPercentage(behavioral.assemblyExperienceDistribution, behavioral.dominantAssemblyExperience, cluster.memberCount)}%)\n`;
+    detailedProfile += `• Frecvență gaming: ${this.formatBehavioral(behavioral.dominantGamingFrequency)} (${this.getPercentage(behavioral.gamingDistribution, behavioral.dominantGamingFrequency, cluster.memberCount)}%)\n\n`;
+    
+    detailedProfile += `**Metrici de performanță:**\n`;
+    detailedProfile += `• Aptitudine tehnică: ${(profile.avgTechnicalAptitude * 100).toFixed(1)}%\n`;
+    detailedProfile += `• Index viteză: ${(profile.avgSpeedIndex * 100).toFixed(1)}%\n`;
+    detailedProfile += `• Index precizie: ${(profile.avgPrecisionIndex * 100).toFixed(1)}%\n`;
+    detailedProfile += `• Index încredere: ${(profile.avgConfidenceIndex * 100).toFixed(1)}%\n`;
+    detailedProfile += `• Index sistematic: ${(profile.avgSystematicIndex * 100).toFixed(1)}%\n`;
+    detailedProfile += `• Index persistență: ${(profile.avgPersistenceIndex * 100).toFixed(1)}%`;
+    
+    return detailedProfile;
+  }
+
+  // Helper methods (keeping existing implementations)
+  private calculateAverageMetrics(responses: Response[]): any {
+    const metrics = responses
+      .map(r => r.computedMetrics)
+      .filter((m): m is NonNullable<typeof m> => m !== null && m !== undefined);
+    
+    if (metrics.length === 0) {
+      return {
+        avgSpeedIndex: 0,
+        avgPrecisionIndex: 0,
+        avgConfidenceIndex: 0,
+        avgSystematicIndex: 0,
+        avgPersistenceIndex: 0,
+        avgTechnicalAptitude: 0
+      };
+    }
+    
+    return {
+      avgSpeedIndex: this.average(metrics.map(m => m.speedIndex)),
+      avgPrecisionIndex: this.average(metrics.map(m => m.precisionIndex)),
+      avgConfidenceIndex: this.average(metrics.map(m => m.confidenceIndex)),
+      avgSystematicIndex: this.average(metrics.map(m => m.systematicIndex)),
+      avgPersistenceIndex: this.average(metrics.map(m => m.persistenceIndex)),
+      avgTechnicalAptitude: this.average(metrics.map(m => m.technicalAptitude))
+    };
   }
 
   private async updateClusterAssignments(responses: Response[], assignments: number[]): Promise<void> {
@@ -820,7 +744,6 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
       insights.push(`${techClusters.length} grup(uri) sunt dominate de profesioniști din domeniul tehnic`);
     }
     
-    // Insight despre diversitatea de vârstă
     const ageGroups = [...new Set(clusters.map(c => c.demographicProfile.dominantAgeGroup))];
     if (ageGroups.length > 1) {
       insights.push(`Participanții acoperă ${ageGroups.length} grupe de vârstă diferite`);
@@ -829,6 +752,7 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
     return insights;
   }
 
+  // Utility methods
   private average(values: number[]): number {
     if (values.length === 0) return 0;
     return values.reduce((sum, val) => sum + (val || 0), 0) / values.length;
@@ -855,74 +779,75 @@ private calculateDetailedBehavioralProfile(responses: Response[]): any {
     return distribution;
   }
 
-  async predictClusterForNewParticipant(
-    computedMetrics: any,
-    surveyId?: number
-  ): Promise<{ clusterId: number; confidence: number; clusterName: string }> {
-    const existingResponses = await this.getResponsesForClustering(surveyId);
-    
-    if (existingResponses.length === 0) {
-      return { clusterId: -1, confidence: 0, clusterName: 'Insufficient data' };
-    }
-    
-    const clusterGroups: Record<number, number[][]> = {};
-    existingResponses
-      .filter(response => response.computedMetrics && response.clusterAssignment !== null && response.clusterAssignment !== undefined)
-      .forEach(response => {
-        const clusterId = response.clusterAssignment!;
-        if (!clusterGroups[clusterId]) {
-          clusterGroups[clusterId] = [];
-        }
-        clusterGroups[clusterId].push(FeatureEngineeringService.metricsToFeatureVector(response.computedMetrics!));
-      });
-    
-    if (Object.keys(clusterGroups).length === 0) {
-      return { clusterId: -1, confidence: 0, clusterName: 'No existing clusters' };
-    }
-    
-    const centroids = Object.keys(clusterGroups).map(clusterId => {
-      const clusterPoints = clusterGroups[parseInt(clusterId)];
-      const dimensions = clusterPoints[0].length;
-      const centroid = new Array(dimensions).fill(0);
-      
-      clusterPoints.forEach(point => {
-        point.forEach((value, dim) => {
-          centroid[dim] += value;
-        });
-      });
-      
-      centroid.forEach((sum, dim) => {
-        centroid[dim] = sum / clusterPoints.length;
-      });
-      
-      return { clusterId: parseInt(clusterId), centroid };
-    });
-    
-    const newParticipantVector = FeatureEngineeringService.metricsToFeatureVector(computedMetrics);
-    
-    let nearestCluster = centroids[0];
-    let minDistance = this.euclideanDistance(newParticipantVector, nearestCluster.centroid);
-    
-    centroids.forEach(cluster => {
-      const distance = this.euclideanDistance(newParticipantVector, cluster.centroid);
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestCluster = cluster;
-      }
-    });
-    
-    const confidence = this.calculateAssignmentConfidence(
-      newParticipantVector,
-      centroids.map(c => c.centroid),
-      centroids.findIndex(c => c.clusterId === nearestCluster.clusterId)
-    );
-    
-    const clusterName = `Cluster ${nearestCluster.clusterId}`;
-    
-    return {
-      clusterId: nearestCluster.clusterId,
-      confidence,
-      clusterName
+  private getPercentage(distribution: Record<string, number>, key: string, total: number): number {
+    const count = distribution[key] || 0;
+    return Math.round((count / total) * 100);
+  }
+
+  private formatDemographic(value: string): string {
+    const demographicMap: Record<string, string> = {
+      'under_16': 'Sub 16 ani',
+      '16_18': '16-18 ani',
+      '19_25': '19-25 ani',
+      '26_35': '26-35 ani',
+      '36_45': '36-45 ani',
+      '46_55': '46-55 ani',
+      'over_55': 'Peste 55 ani',
+      'M': 'Masculin',
+      'F': 'Feminin',
+      'N/A': 'Nespecificat',
+      'elementary': 'Școala generală',
+      'highschool_completed': 'Liceu finalizat',
+      'highschool_tech': 'Liceu profil real',
+      'highschool_general': 'Liceu profil uman',
+      'bachelor': 'Licență',
+      'master': 'Master',
+      'phd': 'Doctorat',
+      'tech': 'IT/Tehnologie',
+      'engineering': 'Inginerie',
+      'education': 'Educație',
+      'student': 'Student',
+      'healthcare': 'Sănătate',
+      'business': 'Business',
+      'retired': 'Pensionar',
+      'other': 'Altele',
+      'stem_expert': 'Expert STEM',
+      'stem_familiar': 'Familiar cu STEM',
+      'stem_moderate': 'Moderat familiar',
+      'stem_basic': 'Cunoștințe de bază',
+      'stem_none': 'Fără cunoștințe STEM'
     };
+    
+    return demographicMap[value] || value;
+  }
+
+  private formatBehavioral(value: string): string {
+    const behavioralMap: Record<string, string> = {
+      'systematic': 'Sistematic',
+      'exploratory': 'Exploratoriu',
+      'balanced': 'Echilibrat',
+      'collaborative': 'Colaborativ',
+      'tech_expert': 'Expert tehnologic',
+      'tech_comfortable': 'Confortabil cu tehnologia',
+      'tech_moderate': 'Moderat cu tehnologia',
+      'tech_basic': 'Cunoștințe de bază',
+      'tech_uncomfortable': 'Neconfortabil cu tehnologia',
+      'quick_retry': 'Încearcă rapid din nou',
+      'analytical': 'Analizează metodic',
+      'restart': 'Reîncepe de la început',
+      'seek_help': 'Caută ajutor',
+      'frustrated': 'Se frustrează',
+      'assembly_expert': 'Expert în asamblare',
+      'assembly_some': 'Ceva experiență',
+      'assembly_rare': 'Experiență rară',
+      'assembly_none': 'Fără experiență',
+      'gaming_heavy': 'Gaming intens (zilnic, multe ore)',
+      'gaming_daily': 'Gaming zilnic moderat',
+      'gaming_weekly': 'Gaming săptămânal',
+      'gaming_occasional': 'Gaming ocazional',
+      'gaming_never': 'Niciodată gaming'
+    };
+    
+    return behavioralMap[value] || value;
   }
 }
