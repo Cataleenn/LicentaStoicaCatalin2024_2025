@@ -107,122 +107,139 @@
           </mat-card>
         </div>
 
-        <!-- Fisher Test Analysis Section -->
-        <div class="fisher-test-section">
-          <mat-card class="fisher-card">
+        <!-- Clustering Analysis Results Card -->
+        <div class="clustering-results-section">
+          <mat-card class="clustering-results-card">
             <mat-card-header>
-              <mat-card-title>🔬 Analiză Fisher's Exact Test</mat-card-title>
-              <mat-card-subtitle>Identifică întrebările care definesc fiecare cluster comportamental</mat-card-subtitle>
+              <mat-card-title>🎯 Rezultatele Analizei Clustering</mat-card-title>
+              <mat-card-subtitle>Profilurile comportamentale identificate și caracteristicile lor</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <app-fisher-test [surveyId]="selectedSurveyId"></app-fisher-test>
+              <!-- Detailed Clusters -->
+              <div class="clusters-section">
+                <h2>🎯 Profilurile Comportamentale Identificate</h2>
+                
+                <mat-accordion class="clusters-accordion" multi="true">
+                  <mat-expansion-panel 
+                    *ngFor="let cluster of clusteringSummary.clusters; let i = index"
+                    class="cluster-panel"
+                    [ngClass]="'cluster-panel-' + i"
+                    [expanded]="i === 0">
+                    
+                    <!-- Cluster Header -->
+                    <mat-expansion-panel-header>
+                      <mat-panel-title>
+                        <div class="cluster-header">
+                          <div class="cluster-icon">{{ getClusterIcon(cluster.name) }}</div>
+                          <div class="cluster-info">
+                            <h3>{{ cluster.name }}</h3>
+                            <div class="cluster-meta">
+                              <span class="participant-count">{{ cluster.size }} participanți</span>
+                              <span class="percentage">({{ cluster.percentage.toFixed(1) }}%)</span>
+                              <span class="performance-badge" [ngClass]="getPerformanceBadgeClass(cluster.performanceMetrics.technicalAptitude)">
+                                {{ getPerformanceLabel(cluster.performanceMetrics.technicalAptitude) }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </mat-panel-title>
+                      <mat-panel-description>
+                        <div class="description-preview">{{ cluster.description }}</div>
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+
+                    <!-- Cluster Content -->
+                    <div class="cluster-content">
+                      <!-- Performance Metrics -->
+                      <div class="metrics-section">
+                        <h4>📊 Indicatori de Performanță</h4>
+                        <div class="metrics-grid">
+                          <div class="metric-card">
+                            <div class="metric-label">Aptitudine Tehnică</div>
+                            <div class="metric-value">{{ (cluster.performanceMetrics.technicalAptitude * 100).toFixed(0) }}%</div>
+                            <div class="metric-bar">
+                              <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.technicalAptitude * 100"></div>
+                            </div>
+                          </div>
+                          <div class="metric-card">
+                            <div class="metric-label">Index Viteză</div>
+                            <div class="metric-value">{{ (cluster.performanceMetrics.speedIndex * 100).toFixed(0) }}%</div>
+                            <div class="metric-bar">
+                              <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.speedIndex * 100"></div>
+                            </div>
+                          </div>
+                          <div class="metric-card">
+                            <div class="metric-label">Index Precizie</div>
+                            <div class="metric-value">{{ (cluster.performanceMetrics.precisionIndex * 100).toFixed(0) }}%</div>
+                            <div class="metric-bar">
+                              <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.precisionIndex * 100"></div>
+                            </div>
+                          </div>
+                          <div class="metric-card">
+                            <div class="metric-label">Index Încredere</div>
+                            <div class="metric-value">{{ (cluster.performanceMetrics.confidenceIndex * 100).toFixed(0) }}%</div>
+                            <div class="metric-bar">
+                              <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.confidenceIndex * 100"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Detailed Profile -->
+                      <div class="profile-section">
+                        <h4>👤 Profil Complet</h4>
+                        <div class="profile-content" [innerHTML]="formatProfileForDisplay(cluster.detailedProfile)"></div>
+                      </div>
+
+                      <!-- Characteristics Tags -->
+                      <div class="characteristics-section" *ngIf="cluster.characteristics && cluster.characteristics.length > 0">
+                        <h4>🏷️ Caracteristici Cheie</h4>
+                        <div class="characteristics-tags">
+                          <mat-chip 
+                            *ngFor="let char of cluster.characteristics" 
+                            selected
+                            color="accent">
+                            {{ char }}
+                          </mat-chip>
+                        </div>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="cluster-actions">
+                        <button mat-button color="primary" (click)="viewClusterDetails(cluster.id)">
+                          <mat-icon>visibility</mat-icon>
+                          Vezi Participanții
+                        </button>
+                        <button mat-button color="accent" (click)="exportClusterData(cluster.id)">
+                          <mat-icon>download</mat-icon>
+                          Exportă Date
+                        </button>
+                      </div>
+                    </div>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </div>
             </mat-card-content>
           </mat-card>
         </div>
 
-        <!-- Detailed Clusters -->
-        <div class="clusters-section">
-          <h2>🎯 Profilurile Comportamentale Identificate</h2>
-          
-          <mat-accordion class="clusters-accordion" multi="true">
-            <mat-expansion-panel 
-              *ngFor="let cluster of clusteringSummary.clusters; let i = index"
-              class="cluster-panel"
-              [ngClass]="'cluster-panel-' + i"
-              [expanded]="i === 0">
-              
-              <!-- Cluster Header -->
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <div class="cluster-header">
-                    <div class="cluster-icon">{{ getClusterIcon(cluster.name) }}</div>
-                    <div class="cluster-info">
-                      <h3>{{ cluster.name }}</h3>
-                      <div class="cluster-meta">
-                        <span class="participant-count">{{ cluster.size }} participanți</span>
-                        <span class="percentage">({{ cluster.percentage.toFixed(1) }}%)</span>
-                        <span class="performance-badge" [ngClass]="getPerformanceBadgeClass(cluster.performanceMetrics.technicalAptitude)">
-                          {{ getPerformanceLabel(cluster.performanceMetrics.technicalAptitude) }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <div class="description-preview">{{ cluster.description }}</div>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-
-              <!-- Cluster Content -->
-              <div class="cluster-content">
-                <!-- Performance Metrics -->
-                <div class="metrics-section">
-                  <h4>📊 Indicatori de Performanță</h4>
-                  <div class="metrics-grid">
-                    <div class="metric-card">
-                      <div class="metric-label">Aptitudine Tehnică</div>
-                      <div class="metric-value">{{ (cluster.performanceMetrics.technicalAptitude * 100).toFixed(0) }}%</div>
-                      <div class="metric-bar">
-                        <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.technicalAptitude * 100"></div>
-                      </div>
-                    </div>
-                    <div class="metric-card">
-                      <div class="metric-label">Index Viteză</div>
-                      <div class="metric-value">{{ (cluster.performanceMetrics.speedIndex * 100).toFixed(0) }}%</div>
-                      <div class="metric-bar">
-                        <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.speedIndex * 100"></div>
-                      </div>
-                    </div>
-                    <div class="metric-card">
-                      <div class="metric-label">Index Precizie</div>
-                      <div class="metric-value">{{ (cluster.performanceMetrics.precisionIndex * 100).toFixed(0) }}%</div>
-                      <div class="metric-bar">
-                        <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.precisionIndex * 100"></div>
-                      </div>
-                    </div>
-                    <div class="metric-card">
-                      <div class="metric-label">Index Încredere</div>
-                      <div class="metric-value">{{ (cluster.performanceMetrics.confidenceIndex * 100).toFixed(0) }}%</div>
-                      <div class="metric-bar">
-                        <div class="metric-fill" [style.width.%]="cluster.performanceMetrics.confidenceIndex * 100"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Detailed Profile -->
-                <div class="profile-section">
-                  <h4>👤 Profil Complet</h4>
-                  <div class="profile-content" [innerHTML]="formatProfileForDisplay(cluster.detailedProfile)"></div>
-                </div>
-
-                <!-- Characteristics Tags -->
-                <div class="characteristics-section" *ngIf="cluster.characteristics && cluster.characteristics.length > 0">
-                  <h4>🏷️ Caracteristici Cheie</h4>
-                  <div class="characteristics-tags">
-                    <mat-chip 
-                      *ngFor="let char of cluster.characteristics" 
-                      selected
-                      color="accent">
-                      {{ char }}
-                    </mat-chip>
-                  </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="cluster-actions">
-                  <button mat-button color="primary" (click)="viewClusterDetails(cluster.id)">
-                    <mat-icon>visibility</mat-icon>
-                    Vezi Participanții
-                  </button>
-                  <button mat-button color="accent" (click)="exportClusterData(cluster.id)">
-                    <mat-icon>download</mat-icon>
-                    Exportă Date
-                  </button>
-                </div>
+        <!-- Separate Fisher Test Analysis Card -->
+        <div class="fisher-test-section">
+          <mat-card class="fisher-test-card">
+            <mat-card-header>
+              <mat-card-title>🔬 Analiză Fisher's Exact Test</mat-card-title>
+              <mat-card-subtitle>Identifică întrebările statistice semnificative care definesc comportamentul fiecărui cluster</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="fisher-description">
+                <p>Testul Fisher analizează care întrebări din chestionar sunt cele mai importante pentru a diferenția între clustere. Aceasta ne arată ce răspunsuri caracterizează cel mai bine fiecare grup comportamental.</p>
               </div>
-            </mat-expansion-panel>
-          </mat-accordion>
+              <app-fisher-test 
+                [surveyId]="selectedSurveyId" 
+                [clusteringSummary]="clusteringSummary">
+              </app-fisher-test>
+            </mat-card-content>
+          </mat-card>
         </div>
       </div>
 

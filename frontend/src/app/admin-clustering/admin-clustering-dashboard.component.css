@@ -210,13 +210,111 @@
   color: #2e7d32;
 }
 
+/* Clustering Results Section - Separate Card Design */
+.clustering-results-section {
+  margin: 2rem 0 3rem 0;
+}
+
+.clustering-results-card {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  border-radius: 20px;
+  box-shadow: 0 6px 25px rgba(46, 125, 50, 0.15);
+  border-left: 6px solid #4caf50;
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.clustering-results-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 35px rgba(46, 125, 50, 0.2);
+}
+
+.clustering-results-card mat-card-title {
+  color: #2e7d32 !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+.clustering-results-card mat-card-subtitle {
+  color: #388e3c !important;
+  font-size: 1rem !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Fisher Test Section - Separate Card Design */
+.fisher-test-section {
+  margin: 3rem 0;
+}
+
+.fisher-test-card {
+  background: linear-gradient(135deg, #fff8e1, #f3e5f5);
+  border-radius: 20px;
+  box-shadow: 0 6px 25px rgba(156, 39, 176, 0.15);
+  border-left: 6px solid #9c27b0;
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fisher-test-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 35px rgba(156, 39, 176, 0.2);
+}
+
+.fisher-test-card mat-card-title {
+  color: #6a1b9a !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+}
+
+.fisher-test-card mat-card-subtitle {
+  color: #8e24aa !important;
+  font-size: 1rem !important;
+  margin-top: 0.5rem !important;
+}
+
+.fisher-description {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border-left: 4px solid #ab47bc;
+}
+
+.fisher-description p {
+  margin: 0;
+  color: #4a148c;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Section Divider Visual Enhancement */
+.clustering-results-section::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #4caf50, transparent);
+  margin: 3rem 0;
+}
+
+.fisher-test-section::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #9c27b0, transparent);
+  margin: 3rem 0 2rem 0;
+}
+
 /* Clusters Section */
 .clusters-section h2 {
-  color: #1a2a6c;
+  color: #1b5e20;
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
   font-weight: 600;
   text-align: center;
+  padding: 1rem 0;
 }
 
 .clusters-accordion {
