@@ -25,11 +25,19 @@ import { ClusteringModule } from './clustering/clustering.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DATABASE_HOST || 'localhost',
-      port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-      username: process.env.DATABASE_USER || 'survey_admin',
-      password: process.env.DATABASE_PASSWORD || 'adminpass',
-      database: process.env.DATABASE_NAME || 'survey_data_db',
+      
+      // ✅ MODIFICAREA: Dacă există DATABASE_URL (Railway), folosește-l
+      // Altfel, folosește config-ul detaliat (local)
+      ...(process.env.DATABASE_URL ? {
+        url: process.env.DATABASE_URL,
+      } : {
+        host: process.env.DATABASE_HOST || 'localhost',
+        port: parseInt(process.env.DATABASE_PORT || '5432', 10),
+        username: process.env.DATABASE_USER || 'survey_admin',
+        password: process.env.DATABASE_PASSWORD || 'adminpass',
+        database: process.env.DATABASE_NAME || 'survey_data_db',
+      }),
+      
       entities: [User, Survey, Response],
       autoLoadEntities: true,
       synchronize: true, // Set to false in production
