@@ -7,7 +7,7 @@
 //   providedIn: 'root'
 // })
 // export class AnalyticsService {
-//   private apiUrl = 'http://localhost:3000/api/analytics';
+//   private apiUrl = '${environment.apiUrl}/analytics';
 
 //   constructor(private http: HttpClient) {}
 

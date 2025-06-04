@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap, catchError } from 'rxjs';
 import { of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SurveyService {
-  private apiUrl = 'http://localhost:3000/api/survey';
+  private apiUrl = '${environment.apiUrl}/survey';
 
   constructor(private http: HttpClient) {}
 
@@ -104,6 +105,6 @@ export class SurveyService {
 
   // Submit responses
   submitResponses(surveyId: number, responses: any): Observable<any> {
-    return this.http.post(`http://localhost:3000/api/responses`, responses);
+    return this.http.post(`${environment.apiUrl}/responses`, responses);
   }
 }
