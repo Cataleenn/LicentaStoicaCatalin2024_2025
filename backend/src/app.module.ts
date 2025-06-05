@@ -30,6 +30,7 @@ import { ClusteringModule } from './clustering/clustering.module';
       // Altfel, folosește config-ul detaliat (local)
       ...(process.env.DATABASE_URL ? {
         url: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false },
       } : {
         host: process.env.DATABASE_HOST || 'localhost',
         port: parseInt(process.env.DATABASE_PORT || '5432', 10),
