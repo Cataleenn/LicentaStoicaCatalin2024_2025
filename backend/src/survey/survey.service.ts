@@ -42,10 +42,16 @@ export class SurveyService {
 
   // Get survey by ID
   async getSurveyById(id: number): Promise<Survey> {
-    return this.surveyRepository.findOneOrFail({
-  where: { id }
-});
+  const survey = await this.surveyRepository.findOne({
+    where: { id }
+  });
+
+  if (!survey) {
+    throw new NotFoundException(`Survey with ID ${id} not found`);
   }
+
+  return survey;
+}
 
   // Get surveys created by a specific user
   async getSurveysByUser(userId: number): Promise<Survey[]> {
