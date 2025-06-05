@@ -42,10 +42,9 @@ export class SurveyService {
 
   // Get survey by ID
   async getSurveyById(id: number): Promise<Survey> {
-    return this.surveyRepository.findOneOrFail({ 
-      where: { id },
-      relations: ['createdBy']
-    });
+    return this.surveyRepository.findOneOrFail({
+  where: { id }
+});
   }
 
   // Get surveys created by a specific user
