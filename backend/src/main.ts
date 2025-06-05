@@ -13,6 +13,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');  // Asigură-te că prefixul 'api' este setat
 
-  await app.listen(3000);  // Ascultă pe portul 3000
+  await app.listen(process.env.PORT || 3000);
+  // Ascultă pe portul 3000
 }
 bootstrap();
