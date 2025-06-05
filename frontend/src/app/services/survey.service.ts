@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class SurveyService {
-  private apiUrl = '${environment.apiUrl}/survey';
+  private apiUrl = `${environment.apiUrl}/survey`;
 
   constructor(private http: HttpClient) {}
 
