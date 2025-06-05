@@ -1,10 +1,12 @@
 {
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist/frontend",
+  "installCommand": "cd frontend && npm install",
+  "framework": "angular",
   "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "framework": "angular",
-  "outputDirectory": "dist/frontend"
+  ]
 }
