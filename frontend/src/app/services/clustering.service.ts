@@ -29,7 +29,7 @@ export interface OptimizationResult {
   providedIn: 'root'
 })
 export class ClusteringService {
-  private apiUrl = '${environment.apiUrl}';
+  private apiUrl = `${environment.apiUrl}`;
 
   constructor(private http: HttpClient) {}
 

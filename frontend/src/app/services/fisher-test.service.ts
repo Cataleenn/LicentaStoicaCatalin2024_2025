@@ -52,7 +52,7 @@ export interface FisherTestSummary {
   providedIn: 'root'
 })
 export class FisherTestService {
-  private apiUrl = '${environment.apiUrl}/fisher-test';
+  private apiUrl = `${environment.apiUrl}/fisher-test`;
 
   constructor(private http: HttpClient) {}
 

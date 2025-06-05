@@ -4,5 +4,7 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "framework": "angular",
+  "outputDirectory": "dist/frontend"
 }
