@@ -14,8 +14,11 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');  // Asigură-te că prefixul 'api' este setat
 
-  await app.listen(process.env.PORT || 3000);
-  console.log('🚀 Backend ready on port:', process.env.PORT || 3000);
+  const port = process.env.PORT;
+console.log('💡 ENV PORT:', port);
+
+await app.listen(port || 3000);
+console.log('🚀 Backend ready on port:', port || 3000);
 
   // Ascultă pe portul 3000
 }
