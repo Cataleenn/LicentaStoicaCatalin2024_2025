@@ -6,4 +6,8 @@ export class AppController {
   getHello(): string {
     return 'Serverul rulează cu succes! 🚀';
   }
+  @Get('ping')
+ping() {
+  return { message: 'pong' };
+}
 }

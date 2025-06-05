@@ -18,6 +18,9 @@ import { AdminModule } from './admin/admin.module';
 import { SurveyModule } from './survey/survey.module';
 import { ClusteringModule } from './clustering/clustering.module';
 
+const isUsingRailway = !!process.env.DATABASE_URL;
+console.log('✅ Using DB:', isUsingRailway ? 'Railway' : 'Local');
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,30 +28,32 @@ import { ClusteringModule } from './clustering/clustering.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      
-      // ✅ MODIFICAREA: Dacă există DATABASE_URL (Railway), folosește-l
-      // Altfel, folosește config-ul detaliat (local)
-      ...(process.env.DATABASE_URL ? {
-        url: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-      } : {
-        host: process.env.DATABASE_HOST || 'localhost',
-        port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-        username: process.env.DATABASE_USER || 'survey_admin',
-        password: process.env.DATABASE_PASSWORD || 'adminpass',
-        database: process.env.DATABASE_NAME || 'survey_data_db',
-      }),
-      
+      ...(isUsingRailway
+        ? {
+            url: process.env.DATABASE_URL,
+            extra: {
+              ssl: {
+                rejectUnauthorized: false,
+              },
+            },
+          }
+        : {
+            host: process.env.DATABASE_HOST || 'localhost',
+            port: parseInt(process.env.DATABASE_PORT || '5432', 10),
+            username: process.env.DATABASE_USER || 'survey_admin',
+            password: process.env.DATABASE_PASSWORD || 'adminpass',
+            database: process.env.DATABASE_NAME || 'survey_data_db',
+          }),
       entities: [User, Survey, Response],
       autoLoadEntities: true,
-      synchronize: true, // Set to false in production
-      logging: false // Set to true for debugging SQL queries
+      synchronize: true,
+      logging: false,
     }),
     AuthModule,
     UserModule,
     SurveyModule,
     AdminModule,
-    ClusteringModule // Add clustering module
+    ClusteringModule,
   ],
   controllers: [AppController],
   providers: [],
