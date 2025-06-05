@@ -8,7 +8,8 @@ async function bootstrap() {
   app.enableCors({
     origin: ['http://localhost:4200', 'http://192.168.100.16:4200','https://survey-assembler-ui-c11e0.web.app'], // Permite acces doar de la frontend-ul tău
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization'
+    allowedHeaders: 'Content-Type, Authorization',
+    credentials: true
   });
 
   app.setGlobalPrefix('api');  // Asigură-te că prefixul 'api' este setat
