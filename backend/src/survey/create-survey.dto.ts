@@ -19,7 +19,7 @@ export class CreateSurveyDto {
 
 
   @IsArray()
-  questions: any[];
+  questions?: Record<string, string>;
 
   @IsString()
   lastModified: string;

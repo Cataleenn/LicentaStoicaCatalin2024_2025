@@ -21,12 +21,10 @@ export class ResponseController {
       // Use enhanced response service with FIXED categories
       console.log('🔬 Using Enhanced Response Service with FIXED categories...');
       const savedResponse = await this.enhancedResponseService.saveEnhancedResponse(dto);
-      
       console.log('\n✅ === RESPONSE SAVED WITH FIXED CATEGORIES ===');
       console.log('🆔 Response ID:', savedResponse.id);
       console.log('📊 FIXED Demographic Profile:', JSON.stringify(savedResponse.demographicProfile, null, 2));
       console.log('🧠 FIXED Behavioral Profile:', JSON.stringify(savedResponse.behavioralProfile, null, 2));
-
       return {
         success: true,
         message: 'Response submitted with FIXED categories successfully',

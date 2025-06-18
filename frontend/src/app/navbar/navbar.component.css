@@ -26,7 +26,12 @@
   flex: 1;
   gap: 12px;
 }
-
+.center-navigation {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+}
 .spacer {
   width: auto;
   margin-left: auto;

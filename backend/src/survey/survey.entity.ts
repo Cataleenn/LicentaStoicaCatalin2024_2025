@@ -24,8 +24,8 @@ export class Survey {
   @Column({ type: 'text', nullable: true })
   userInstructions?: string;
 
-  @Column('jsonb')
-  questions: any[];
+   @Column('json', { nullable: true })
+  questions?: Record<string, string>;
 
   @Column({ default: false })
   required: boolean;

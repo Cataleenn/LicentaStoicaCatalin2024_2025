@@ -30,20 +30,52 @@ export class EnhancedResponseService {
     private readonly featureEngineering: FeatureEngineeringService,
   ) {}
 
+    private readonly QUESTION_KEYWORDS = {
+    // Demografice
+    'age': ['vârst', 'ani', 'age', 'years', 'născut'],
+    'gender': ['gen', 'gender', 'sex', 'bărbat', 'femeie'],
+    'education': ['educație', 'școală', 'studii', 'education', 'diploma'],
+    'occupation': ['ocupație', 'job', 'muncă', 'profesie', 'lucrez'],
+    'stem': ['stem', 'științe', 'matematică', 'tehnică'],
+    
+    // Comportamentale
+    'tech_comfort': ['confortabil', 'tehnologie', 'tech', 'computer'],
+    'problem_solving': ['rezolv', 'abordez', 'solve', 'probleme'],
+    'assembly_experience': ['asamblare', 'assembly', 'construi'],
+    'error_handling': ['erori', 'greșeli', 'errors', 'mistakes'],
+    'gaming': ['jocuri', 'gaming', 'games', 'play']
+  };
   /**
    * Enhanced method to save response with full behavioral analysis
    */
+  private detectQuestionType(questionText: string): string {
+  const text = questionText.toLowerCase();
+  
+  for (const [dimension, keywords] of Object.entries(this.QUESTION_KEYWORDS)) {
+    for (const keyword of keywords) {
+      if (text.includes(keyword)) {
+        return dimension;
+      }
+    }
+  }
+  
+  return 'unknown';
+}
   async saveEnhancedResponse(dto: CreateResponseDto): Promise<Response> {
-    console.log('🔬 Starting FIXED enhanced response processing...');
-    console.log('📝 Raw answers received:', JSON.stringify(dto.answers, null, 2));
-    
-    // Find the survey
-    const survey = await this.surveyRepo.findOne({ where: { id: dto.formId } });
-    if (!survey) throw new NotFoundException(`Survey with id ${dto.formId} not found`);
+     console.log('🔬 Starting enhanced response processing...');
+      
+  
+  // Find the survey cu întrebările incluse
+  const survey = await this.surveyRepo.findOne({ where: { id: dto.formId } });
+  if (!survey) throw new NotFoundException(`Survey with id ${dto.formId} not found`);
+  
+  console.log('🔍 DEBUG - Raw DTO received:');
+  console.log('📝 Answers:', JSON.stringify(dto.answers, null, 2));
+  console.log('📋 Questions from survey:', JSON.stringify(survey.questions, null, 2));
 
-    // Extract profiles from survey answers with FIXED mapping
-    const demographicProfile = this.extractDemographicProfile(dto.answers);
-    const behavioralProfile = this.extractBehavioralProfile(dto.answers);
+  // Folosește întrebările din survey pentru mapare dinamică
+  const demographicProfile = this.extractDemographicProfile(dto.answers, survey.questions);
+  const behavioralProfile = this.extractBehavioralProfile(dto.answers, survey.questions);
     
     console.log('📊 FIXED extracted demographic profile:', JSON.stringify(demographicProfile, null, 2));
     console.log('🧠 FIXED extracted behavioral profile:', JSON.stringify(behavioralProfile, null, 2));
@@ -84,107 +116,120 @@ export class EnhancedResponseService {
   /**
    * COMPLETELY FIXED Extract demographic profile - DIRECT MAPPING ONLY
    */
-  private extractDemographicProfile(answers: Record<string, any>): DemographicProfile {
-    console.log('🔍 Starting FIXED demographic extraction from answers:', JSON.stringify(answers, null, 2));
+ private extractDemographicProfile(answers: Record<string, any>, questions?: Record<string, string>): DemographicProfile {
+  console.log('🔍 Starting dynamic demographic extraction...');
+  
+  const profile: any = {
+    ageGroup: '19_25',      // defaults
+    gender: 'N/A',
+    educationLevel: 'bachelor',
+    occupation: 'other',
+    stemFamiliarity: 'stem_moderate'
+  };
+  
+  if (questions) {
+    // MAPARE DINAMICĂ bazată pe keywords
+    for (const [questionKey, questionText] of Object.entries(questions)) {
+      const dimensionType = this.detectQuestionType(questionText);
+      const answerValue = answers[questionKey];
+      
+      if (answerValue) {
+        switch (dimensionType) {
+          case 'age':
+            profile.ageGroup = this.mapAgeGroupFixed(answerValue);
+            break;
+          case 'gender':
+            profile.gender = this.mapGenderFixed(answerValue);
+            break;
+          case 'education':
+            profile.educationLevel = this.mapEducationFixed(answerValue);
+            break;
+          case 'occupation':
+            profile.occupation = this.mapOccupationFixed(answerValue);
+            break;
+          case 'stem':
+            profile.stemFamiliarity = this.mapStemFamiliarityFixed(answerValue);
+            break;
+        }
+      }
+    }
+  } else {
+    // FALLBACK - maparea veche pentru compatibilitate
+    const getAnswerValue = (key: string) => {
+      const raw = answers[key];
+      if (!raw) return '';
+      return typeof raw === 'string' ? raw.toLowerCase().trim() : String(raw).toLowerCase().trim();
+    };
     
-    const getAnswerValue = (questionKey: string): string => {
-      console.log(`📝 Getting answer for key "${questionKey}"`);
-      
-      const rawAnswer = answers[questionKey];
-      console.log(`Raw answer for "${questionKey}":`, rawAnswer, typeof rawAnswer);
-      
-      if (!rawAnswer) {
-        console.log(`❌ No answer found for key "${questionKey}"`);
-        return '';
-      }
-      
-      let result = '';
-      if (typeof rawAnswer === 'string') {
-        result = rawAnswer.toLowerCase().trim();
-      } else if (Array.isArray(rawAnswer) && rawAnswer.length > 0) {
-        result = String(rawAnswer[0]).toLowerCase().trim();
-      } else {
-        result = String(rawAnswer).toLowerCase().trim();
-      }
-      
-      console.log(`✅ Processed answer for "${questionKey}": "${result}"`);
-      return result;
-    };
-
-    // ✅ MAPARE DIRECTĂ PENTRU STRUCTURA TA DE CHESTIONAR:
-    // Întrebările 1-5 sunt demografice în structura ta
-    const ageAnswer = getAnswerValue('1');        // Întrebarea 1: Vârstă
-    const genderAnswer = getAnswerValue('2');     // Întrebarea 2: Gen  
-    const educationAnswer = getAnswerValue('3');  // Întrebarea 3: Educație
-    const occupationAnswer = getAnswerValue('4'); // Întrebarea 4: Ocupație
-    const stemAnswer = getAnswerValue('5');      // Întrebarea 5: STEM
-
-    console.log('📝 FIXED mapping - extracted values:', {
-      age: ageAnswer,
-      gender: genderAnswer,
-      education: educationAnswer,
-      occupation: occupationAnswer,
-      stem: stemAnswer
-    });
-
-    const profile: DemographicProfile = {
-      ageGroup: this.mapAgeGroupFixed(ageAnswer),
-      gender: this.mapGenderFixed(genderAnswer),
-      educationLevel: this.mapEducationFixed(educationAnswer),
-      occupation: this.mapOccupationFixed(occupationAnswer),
-      stemFamiliarity: this.mapStemFamiliarityFixed(stemAnswer)
-    };
-
-    console.log('✅ FIXED mapped demographic profile:', JSON.stringify(profile, null, 2));
-    return profile;
+    profile.ageGroup = this.mapAgeGroupFixed(getAnswerValue('1'));
+    profile.gender = this.mapGenderFixed(getAnswerValue('2'));
+    profile.educationLevel = this.mapEducationFixed(getAnswerValue('3'));
+    profile.occupation = this.mapOccupationFixed(getAnswerValue('4'));
+    profile.stemFamiliarity = this.mapStemFamiliarityFixed(getAnswerValue('5'));
   }
+
+  console.log('✅ Dynamic mapped demographic profile:', JSON.stringify(profile, null, 2));
+  return profile;
+}
 
   /**
    * COMPLETELY FIXED Extract behavioral profile - DIRECT MAPPING ONLY
    */
-  private extractBehavioralProfile(answers: Record<string, any>): BehavioralProfile {
-    console.log('🔍 Starting FIXED behavioral extraction from answers:', JSON.stringify(answers, null, 2));
-    
-    const getAnswerValue = (questionKey: string): string => {
-      const rawAnswer = answers[questionKey];
-      if (!rawAnswer) return '';
+  private extractBehavioralProfile(answers: Record<string, any>, questions?: Record<string, string>): BehavioralProfile {
+  console.log('🔍 Starting dynamic behavioral extraction...');
+  
+  const profile: any = {
+    problemSolvingStyle: 'balanced',     // defaults
+    techComfort: 'tech_moderate',
+    assemblyExperience: 'assembly_rare',
+    errorHandlingStyle: 'analytical',
+    gamingFrequency: 'gaming_occasional'
+  };
+  
+  if (questions) {
+    // MAPARE DINAMICĂ bazată pe keywords
+    for (const [questionKey, questionText] of Object.entries(questions)) {
+      const dimensionType = this.detectQuestionType(questionText);
+      const answerValue = answers[questionKey];
       
-      if (typeof rawAnswer === 'string') {
-        return rawAnswer.toLowerCase().trim();
+      if (answerValue) {
+        switch (dimensionType) {
+          case 'problem_solving':
+            profile.problemSolvingStyle = this.mapProblemSolvingStyleFixed(answerValue);
+            break;
+          case 'tech_comfort':
+            profile.techComfort = this.mapTechComfortFixed(answerValue);
+            break;
+          case 'assembly_experience':
+            profile.assemblyExperience = this.mapAssemblyExperienceFixed(answerValue);
+            break;
+          case 'error_handling':
+            profile.errorHandlingStyle = this.mapErrorHandlingFixed(answerValue);
+            break;
+          case 'gaming':
+            profile.gamingFrequency = this.mapGamingFrequencyFixed(answerValue);
+            break;
+        }
       }
-      if (Array.isArray(rawAnswer) && rawAnswer.length > 0) {
-        return String(rawAnswer[0]).toLowerCase().trim();
-      }
-      return String(rawAnswer).toLowerCase().trim();
+    }
+  } else {
+    // FALLBACK - maparea veche pentru compatibilitate
+    const getAnswerValue = (key: string) => {
+      const raw = answers[key];
+      if (!raw) return '';
+      return typeof raw === 'string' ? raw.toLowerCase().trim() : String(raw).toLowerCase().trim();
     };
-
-    // ✅ MAPARE DIRECTĂ PENTRU STRUCTURA TA DE CHESTIONAR:
-    // Întrebările 6-10 sunt comportamentale în structura ta
-    const problemSolvingAnswer = getAnswerValue('6');   // Întrebarea 6: Stil rezolvare probleme
-    const techComfortAnswer = getAnswerValue('7');     // Întrebarea 7: Comfort tehnologic
-    const assemblyExpAnswer = getAnswerValue('8');     // Întrebarea 8: Experiență asamblare
-    const errorHandlingAnswer = getAnswerValue('9');   // Întrebarea 9: Gestionarea erorilor
-    const gamingAnswer = getAnswerValue('10');          // Întrebarea 10: Gaming
-
-    console.log('📝 FIXED behavioral mapping - extracted values:', {
-      problemSolving: problemSolvingAnswer,
-      techComfort: techComfortAnswer,
-      assemblyExp: assemblyExpAnswer,
-      errorHandling: errorHandlingAnswer,
-      gaming: gamingAnswer
-    });
-
-    const profile: BehavioralProfile = {
-      problemSolvingStyle: this.mapProblemSolvingStyleFixed(problemSolvingAnswer),
-      techComfort: this.mapTechComfortFixed(techComfortAnswer),
-      assemblyExperience: this.mapAssemblyExperienceFixed(assemblyExpAnswer),
-      errorHandlingStyle: this.mapErrorHandlingFixed(errorHandlingAnswer),
-      gamingFrequency: this.mapGamingFrequencyFixed(gamingAnswer)
-    };
-
-    console.log('✅ FIXED mapped behavioral profile:', JSON.stringify(profile, null, 2));
-    return profile;
+    
+    profile.problemSolvingStyle = this.mapProblemSolvingStyleFixed(getAnswerValue('6'));
+    profile.techComfort = this.mapTechComfortFixed(getAnswerValue('7'));
+    profile.assemblyExperience = this.mapAssemblyExperienceFixed(getAnswerValue('8'));
+    profile.errorHandlingStyle = this.mapErrorHandlingFixed(getAnswerValue('9'));
+    profile.gamingFrequency = this.mapGamingFrequencyFixed(getAnswerValue('10'));
   }
+
+  console.log('✅ Dynamic mapped behavioral profile:', JSON.stringify(profile, null, 2));
+  return profile;
+}
 
   // ===================================================================
   // METODE DE MAPARE COMPLET FIXATE - FĂRĂ ALGORITMI "INTELIGENȚI"

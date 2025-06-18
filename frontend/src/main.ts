@@ -21,8 +21,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
   { path: 'creare-chestionar', component: SurveyCreateComponent, canActivate: [AuthGuard] },
-  { path: 'utilizatori', component: UserManagementComponent, canActivate: [AuthGuard] },
   { path: 'clustering-analysis', component: AdminClusteringDashboardComponent, canActivate: [AuthGuard] },
+  { path: 'utilizatori', component: UserManagementComponent, canActivate: [AuthGuard] },
   { path: 'survey/:id', component: SurveyViewComponent },
   { path: '**', redirectTo: '/login' }
 ];

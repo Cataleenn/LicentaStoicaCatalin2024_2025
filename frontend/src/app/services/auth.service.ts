@@ -24,7 +24,7 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     return this.http.get<{ name: string; email: string }>(
-      '${environment.apiUrl}/auth/me',
+      `${environment.apiUrl}/auth/me`,
       { headers }
     );
   }
@@ -41,18 +41,19 @@ export class AuthService {
 
   // ✅ Verifică dacă utilizatorul este autentificat
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
-    const token = this.getToken();
-    if (!token) return false;
+  const token = this.getToken();
+  if (!token) return false;
 
-    const isExpired = this.jwtHelper.isTokenExpired(token);
-    if (isExpired) {
-      console.warn('❌ Token expirat! Utilizator delogat automat.');
-      this.logout();
-      return false;
-    }
-    return true;
+  const isExpired = this.jwtHelper.isTokenExpired(token);
+  if (isExpired) {
+    console.warn('❌ Token expirat! Utilizator delogat automat.');
+    this.logout();
+    return false;
   }
+
+  return true;
+}
+
 
   logout(): void {
     console.log('🔹 Utilizator delogat! Șterg token-ul din localStorage.');

@@ -19,7 +19,13 @@ export class SurveyService {
 
   // Create a new survey with creator tracking
   async createSurvey(createSurveyDto: CreateSurveyDto, userId?: number): Promise<Survey> {
-    const survey = this.surveyRepository.create(createSurveyDto);
+    //const survey = this.surveyRepository.create(createSurveyDto);
+    const survey = new Survey();
+    survey.formTitle = createSurveyDto.formTitle;
+    survey.adminDescription = createSurveyDto.adminDescription;
+    survey.userInstructions = createSurveyDto.userInstructions;
+
+    survey.questions = createSurveyDto.questions;
     
     if (userId) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -87,7 +93,7 @@ export class SurveyService {
       isComplete: response.isComplete,
       createdAt: response.createdAt,
       // Add question text for better readability
-      processedAnswers: this.processAnswersWithQuestions(response.answers, survey.questions)
+      processedAnswers: this.processAnswersWithQuestions(response.answers, survey.questions || {})
     }));
 
     return {
@@ -107,26 +113,26 @@ export class SurveyService {
   }
 
   // Helper method to process answers with question text
-  private processAnswersWithQuestions(answers: Record<string, any>, questions: any[]): any[] {
-    const processed: any[] = [];
+  private processAnswersWithQuestions(answers: Record<string, any>, questions: Record<string, string>): any[] {
+  const processed: any[] = [];
+  
+  Object.keys(answers).forEach(questionIndex => {
+    // questions folosește cheia directă, nu index-ul
+    const questionText = questions[questionIndex];
     
-    Object.keys(answers).forEach(questionIndex => {
-      const qIndex = parseInt(questionIndex) - 1; // Convert to 0-based index
-      const question = questions[qIndex];
-      
-      if (question) {
-        processed.push({
-          questionNumber: questionIndex,
-          questionText: question.questionText,
-          questionType: question.questionType,
-          answer: answers[questionIndex],
-          options: question.options || []
-        });
-      }
-    });
-    
-    return processed;
-  }
+    if (questionText) {
+      processed.push({
+        questionNumber: questionIndex,
+        questionText: questionText,        // e deja string din Record<string, string>
+        questionType: 'text',             // valoare default
+        answer: answers[questionIndex],
+        options: []                       // array gol
+      });
+    }
+  });
+  
+  return processed;
+}
 
   // Delete survey and all associated responses
   async deleteSurvey(surveyId: number, userId: number, userRole: string): Promise<{ message: string }> {
