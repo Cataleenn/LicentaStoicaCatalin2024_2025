@@ -1,4 +1,4 @@
-// Simple Fisher Controller - backend/src/clustering/simple-fisher.controller.ts
+
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../admin/admin.guard';
 import { SimpleFisherService, SimpleQuestionResult, ClusterQuestionAnalysis, AllClustersAnalysis } from './simple-fisher.service';
@@ -10,10 +10,6 @@ export class SimpleFisherController {
     private readonly fisherService: SimpleFisherService
   ) {}
 
-  /**
-   * GET /api/fisher-test/survey/:id/cluster/:clusterId
-   * Get significant questions for a specific cluster
-   */
   @Get('survey/:id/cluster/:clusterId')
   async getClusterSignificantQuestions(
     @Param('id') surveyId: number,
@@ -44,10 +40,7 @@ export class SimpleFisherController {
     }
   }
 
-  /**
-   * GET /api/fisher-test/survey/:id/all-clusters
-   * Get significant questions for all clusters in a survey
-   */
+
   @Get('survey/:id/all-clusters')
   async getAllClustersSignificantQuestions(@Param('id') surveyId: number): Promise<{
     success: boolean;
@@ -90,10 +83,7 @@ export class SimpleFisherController {
     }
   }
 
-  /**
-   * GET /api/fisher-test/survey/:id/summary
-   * Get a simple summary of the most significant questions across all clusters
-   */
+
   @Get('survey/:id/summary')
   async getFisherTestSummary(@Param('id') surveyId: number): Promise<{
     success: boolean;
@@ -106,7 +96,6 @@ export class SimpleFisherController {
     try {
       const allClustersResult = await this.fisherService.getAllClustersSignificantQuestions(surveyId);
       
-      // Collect all significant questions across clusters
       const allQuestions: Array<{
         clusterId: number;
         questionNumber: string;
@@ -126,13 +115,13 @@ export class SimpleFisherController {
         });
       });
       
-      // Sort by significance
+     
       allQuestions.sort((a, b) => a.pValue - b.pValue);
       
-      // Get top 10 most significant across all clusters
+    
       const topQuestions = allQuestions.slice(0, 10);
       
-      // Create summary
+   
       const summary = {
         totalClusters: allClustersResult.clusters.length,
         totalSignificantQuestions: allQuestions.length,
@@ -155,9 +144,7 @@ export class SimpleFisherController {
     }
   }
 
-  /**
-   * Helper method to calculate which questions are most important overall
-   */
+
   private calculateQuestionImportance(allQuestions: any[]): Array<{
     questionNumber: string;
     questionText: string;
@@ -171,7 +158,7 @@ export class SimpleFisherController {
       count: number;
     }> = {};
     
-    // Aggregate stats by question
+ 
     allQuestions.forEach(q => {
       if (!questionStats[q.questionNumber]) {
         questionStats[q.questionNumber] = {
@@ -184,7 +171,7 @@ export class SimpleFisherController {
       questionStats[q.questionNumber].count++;
     });
     
-    // Calculate importance
+
     const questionImportance = Object.entries(questionStats).map(([questionNumber, stats]) => {
       const avgPValue = stats.pValues.reduce((sum, p) => sum + p, 0) / stats.pValues.length;
       
@@ -204,15 +191,15 @@ export class SimpleFisherController {
       };
     });
     
-    // Sort by importance
+  
     questionImportance.sort((a, b) => {
-      // First by count, then by avg p-value
+    
       if (a.timesSignificant !== b.timesSignificant) {
         return b.timesSignificant - a.timesSignificant;
       }
       return a.avgPValue - b.avgPValue;
     });
     
-    return questionImportance.slice(0, 5); // Top 5 most important questions
+    return questionImportance.slice(0, 5); 
   }
 }

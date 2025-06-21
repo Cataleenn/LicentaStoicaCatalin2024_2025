@@ -50,7 +50,6 @@
   background-repeat: no-repeat;
 }
 
-/* Hub slots on front side (for modules) - EXACT SIZE WITH OVERFLOW HIDDEN */
 .slot {
   width: 100%;
   height: 100%;
@@ -61,11 +60,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Hide anything that goes outside slot */
+  overflow: hidden;
   position: relative;
 }
 
-/* Screen slot on back side of hub - FULL BACK SIZE */
 .screen-slot {
   background: none;
   border: none;
@@ -86,7 +84,6 @@
   transform: scale(1.05);
 }
 
-/* General component styling - CENTERED IN SLOT */
 .component {
   width: 100%;
   height: 100%;
@@ -103,16 +100,14 @@
   overflow: hidden;
 }
 
-/* Component images - LARGER THAN SLOT, CENTERED */
 .slot-image {
-  width: 220%; /* Larger than slot */
-  height: 220%; /* Larger than slot */
-  object-fit: cover; /* Fill and crop if needed */
+  width: 220%;
+  height: 220%; 
+  object-fit: cover; 
   pointer-events: none;
   display: block;
 }
 
-/* Component text fallback */
 .component-text {
   font-size: 12px;
   font-weight: bold;
@@ -123,14 +118,12 @@
   border-radius: 4px;
 }
 
-/* Pool images (components in pool) */
 .pool-image {
   width: 120px;
   height: 120px;
   object-fit: contain;
 }
 
-/* Screen component - COVERS ENTIRE BACK */
 .component.screen {
   background: none;
   border: none;
@@ -144,13 +137,12 @@
 }
 
 .component.screen .slot-image {
-  width: 100%; /* Slightly larger than back */
-  height: 100%; /* Slightly larger than back */
-  object-fit: fit; /* Fill entire back, crop if needed */
+  width: 100%; 
+  height: 100%; 
+  object-fit: fit;
   border-radius: 16px;
 }
 
-/* Hover effects for components */
 .component:hover {
   transform: scale(1.05);
   transition: transform 0.2s ease;
@@ -160,12 +152,10 @@
   transform: scale(0.95);
 }
 
-/* Dragging state */
 .component:active {
   opacity: 0.8;
 }
 
-/* Screen area when not placed */
 .screen-area {
   width: 30%;
   height: 25%;
@@ -177,7 +167,6 @@
   overflow: hidden;
 }
 
-/* Screen component in screen area */
 .screen-area .component.screen {
   border-radius: 16px;
   overflow: hidden;
@@ -186,10 +175,9 @@
 .screen-area .pool-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Fill screen area completely */
+  object-fit: cover;
 }
 
-/* Pool of components below hub */
 .pool-below {
   display: flex;
   flex-wrap: wrap;
@@ -279,7 +267,7 @@ button:hover {
   font-family: 'Poppins', sans-serif;
   color: #1565c0;
 }
-/* Progress Bar Styling */
+
 .progress-container {
   margin: 20px auto;
   max-width: 400px;
@@ -354,7 +342,6 @@ button:hover {
   100% { transform: translateX(100%); }
 }
 
-/* Progress states */
 .progress-fill[style*="width: 100"] {
   background: linear-gradient(90deg, #4caf50, #2e7d32);
 }

@@ -33,7 +33,7 @@ export class UserService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  // Obține toți administratorii
+
   async getAllAdmins(): Promise<User[]> {
     const headers = this.getAuthHeaders();
     return firstValueFrom(
@@ -41,7 +41,7 @@ export class UserService {
     );
   }
 
-  // Creează un administrator nou
+
   async createAdmin(adminData: CreateAdminDto): Promise<User> {
     const headers = this.getAuthHeaders();
     return firstValueFrom(
@@ -49,7 +49,7 @@ export class UserService {
     );
   }
 
-  // Șterge un utilizator
+
   async deleteUser(userId: number): Promise<{ message: string }> {
     const headers = this.getAuthHeaders();
     return firstValueFrom(
@@ -57,13 +57,13 @@ export class UserService {
     );
   }
 
-  // Obține un utilizator după ID
+ 
   getUserById(userId: number): Observable<User> {
     const headers = this.getAuthHeaders();
     return this.http.get<User>(`${this.apiUrl}/${userId}`, { headers });
   }
 
-  // Actualizează un utilizator
+
   updateUser(userId: number, userData: Partial<User>): Observable<User> {
     const headers = this.getAuthHeaders();
     return this.http.put<User>(`${this.apiUrl}/${userId}`, userData, { headers });

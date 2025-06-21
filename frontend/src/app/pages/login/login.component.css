@@ -13,7 +13,7 @@ html, body {
     align-items: center;
 }
 
-  /* Containerul formularului */
+
   .login-container {
     display: flex;
     justify-content: center;
@@ -22,7 +22,7 @@ html, body {
     height: 100vh;
   }
   
-  /* Cardul de login */
+
   .login-card {
     width: 380px;
     padding: 30px;
@@ -33,7 +33,7 @@ html, body {
     animation: fadeIn 0.8s ease-in-out;
   }
   
-  /* Animație pentru efect vizual */
+
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -45,7 +45,7 @@ html, body {
     }
   }
   
-  /* Titlul */
+
   h2 {
     margin-bottom: 20px;
     color: #1a2a6c;
@@ -61,7 +61,7 @@ html, body {
     margin-right: 8px;
   }
   
-  /* Grupul de input-uri */
+
 .input-group {
     width: 100%; 
     margin-bottom: 15px;
@@ -87,7 +87,7 @@ html, body {
     box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
   }
   
-  /* Butonul de autentificare */
+
   button {
     width: 50%;
     padding: 12px;

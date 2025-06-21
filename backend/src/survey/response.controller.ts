@@ -1,4 +1,4 @@
-// Updated Response Controller - backend/src/survey/response.controller.ts
+
 import { Controller, Post, Body, Get, Param, UseGuards } from '@nestjs/common';
 import { ResponseService } from './response.service';
 import { EnhancedResponseService } from './enhanced-response.service';
@@ -18,7 +18,7 @@ export class ResponseController {
     console.log('📦 FULL DTO:', JSON.stringify(dto, null, 2));
 
     try {
-      // Use enhanced response service with FIXED categories
+      
       console.log('🔬 Using Enhanced Response Service with FIXED categories...');
       const savedResponse = await this.enhancedResponseService.saveEnhancedResponse(dto);
       console.log('\n✅ === RESPONSE SAVED WITH FIXED CATEGORIES ===');
@@ -39,7 +39,7 @@ export class ResponseController {
     } catch (enhancedError) {
       console.error('❌ Enhanced Response Service FAILED:', enhancedError);
       
-      // Fallback to basic response service
+     
       console.log('\n⚠️ Falling back to basic response service...');
       try {
         const basicResponse = await this.responseService.saveResponse(dto);
@@ -67,9 +67,7 @@ export class ResponseController {
     }
   }
 
-  /**
-   * ✅ NEW ENDPOINT: Recompute ALL responses with FIXED categories
-   */
+  
   @Post('fix-all-categories')
   @UseGuards(AdminGuard)
   async fixAllCategoriesWithConsistentMapping() {
@@ -101,9 +99,7 @@ export class ResponseController {
     }
   }
 
-  /**
-   * Recompute metrics for existing responses in a survey
-   */
+  
   @Post('recompute-metrics/:surveyId')
   @UseGuards(AdminGuard)
   async recomputeMetrics(@Param('surveyId') surveyId: number) {
@@ -130,9 +126,7 @@ export class ResponseController {
     }
   }
 
-  /**
-   * Get enhanced analytics for a survey (admin only)
-   */
+  
   @Get('analytics/survey/:id')
   @UseGuards(AdminGuard)
   async getSurveyAnalytics(@Param('id') surveyId: number) {
@@ -156,9 +150,7 @@ export class ResponseController {
     }
   }
 
-  /**
-   * Debug endpoint - get last response details
-   */
+  
   @Get('debug/last/:count')
   @UseGuards(AdminGuard)
   async getLastResponsesDebug(@Param('count') count: number = 1) {
@@ -211,9 +203,7 @@ export class ResponseController {
     }
   }
 
-  /**
-   * ✅ NEW: Check category consistency across all responses
-   */
+  
   @Get('debug/category-consistency')
   @UseGuards(AdminGuard)
   async checkCategoryConsistency() {

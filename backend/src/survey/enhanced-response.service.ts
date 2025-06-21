@@ -1,4 +1,4 @@
-// COMPLETE FIXED Enhanced Response Service - backend/src/survey/enhanced-response.service.ts
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, IsNull } from 'typeorm';
@@ -45,9 +45,7 @@ export class EnhancedResponseService {
     'error_handling': ['erori', 'greșeli', 'errors', 'mistakes'],
     'gaming': ['jocuri', 'gaming', 'games', 'play']
   };
-  /**
-   * Enhanced method to save response with full behavioral analysis
-   */
+  
   private detectQuestionType(questionText: string): string {
   const text = questionText.toLowerCase();
   
@@ -65,7 +63,7 @@ export class EnhancedResponseService {
      console.log('🔬 Starting enhanced response processing...');
       
   
-  // Find the survey cu întrebările incluse
+
   const survey = await this.surveyRepo.findOne({ where: { id: dto.formId } });
   if (!survey) throw new NotFoundException(`Survey with id ${dto.formId} not found`);
   
@@ -73,24 +71,23 @@ export class EnhancedResponseService {
   console.log('📝 Answers:', JSON.stringify(dto.answers, null, 2));
   console.log('📋 Questions from survey:', JSON.stringify(survey.questions, null, 2));
 
-  // Folosește întrebările din survey pentru mapare dinamică
   const demographicProfile = this.extractDemographicProfile(dto.answers, survey.questions);
   const behavioralProfile = this.extractBehavioralProfile(dto.answers, survey.questions);
     
     console.log('📊 FIXED extracted demographic profile:', JSON.stringify(demographicProfile, null, 2));
     console.log('🧠 FIXED extracted behavioral profile:', JSON.stringify(behavioralProfile, null, 2));
     
-    // Extract assembly data
+   
     const assemblyData = this.extractAssemblyData(dto.assembly);
     
-    // Compute comprehensive behavioral metrics
+    
     const computedMetrics = this.featureEngineering.computeBehavioralMetrics(
       assemblyData,
       behavioralProfile,
       demographicProfile
     );
 
-    // Create response entity with correct typing
+   
     const responseData = {
       userId: dto.userId,
       answers: dto.answers,
@@ -113,14 +110,12 @@ export class EnhancedResponseService {
     return savedResponse;
   }
 
-  /**
-   * COMPLETELY FIXED Extract demographic profile - DIRECT MAPPING ONLY
-   */
+ 
  private extractDemographicProfile(answers: Record<string, any>, questions?: Record<string, string>): DemographicProfile {
   console.log('🔍 Starting dynamic demographic extraction...');
   
   const profile: any = {
-    ageGroup: '19_25',      // defaults
+    ageGroup: '19_25',      
     gender: 'N/A',
     educationLevel: 'bachelor',
     occupation: 'other',
@@ -128,7 +123,7 @@ export class EnhancedResponseService {
   };
   
   if (questions) {
-    // MAPARE DINAMICĂ bazată pe keywords
+    
     for (const [questionKey, questionText] of Object.entries(questions)) {
       const dimensionType = this.detectQuestionType(questionText);
       const answerValue = answers[questionKey];
@@ -154,7 +149,7 @@ export class EnhancedResponseService {
       }
     }
   } else {
-    // FALLBACK - maparea veche pentru compatibilitate
+    
     const getAnswerValue = (key: string) => {
       const raw = answers[key];
       if (!raw) return '';
@@ -172,14 +167,12 @@ export class EnhancedResponseService {
   return profile;
 }
 
-  /**
-   * COMPLETELY FIXED Extract behavioral profile - DIRECT MAPPING ONLY
-   */
+ 
   private extractBehavioralProfile(answers: Record<string, any>, questions?: Record<string, string>): BehavioralProfile {
   console.log('🔍 Starting dynamic behavioral extraction...');
   
   const profile: any = {
-    problemSolvingStyle: 'balanced',     // defaults
+    problemSolvingStyle: 'balanced',     
     techComfort: 'tech_moderate',
     assemblyExperience: 'assembly_rare',
     errorHandlingStyle: 'analytical',
@@ -187,7 +180,7 @@ export class EnhancedResponseService {
   };
   
   if (questions) {
-    // MAPARE DINAMICĂ bazată pe keywords
+  
     for (const [questionKey, questionText] of Object.entries(questions)) {
       const dimensionType = this.detectQuestionType(questionText);
       const answerValue = answers[questionKey];
@@ -213,7 +206,7 @@ export class EnhancedResponseService {
       }
     }
   } else {
-    // FALLBACK - maparea veche pentru compatibilitate
+    
     const getAnswerValue = (key: string) => {
       const raw = answers[key];
       if (!raw) return '';
@@ -231,9 +224,6 @@ export class EnhancedResponseService {
   return profile;
 }
 
-  // ===================================================================
-  // METODE DE MAPARE COMPLET FIXATE - FĂRĂ ALGORITMI "INTELIGENȚI"
-  // ===================================================================
 
   private mapAgeGroupFixed(value: string): string {
     console.log('🔍 FIXED mapping age group from:', `"${value}"`);
@@ -243,7 +233,7 @@ export class EnhancedResponseService {
       return '19_25';
     }
     
-    // Mapare directă și exactă pe text complet
+  
     if (value.includes('sub 16')) {
       console.log('✅ FIXED age mapping result: under_16');
       return 'under_16';
@@ -629,23 +619,23 @@ export class EnhancedResponseService {
         try {
           console.log(`\n🔄 Processing response ${response.id}...`);
           
-          // Store original profiles for comparison
+         
           const originalDemo = JSON.stringify(response.demographicProfile);
           const originalBehav = JSON.stringify(response.behavioralProfile);
           
-          // Re-extract profiles with FIXED mapping
+        
           const demographicProfile = this.extractDemographicProfile(response.answers);
           const behavioralProfile = this.extractBehavioralProfile(response.answers);
           const assemblyData = this.extractAssemblyData(response.assembly);
 
-          // Recompute metrics
+        
           const computedMetrics = this.featureEngineering.computeBehavioralMetrics(
             assemblyData,
             behavioralProfile,
             demographicProfile
           );
 
-          // Update the response
+         
           await this.responseRepo.update(response.id, {
             demographicProfile,
             behavioralProfile,
@@ -654,7 +644,7 @@ export class EnhancedResponseService {
 
           processedCount++;
           
-          // Check if categories were actually changed
+          
           const newDemo = JSON.stringify(demographicProfile);
           const newBehav = JSON.stringify(behavioralProfile);
           
@@ -714,19 +704,19 @@ export class EnhancedResponseService {
           console.log(`\n🔄 Processing response ${response.id}...`);
           console.log('Original answers:', JSON.stringify(response.answers, null, 2));
           
-          // Re-extract profiles from existing answers with FIXED mapping
+          
           const demographicProfile = this.extractDemographicProfile(response.answers);
           const behavioralProfile = this.extractBehavioralProfile(response.answers);
           const assemblyData = this.extractAssemblyData(response.assembly);
 
-          // Recompute metrics
+          
           const computedMetrics = this.featureEngineering.computeBehavioralMetrics(
             assemblyData,
             behavioralProfile,
             demographicProfile
           );
 
-          // Update the response
+         
           await this.responseRepo.update(response.id, {
             demographicProfile,
             behavioralProfile,
@@ -758,9 +748,8 @@ export class EnhancedResponseService {
     }
   }
 
-  /**
-   * Get enhanced analytics for a survey
-   */
+
+  
   async getEnhancedSurveyAnalytics(surveyId: number): Promise<{
     overview: any;
     performanceMetrics: any;
@@ -771,14 +760,14 @@ export class EnhancedResponseService {
   }> {
     console.log(`📊 Generating enhanced analytics for survey ${surveyId}`);
     
-    // Get all responses with computed metrics
+    
     const responses = await this.getResponsesWithMetrics(surveyId);
     
     if (responses.length === 0) {
       throw new NotFoundException('No responses with computed metrics found');
     }
 
-    // Generate comprehensive analytics
+   
     const overview = this.generateOverview(responses);
     const performanceMetrics = this.analyzePerformanceMetrics(responses);
     const behavioralAnalysis = this.analyzeBehavioralPatterns(responses);
@@ -796,9 +785,7 @@ export class EnhancedResponseService {
     };
   }
 
-  /**
-   * Get responses with computed metrics for analysis
-   */
+  
   private async getResponsesWithMetrics(surveyId: number): Promise<Response[]> {
     return await this.responseRepo.find({
       where: {
@@ -810,7 +797,7 @@ export class EnhancedResponseService {
     });
   }
 
-  // Analytics helper methods
+
   private generateOverview(responses: Response[]): any {
     const totalResponses = responses.length;
     const completedResponses = responses.filter(r => r.isComplete).length;
@@ -917,7 +904,7 @@ export class EnhancedResponseService {
       .map(r => r.behavioralProfile)
       .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined);
 
-    // Performance insights
+  
     const avgTechnicalAptitude = this.average(metrics.map(m => m.technicalAptitude));
     if (avgTechnicalAptitude > 0.75) {
       insights.performanceInsights.push('Overall high technical performance - participants show strong aptitude');
@@ -925,7 +912,7 @@ export class EnhancedResponseService {
       insights.performanceInsights.push('Performance indicates need for additional support or clearer instructions');
     }
 
-    // Speed vs precision analysis
+
     const speedPrecisionCorr = this.calculateCorrelation(
       metrics.map(m => m.speedIndex),
       metrics.map(m => m.precisionIndex)
@@ -937,7 +924,7 @@ export class EnhancedResponseService {
       insights.correlationInsights.push('Fast users also tend to be more accurate - indicates skill rather than trade-off');
     }
 
-    // Confidence analysis
+   
     const confPerformanceCorr = this.calculateCorrelation(
       metrics.map(m => m.confidenceIndex),
       metrics.map(m => m.technicalAptitude)
@@ -946,7 +933,7 @@ export class EnhancedResponseService {
       insights.correlationInsights.push('Confident users perform significantly better overall');
     }
 
-    // Behavioral insights
+  
     const systematicCount = behavioral.filter(b => b.problemSolvingStyle === 'systematic').length;
     const exploratoryCount = behavioral.filter(b => b.problemSolvingStyle === 'exploratory').length;
     const collaborativeCount = behavioral.filter(b => b.problemSolvingStyle === 'collaborative').length;
@@ -958,7 +945,7 @@ export class EnhancedResponseService {
       insights.behavioralInsights.push('Significant portion of participants prefer collaborative problem-solving');
     }
 
-    // Demographic insights
+   
     const ageGroups = this.calculateDistribution(demographics.map(d => d.ageGroup));
     const dominantAge = Object.keys(ageGroups).reduce((a, b) => ageGroups[a] > ageGroups[b] ? a : b);
     insights.demographicInsights.push(`Most common age group: ${dominantAge.replace('_', '-')} years`);
@@ -974,7 +961,7 @@ export class EnhancedResponseService {
     return insights;
   }
 
-  // Statistical helper methods
+
   private average(values: number[]): number {
     if (values.length === 0) return 0;
     return values.reduce((sum, val) => sum + (val || 0), 0) / values.length;
@@ -1025,4 +1012,32 @@ export class EnhancedResponseService {
     const denominator = Math.sqrt(sumXSquared * sumYSquared);
     return denominator === 0 ? 0 : numerator / denominator;
   }
+  
+
+async findResponseByResponseId(responseId: number, surveyId: number): Promise<any> {
+  try {
+    console.log(`🔍 Searching for response: responseId=${responseId}, surveyId=${surveyId}`);
+    
+    const response = await this.responseRepo.findOne({
+      where: { 
+        id: responseId, 
+        survey: { id: surveyId } 
+      }
+    });
+    
+    console.log(`📝 Response found:`, !!response);
+    if (response) {
+      console.log(`📊 Response has assembly:`, !!response.assembly);
+      if (response.assembly) {
+        console.log(`🔧 Assembly structure keys:`, Object.keys(response.assembly));
+        console.log(`📝 Components placed:`, response.assembly.componentsPlaced ? response.assembly.componentsPlaced.length : 0);
+      }
+    }
+    
+    return response;
+  } catch (error) {
+    console.error(`Error finding response ${responseId} in survey ${surveyId}:`, error);
+    return null;
+  }
+}
 }

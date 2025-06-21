@@ -1,4 +1,4 @@
-// ✅ product-assembly.component.ts - STRICT placement restrictions
+
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -27,9 +27,9 @@ interface AssemblyStatistics {
   componentsPlaced: { componentId: string; slotId: string; order: number}[];
   piecesRemovedCount: number;
   piecesSwappedCount: number;
-  wrongPlacementsCount: number; // Doar pentru încălcările restricțiilor STRICTE
-  correctPlacementsCount: number; // Module în sloturile potrivite pentru tipul lor
-  optimalPlacementsCount: number; // Perfect placement în configurația ideală
+  wrongPlacementsCount: number; 
+  correctPlacementsCount: number; 
+  optimalPlacementsCount: number; 
   correctnessPercentage: number;
   totalMoves: number;
   timeSpent: number;
@@ -60,22 +60,22 @@ export class ProductAssemblyComponent {
   stepCounter = 1;
   placementOrder: { componentId: string; slotId: string; order: number}[] = [];
 
-  // ✅ Statistical tracking
+
   private startTime: number = Date.now();
   private piecesRemovedCount = 0;
   private piecesSwappedCount = 0;
-  private wrongPlacementsCount = 0; // Doar pentru încălcările restricțiilor STRICTE
+  private wrongPlacementsCount = 0; 
   private totalMoves = 0;
   private moveHistory: Array<{
     componentId: string;
     fromSlot?: string;
     toSlot?: string;
     timestamp: number;
-    isValidPlacement: boolean; // Respectă restricțiile STRICTE
-    isOptimal: boolean; // Este în slotul ideal pentru tipul său
+    isValidPlacement: boolean; 
+    isOptimal: boolean; 
   }> = [];
 
-  // ✅ Configurația IDEALĂ (pentru statistici)
+
   private readonly OPTIMAL_ASSEMBLY = {
     'powerbank-1': 'hub-front-slot1',
     'powerbank-2': 'hub-front-slot5', 
@@ -86,7 +86,7 @@ export class ProductAssemblyComponent {
     'screen': 'hub-back-screen-slot'
   };
 
-  // ✅ Sloturile CORECTE pentru fiecare tip (pentru statistici)
+ 
   private readonly CORRECT_SLOTS_BY_TYPE = {
     powerbank: ['hub-front-slot1', 'hub-front-slot5'],
     flash: ['hub-front-slot2', 'hub-front-slot6'],
@@ -183,7 +183,7 @@ export class ProductAssemblyComponent {
     return this.slots.filter(s => s.side === 'back');
   }
 
-  // ✅ Helper functions
+
   private getModuleType(componentId: string): string {
     if (componentId.includes('bluetooth')) return 'bluetooth';
     if (componentId.includes('powerbank')) return 'powerbank';
@@ -192,16 +192,14 @@ export class ProductAssemblyComponent {
     return 'unknown';
   }
 
-  // ✅ STRICT VALIDATION: Verifică dacă plasarea respectă restricțiile OBLIGATORII
+
   private isValidPlacement(componentId: string, slotId: string): boolean {
     const slot = this.slots.find(s => s.id === slotId);
     if (!slot) return false;
-
-    // ✅ RESTRICȚII STRICTE - NU PERMITE PLASAREA GREȘITĂ
     if (componentId === 'screen') {
-      return slot.side === 'back'; // Screen DOAR pe spate
+      return slot.side === 'back'; 
     } else {
-      return slot.side === 'front'; // Module DOAR pe față
+      return slot.side === 'front';
     }
   }
 
@@ -230,43 +228,32 @@ export class ProductAssemblyComponent {
 
   onDrop(slot: Slot) {
     if (!this.draggedComponent) return;
-
-    // ✅ VERIFICARE RESTRICȚII STRICTE - BLOCHEAZĂ PLASAREA GREȘITĂ
     const isValidPlacement = this.isValidPlacement(this.draggedComponent.id, slot.id);
     
     if (!isValidPlacement) {
-      // ✅ BLOCHEAZĂ PLASAREA ȘI AFIȘEAZĂ EROARE
       if (this.draggedComponent.id === 'screen' && slot.side === 'front') {
         this.placementError = '❌ Ecranul poate fi plasat DOAR pe partea din spate!';
       } else if (this.draggedComponent.id !== 'screen' && slot.side === 'back') {
         this.placementError = '❌ Modulele pot fi plasate DOAR pe partea din față!';
       }
-      
-      // ✅ Contorizează încălcarea restricțiilor STRICTE
       this.wrongPlacementsCount++;
-      
-      // ✅ RESETEAZĂ draggedComponent pentru a anula plasarea
+
       this.draggedComponent = null;
-      
-      // ✅ Ascunde eroarea după 3 secunde
+
       setTimeout(() => {
         this.placementError = null;
       }, 3000);
-      
-      // ✅ NU PERMITE PLASAREA - IEȘI DIN FUNCȚIE
+
       return;
     }
 
-    // ✅ PLASAREA ESTE VALIDĂ - CONTINUĂ
-    this.placementError = null; // Curăță orice eroare anterioară
-    
-    // ✅ VERIFICARE TIP CORECT (pentru statistici)
+    this.placementError = null;
+ 
     const isCorrectTypeSlot = this.isCorrectTypeSlot(this.draggedComponent.id, slot.id);
     const isOptimal = this.isOptimalPlacement(this.draggedComponent.id, slot.id);
 
     const previousSlotId = this.draggedComponent.placedIn;
 
-    // Handle swapping
     if (slot.occupiedBy) {
       const existing = this.getComponentById(slot.occupiedBy);
 
@@ -287,14 +274,10 @@ export class ProductAssemblyComponent {
       }
     }
 
-    // ✅ EFECTUEAZĂ PLASAREA (acum că știm că este validă)
     this.moveComponentToSlot(this.draggedComponent, slot);
 
-    // ✅ Înregistrează statistici
     this.recordMove(this.draggedComponent.id, previousSlotId, slot.id, isValidPlacement, isOptimal);
     this.totalMoves++;
-
-    // Update placement order
     this.placementOrder = this.placementOrder.filter(
       p => p.componentId !== this.draggedComponent!.id
     );
@@ -335,13 +318,9 @@ export class ProductAssemblyComponent {
       flashsCorrect: 0,
       moduleTypeMismatches: [] as Array<{componentId: string, slotId: string, expectedSlots: string[]}>
     };
-
-    // Screen placement
     if (this.screen.placedIn) {
       stats.screenPlacement = this.screen.placedIn === 'hub-back-screen-slot' ? 'correct' : 'wrong';
     }
-
-    // Module placements
     [...this.components].forEach(component => {
       if (component.placedIn) {
         const moduleType = this.getModuleType(component.id);
@@ -368,13 +347,9 @@ export class ProductAssemblyComponent {
   private calculateCorrectnessPercentage(): number {
     const totalComponents = [...this.components, this.screen].length;
     let correctPlacements = 0;
-
-    // Screen
     if (this.screen.placedIn === 'hub-back-screen-slot') {
       correctPlacements++;
     }
-
-    // Modules in correct type slots
     this.components.forEach(component => {
       if (component.placedIn && this.isCorrectTypeSlot(component.id, component.placedIn)) {
         correctPlacements++;
@@ -463,12 +438,9 @@ export class ProductAssemblyComponent {
   }
 
   isAssemblyValid(): boolean {
-    // ✅ Verifică că toate componentele sunt plasate ȘI că sunt în pozițiile CORECTE
     const allPlaced = [...this.components, this.screen].every(c => c.placedIn);
     
     if (!allPlaced) return false;
-    
-    // ✅ Verifică că toate componentele respectă restricțiile STRICTE
     const allValidPlacements = [...this.components, this.screen].every(c => 
       c.placedIn ? this.isValidPlacement(c.id, c.placedIn) : false
     );
@@ -500,7 +472,7 @@ export class ProductAssemblyComponent {
       componentsPlaced: this.placementOrder,
       piecesRemovedCount: this.piecesRemovedCount,
       piecesSwappedCount: this.piecesSwappedCount,
-      wrongPlacementsCount: this.wrongPlacementsCount, // Doar încălcările restricțiilor STRICTE
+      wrongPlacementsCount: this.wrongPlacementsCount, 
       correctPlacementsCount,
       optimalPlacementsCount,
       correctnessPercentage: this.calculateCorrectnessPercentage(),

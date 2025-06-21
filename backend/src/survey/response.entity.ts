@@ -1,4 +1,4 @@
-// Updated Response Entity - backend/src/survey/response.entity.ts
+
 import {
   Entity,
   Column,
@@ -38,7 +38,7 @@ export class Response {
     detailedStats?: any;
   };
 
-  // Add the missing fields for enhanced analytics
+ 
   @Column({ type: 'jsonb', nullable: true })
   demographicProfile?: {
     ageGroup: string;
@@ -87,7 +87,7 @@ export class Response {
   @CreateDateColumn()
   createdAt: Date;
 
-  // Add submittedAt field that was missing
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   submittedAt: Date;
 

@@ -15,7 +15,7 @@ export class AuthService {
   private jwtHelper = new JwtHelperService();
   constructor(private http: HttpClient, private router: Router) {}
 
-  // Trimite cererea la backend și primește un token JWT
+
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { email, password });
   }
@@ -29,17 +29,17 @@ export class AuthService {
     );
   }
 
-  // ✅ Salvează token-ul în LocalStorage
+
   setToken(token: string): void {
     localStorage.setItem('token', token);
   }
 
-  // ✅ Obține token-ul salvat
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  // ✅ Verifică dacă utilizatorul este autentificat
+
   isAuthenticated(): boolean {
   const token = this.getToken();
   if (!token) return false;
@@ -57,7 +57,7 @@ export class AuthService {
 
   logout(): void {
     console.log('🔹 Utilizator delogat! Șterg token-ul din localStorage.');
-    localStorage.removeItem('token'); // ✅ Șterge token-ul JWT
-    window.location.href = '/login'; // ✅ Redirecționează la pagina de login
+    localStorage.removeItem('token'); 
+    window.location.href = '/login'; 
   }
 }

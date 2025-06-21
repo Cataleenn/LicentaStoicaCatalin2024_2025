@@ -31,6 +31,6 @@ async login(@Body('email') email: string, @Body('password') password: string) {
   @Get('me')  
   @UseGuards(AdminGuard) 
   getProfile(@Request() req) {
-    return req.user; // Returnăm datele utilizatorului
+    return req.user; 
   }
 }

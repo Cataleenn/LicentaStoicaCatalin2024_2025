@@ -1,4 +1,4 @@
-// Fixed Clustering Controller - backend/src/clustering/clustering.controller.ts
+
 import { Controller, Get, Post, Param, UseGuards, Query, Body } from '@nestjs/common';
 import { AdminGuard } from '../admin/admin.guard';
 import { ClusteringService } from './clustering.service';
@@ -19,17 +19,13 @@ interface SurveyComparison {
 }
 
 @Controller('clustering')
-@UseGuards(AdminGuard) // Protect all clustering endpoints
+@UseGuards(AdminGuard) 
 export class ClusteringController {
   constructor(
     private readonly clusteringService: ClusteringService,
     private readonly enhancedResponseService: EnhancedResponseService
   ) {}
 
-  /**
-   * POST /api/clustering/survey/:id/analyze
-   * Perform clustering analysis on survey responses
-   */
   @Post('survey/:id/analyze')
   async performClusteringAnalysis(
     @Param('id') surveyId: number,
@@ -59,16 +55,13 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * GET /api/clustering/survey/:id/results
-   * Get existing clustering results for a survey
-   */
+  
   @Get('survey/:id/results')
   async getClusteringResults(@Param('id') surveyId: number) {
     console.log(`📊 Getting clustering results for survey ${surveyId}`);
     
     try {
-      // This would typically get cached results, but for now we'll re-run analysis
+
       const clusteringResult = await this.clusteringService.performClustering(surveyId);
       
       return {
@@ -91,10 +84,7 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * GET /api/clustering/survey/:id/cluster/:clusterId/details
-   * Get detailed information about a specific cluster
-   */
+ 
   @Get('survey/:id/cluster/:clusterId/details')
   async getClusterDetails(
     @Param('id') surveyId: number,
@@ -113,7 +103,6 @@ export class ClusteringController {
         };
       }
 
-      // Get all participants in this cluster
       const participants = clusteringResult.assignments.filter(a => a.clusterId === clusterId);
       
       return {
@@ -136,10 +125,6 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * GET /api/clustering/survey/:id/participant/:participantId/assignment
-   * Get cluster assignment for a specific participant
-   */
   @Get('survey/:id/participant/:participantId/assignment')
   async getParticipantClusterAssignment(
     @Param('id') surveyId: number,
@@ -178,18 +163,14 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * POST /api/clustering/all-surveys/analyze
-   * Perform cross-survey clustering analysis
-   */
   @Post('all-surveys/analyze')
   async performCrossSurveyAnalysis(@Body() options?: { forcedK?: number }) {
     console.log('🌐 Starting cross-survey clustering analysis');
     
     try {
-      // Perform clustering across all surveys (no surveyId specified)
+    
       const clusteringResult = await this.clusteringService.performClustering(
-        undefined, // No specific survey
+        undefined, 
         options?.forcedK
       );
       
@@ -212,10 +193,7 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * GET /api/clustering/comparison
-   * Compare clustering results across different surveys
-   */
+  
   @Get('comparison')
   async getClusteringComparison(@Query('surveyIds') surveyIds: string) {
     console.log('📊 Getting clustering comparison across surveys');
@@ -264,87 +242,129 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * GET /api/clustering/export/:surveyId
-   * Export clustering data for external analysis
-   */
-  @Get('export/:surveyId')
-  async exportClusteringData(@Param('surveyId') surveyId: number) {
-    console.log(`📤 Exporting clustering data for survey ${surveyId}`);
+ 
+@Get('export/:surveyId')
+async exportClusteringData(@Param('surveyId') surveyId: number) {
+  console.log(`📤 Exporting clustering data for survey ${surveyId}`);
+  
+  try {
+    const clusteringResult = await this.clusteringService.performClustering(surveyId);
     
-    try {
-      const clusteringResult = await this.clusteringService.performClustering(surveyId);
+    const getComponentDisplayName = (componentId: string): string => {
+      if (componentId.includes('powerbank')) return 'Powerbank';
+      if (componentId.includes('bluetooth')) return 'Bluetooth';
+      if (componentId.includes('flash')) return 'Flash';
+      if (componentId.includes('screen')) return 'Screen';
+      return componentId;
+    };
+
+    const getSlotDisplayName = (slotId: string): string => {
+      const slotMappings: { [key: string]: string } = {
+        'hub-front-slot1': 'Față Slot 1',
+        'hub-front-slot2': 'Față Slot 2',
+        'hub-front-slot3': 'Față Slot 3',
+        'hub-front-slot4': 'Față Slot 4',
+        'hub-front-slot5': 'Față Slot 5',
+        'hub-front-slot6': 'Față Slot 6',
+        'hub-back-screen-slot': 'Spate Screen'
+      };
+      return slotMappings[slotId] || slotId;
+    };
+
+    const generateFavoriteSequence = (componentsPlaced: Array<{ componentId: string; slotId: string; order: number }>): string => {
+      if (!componentsPlaced || componentsPlaced.length === 0) return 'Nu există date de asamblare';
       
-      // Prepare data for export
-      const exportData = {
-        metadata: {
-          surveyId,
-          exportDate: new Date(),
-          totalParticipants: clusteringResult.metadata.totalParticipants,
-          clusterCount: clusteringResult.clusters.length,
-          qualityMetrics: {
-            silhouetteScore: clusteringResult.metadata.silhouetteScore,
-            inertia: clusteringResult.metadata.inertia
-          }
-        },
-        clusters: clusteringResult.clusters.map(cluster => ({
-          id: cluster.id,
-          name: cluster.clusterName,
-          description: cluster.clusterDescription,
-          size: cluster.memberCount,
-          percentage: ((cluster.memberCount / clusteringResult.metadata.totalParticipants) * 100).toFixed(1),
-          profile: cluster.profile,
-          demographics: cluster.demographicProfile,
-          behavioral: cluster.behavioralProfile
-        })),
-        participants: clusteringResult.assignments.map(assignment => ({
+      const sortedComponents = [...componentsPlaced].sort((a, b) => a.order - b.order);
+      const sequenceSteps = sortedComponents.map((component, index) => {
+        const componentName = getComponentDisplayName(component.componentId);
+        const slotName = getSlotDisplayName(component.slotId);
+        return `${index + 1}. ${componentName} → ${slotName}`;
+      });
+
+      return sequenceSteps.join(' | ');
+    };
+
+    const exportData = {
+      metadata: {
+        surveyId,
+        exportDate: new Date(),
+        totalParticipants: clusteringResult.metadata.totalParticipants,
+        clusterCount: clusteringResult.clusters.length,
+        qualityMetrics: {
+          silhouetteScore: clusteringResult.metadata.silhouetteScore,
+          inertia: clusteringResult.metadata.inertia
+        }
+      },
+      clusters: clusteringResult.clusters.map(cluster => ({
+        id: cluster.id,
+        name: cluster.clusterName,
+        description: cluster.clusterDescription,
+        size: cluster.memberCount,
+        percentage: ((cluster.memberCount / clusteringResult.metadata.totalParticipants) * 100).toFixed(1),
+        profile: cluster.profile,
+        demographics: cluster.demographicProfile,
+        behavioral: cluster.behavioralProfile
+      })),
+      
+      participants: await Promise.all(clusteringResult.assignments.map(async assignment => {
+        
+        let participantResponse: any = null;
+        try {
+          
+          participantResponse = await this.enhancedResponseService.findResponseByResponseId(
+            assignment.participantId,  
+            surveyId
+          );
+        } catch (error) {
+          console.log(`⚠️ Could not find response for participant ${assignment.participantId}`);
+        }
+        
+        return {
           participantId: assignment.participantId,
           clusterId: assignment.clusterId,
           clusterName: clusteringResult.clusters.find(c => c.id === assignment.clusterId)?.clusterName,
-          confidence: assignment.confidence,
-          distanceToCenter: assignment.distanceToCenter
-        })),
-        insights: clusteringResult.insights,
-        featureImportance: this.calculateFeatureImportance(clusteringResult.clusters)
-      };
-      
-      return {
-        success: true,
-        data: exportData,
-        message: 'Clustering data exported successfully',
-        downloadFileName: `clustering_analysis_survey_${surveyId}_${new Date().toISOString().split('T')[0]}.json`
-      };
-    } catch (error) {
-      console.error('❌ Error exporting clustering data:', error);
-      return {
-        success: false,
-        error: error.message
-      };
-    }
+          
+          favoriteAssemblySequence: (participantResponse && participantResponse.assembly && participantResponse.assembly.componentsPlaced) 
+            ? generateFavoriteSequence(participantResponse.assembly.componentsPlaced)
+            : 'Nu există date de asamblare'
+        };
+      })),
+      insights: clusteringResult.insights,
+      featureImportance: this.calculateFeatureImportance(clusteringResult.clusters)
+    };
+    
+    return {
+      success: true,
+      data: exportData,
+      message: 'Clustering data exported successfully',
+      downloadFileName: `clustering_analysis_survey_${surveyId}_${new Date().toISOString().split('T')[0]}.json`
+    };
+  } catch (error) {
+    console.error('❌ Error exporting clustering data:', error);
+    return {
+      success: false,
+      error: error.message
+    };
   }
-
-  /**
-   * Helper methods
-   */
+}
+  
+   
   private generateClusterSpecificInsights(cluster: any): string[] {
     const insights: string[] = [];
     const profile = cluster.profile;
     
-    // Performance insights
     if (profile.avgTechnicalAptitude > 0.8) {
       insights.push('This cluster shows exceptional technical aptitude');
     } else if (profile.avgTechnicalAptitude < 0.4) {
       insights.push('This cluster may benefit from additional technical support');
     }
     
-    // Behavioral insights
     if (profile.avgSystematicIndex > 0.7) {
       insights.push('Members prefer systematic, methodical approaches');
     } else if (profile.avgSystematicIndex < 0.4) {
       insights.push('Members tend to use exploratory, trial-and-error approaches');
     }
     
-    // Speed vs accuracy trade-off
     const speedAccuracyRatio = profile.avgSpeedIndex / (profile.avgPrecisionIndex || 0.1);
     if (speedAccuracyRatio > 1.5) {
       insights.push('Speed-focused group - prioritizes completion time over precision');
@@ -374,11 +394,9 @@ export class ClusteringController {
   private generateCrossSurveyInsights(clusteringResult: any): string[] {
     const insights: string[] = [];
     
-    // Cluster consistency insights
     const clusterCount = clusteringResult.clusters.length;
     insights.push(`Cross-survey analysis identified ${clusterCount} distinct behavioral patterns`);
     
-    // Quality insights
     const silhouette = clusteringResult.metadata.silhouetteScore;
     if (silhouette > 0.5) {
       insights.push('High clustering quality - behavioral groups are well-separated');
@@ -420,7 +438,6 @@ export class ClusteringController {
       'Technical Aptitude'
     ];
     
-    // Calculate variance for each feature across clusters
     const featureVariances = featureNames.map((name, index) => {
       const values = clusters.map(cluster => cluster.centroid[index] || 0);
       const mean = this.calculateAverage(values);
@@ -433,7 +450,6 @@ export class ClusteringController {
       };
     });
     
-    // Sort by importance
     featureVariances.sort((a, b) => b.importance - a.importance);
     
     return featureVariances.map((item, index) => ({
@@ -483,9 +499,7 @@ export class ClusteringController {
         duration: number;
       }> = [];
 
-      // ========================
-      // ITERATION 1: Analiza cu datele existente
-      // ========================
+
       console.log('🔄 Iteration 1: Analyzing with existing data...');
       const iter1Start = Date.now();
       
@@ -518,22 +532,19 @@ export class ClusteringController {
         });
       }
 
-      // ========================
-      // ITERATION 2: Recompute metrics + clustering
-      // ========================
+
       if (maxIterations >= 2) {
         console.log('🔄 Iteration 2: Recomputing metrics and re-clustering...');
         const iter2Start = Date.now();
         
         try {
-          // Recompute metrics with FIXED categories
+  
           console.log('🔧 Step 2a: Recomputing metrics with FIXED categories...');
           const metricsResult = await this.enhancedResponseService.recomputeMetricsForSurvey(surveyId);
           
           if (metricsResult.success) {
             console.log(`✅ Metrics recomputed for ${metricsResult.processedCount} responses`);
             
-            // Re-run clustering with improved data
             console.log('🔧 Step 2b: Re-running clustering with improved data...');
             const result2 = await this.clusteringService.performClustering(surveyId, options?.forcedK);
             const quality2 = result2.metadata.silhouetteScore;
@@ -565,19 +576,16 @@ export class ClusteringController {
         }
       }
 
-      // ========================
-      // ITERATION 3: Try different K values if quality is still low
-      // ========================
       if (maxIterations >= 3 && bestQualityScore < qualityThreshold && !options?.forcedK) {
         console.log('🔄 Iteration 3: Trying different cluster counts for better quality...');
         const iter3Start = Date.now();
         
         try {
-          const kValues = [2, 3, 4, 5, 6]; // Different K values to try
+          const kValues = [2, 3, 4, 5, 6]; 
           let bestK = bestResult?.clusters?.length || 3;
           
           for (const k of kValues) {
-            if (k === bestK) continue; // Skip already tested K
+            if (k === bestK) continue; 
             
             console.log(`🔧 Testing with K=${k}...`);
             const resultK = await this.clusteringService.performClustering(surveyId, k);
@@ -613,16 +621,12 @@ export class ClusteringController {
         }
       }
 
-      // ========================
-      // FINALIZATION
-      // ========================
       const totalDuration = Date.now() - startTime;
       
       if (!bestResult) {
         throw new Error('All optimization iterations failed');
       }
 
-      // Calculate improvement
       const initialQuality = optimizationLog[0]?.qualityScore || 0;
       const finalQuality = bestQualityScore;
       const improvement = ((finalQuality - initialQuality) / Math.max(initialQuality, 0.001)) * 100;
@@ -660,9 +664,6 @@ export class ClusteringController {
     }
   }
 
-  /**
-   * Generate optimization summary for user
-   */
   private generateOptimizationSummary(
     optimizationLog: any[], 
     improvement: number

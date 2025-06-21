@@ -14,10 +14,10 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    // ✅ Încarcă utilizatorul CU parola explicit
+    
     const user = await this.usersRepository.findOne({ 
       where: { email },
-      select: ['id', 'email', 'name', 'role', 'password'] // Include explicit password
+      select: ['id', 'email', 'name', 'role', 'password'] 
     });
 
     console.log('🔍 User găsit:', user ? 'DA' : 'NU');

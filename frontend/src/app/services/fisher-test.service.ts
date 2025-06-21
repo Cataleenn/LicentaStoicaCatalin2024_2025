@@ -1,4 +1,4 @@
-// Frontend Fisher Test Service - frontend/src/app/services/fisher-test.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -61,9 +61,7 @@ export class FisherTestService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  /**
-   * Get significant questions for a specific cluster
-   */
+ 
   getClusterSignificantQuestions(surveyId: number, clusterId: number): Observable<{
     success: boolean;
     data: ClusterSignificantQuestions;
@@ -74,9 +72,7 @@ export class FisherTestService {
     });
   }
 
-  /**
-   * Get significant questions for all clusters in a survey
-   */
+
   getAllClustersSignificantQuestions(surveyId: number): Observable<{
     success: boolean;
     data: AllClustersResult;
@@ -92,9 +88,7 @@ export class FisherTestService {
     });
   }
 
-  /**
-   * Get Fisher test summary for a survey
-   */
+ 
   getFisherTestSummary(surveyId: number): Observable<{
     success: boolean;
     data: FisherTestSummary;

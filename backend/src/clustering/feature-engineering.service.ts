@@ -1,4 +1,4 @@
-// Feature Engineering Service - backend/src/clustering/feature-engineering.service.ts
+
 import { Injectable } from '@nestjs/common';
 
 export interface RawAssemblyData {
@@ -9,14 +9,14 @@ export interface RawAssemblyData {
   piecesRemovedCount: number;      // count
   piecesSwappedCount: number;      // count
   totalMoves: number;              // count
-  timeSpent: number;               // seconds (same as completionTime)
+  timeSpent: number;               // seconds 
   completed: boolean;              // true/false
   componentsPlaced: Array<{        // placement order data
     componentId: string;
     slotId: string;
     order: number;
   }>;
-  detailedStats?: any;             // additional stats from assembly component
+  detailedStats?: any;           
 }
 
 export interface BehavioralProfile {
@@ -36,23 +36,23 @@ export interface DemographicProfile {
 }
 
 export interface ComputedBehavioralMetrics {
-  // Primary performance indices (0-1 scale, higher = better)
+  
   speedIndex: number;             // How fast compared to expected time
   precisionIndex: number;         // Accuracy of moves (correct/total)
   efficiencyIndex: number;        // Speed + accuracy combined
   
-  // Cognitive style indices (0-1 scale)
+
   confidenceIndex: number;        // Quick to start, fewer hesitations
   systematicIndex: number;        // Methodical approach, few rotations
   persistenceIndex: number;       // Completion rate, error recovery
   adaptabilityIndex: number;      // Learning during task, improvement
   
-  // Problem-solving strategy indices (0-1 scale)
+
   explorationIndex: number;       // Willingness to try different approaches
   planningIndex: number;          // Evidence of upfront thinking
   recoveryIndex: number;          // How well they handle mistakes
   
-  // Derived psychological traits (0-1 scale)
+ 
   impulsivityIndex: number;       // Quick actions vs deliberation
   frustrationTolerance: number;   // Persistence under difficulty
   technicalAptitude: number;      // Overall technical performance
@@ -61,16 +61,14 @@ export interface ComputedBehavioralMetrics {
 @Injectable()
 export class FeatureEngineeringService {
   
-  /**
-   * Main method to compute all behavioral metrics from raw data
-   */
+  
   computeBehavioralMetrics(
     assemblyData: RawAssemblyData,
     behavioralProfile: BehavioralProfile,
     demographicProfile: DemographicProfile
   ): ComputedBehavioralMetrics {
     
-    // Normalize assembly data for calculations
+   
     const normalized = this.normalizeAssemblyData(assemblyData);
     
     // Calculate primary performance indices

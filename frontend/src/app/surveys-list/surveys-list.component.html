@@ -19,8 +19,6 @@
     <h3>📋 Nu există chestionare create încă</h3>
     <p>Creați primul chestionar pentru a îl vedea aici.</p>
   </div>
-
-  <!-- Statistics Cards -->
   <div *ngIf="stats && !isLoading" class="stats-row">
     <mat-card class="stat-card">
       <mat-card-content>
@@ -36,8 +34,6 @@
       </mat-card-content>
     </mat-card>
   </div>
-
-  <!-- Surveys List -->
   <div *ngIf="!isLoading && surveys.length > 0" class="surveys-grid">
     <mat-card *ngFor="let survey of surveys; trackBy: trackBySurvey" class="survey-card">
       <mat-card-header>

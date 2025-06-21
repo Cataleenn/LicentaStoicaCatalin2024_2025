@@ -17,7 +17,7 @@ export class SurveyService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  // Create survey
+ 
   createSurvey(surveyData: any): Observable<any> {
     console.log('🔹 Creez chestionar:', surveyData);
     return this.http.post<any>(`${this.apiUrl}`, surveyData, { 
@@ -31,7 +31,7 @@ export class SurveyService {
     );
   }
 
-  // Get survey by ID (public endpoint)
+  
   getSurveyById(id: number): Observable<any> {
     console.log('🔹 Obțin chestionar cu ID:', id);
     return this.http.get(`${this.apiUrl}/${id}`).pipe(
@@ -43,7 +43,7 @@ export class SurveyService {
     );
   }
 
-  // Get all surveys (admin only)
+ 
   getAllSurveys(): Observable<any[]> {
     console.log('🔹 Încerc să obțin toate chestionarele...');
     
@@ -61,7 +61,7 @@ export class SurveyService {
     );
   }
 
-  // Get survey statistics (admin only)
+
   getSurveyStats(): Observable<any> {
     console.log('🔹 Încerc să obțin statisticile...');
     return this.http.get<any>(`${this.apiUrl}/stats`, { 
@@ -75,7 +75,7 @@ export class SurveyService {
     );
   }
 
-  // Get survey responses (admin only)
+
   getSurveyResponses(surveyId: number): Observable<any> {
     console.log('🔹 Obțin răspunsurile pentru chestionarul:', surveyId);
     return this.http.get<any>(`${this.apiUrl}/${surveyId}/responses`, { 
@@ -89,7 +89,7 @@ export class SurveyService {
     );
   }
 
-  // Delete survey and all responses (admin only)
+ 
   deleteSurvey(surveyId: number): Observable<any> {
     console.log('🔹 Șterg chestionarul:', surveyId);
     return this.http.delete<any>(`${this.apiUrl}/${surveyId}`, { 
@@ -103,7 +103,7 @@ export class SurveyService {
     );
   }
 
-  // Submit responses
+
   submitResponses(surveyId: number, responses: any): Observable<any> {
     return this.http.post(`${environment.apiUrl}/responses`, responses);
   }

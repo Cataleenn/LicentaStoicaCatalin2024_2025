@@ -1,4 +1,4 @@
-// Simplified Admin Clustering Dashboard Component - TypeScript
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -74,7 +74,7 @@ interface ClusteringSummary {
   styleUrls: ['./admin-clustering-dashboard.component.css']
 })
 export class AdminClusteringDashboardComponent implements OnInit {
-  // Properties
+
   selectedSurveyId: number | null = null;
   isAnalyzing: boolean = false;
   isLoadingSurveys: boolean = true;
@@ -93,7 +93,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
     this.loadAvailableSurveys();
   }
 
-  // Load all surveys that can be analyzed
   loadAvailableSurveys(): void {
     this.isLoadingSurveys = true;
     this.errorMessage = '';
@@ -126,7 +125,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
     });
   }
 
-  // When a survey is selected
   onSurveySelected(surveyId: number): void {
     this.selectedSurveyId = surveyId;
     this.clusteringSummary = null;
@@ -136,7 +134,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     this.checkExistingResults(surveyId);
   }
 
-  // Check if survey already has clustering results
+
   checkExistingResults(surveyId: number): void {
     this.clusteringService.getClusteringResults(surveyId).subscribe({
       next: (results) => {
@@ -151,7 +149,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     });
   }
 
-  // ✅ SIMPLIFIED: Direct optimal clustering analysis
+
   startClusteringAnalysis(): void {
     if (!this.selectedSurveyId) {
       this.snackBar.open('Te rog selectează mai întâi un chestionar', 'Închide', { duration: 3000 });
@@ -171,7 +169,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     console.log('🔬 Starting OPTIMAL clustering analysis for survey:', this.selectedSurveyId);
     this.snackBar.open('Se efectuează analiza optimală...', 'Închide', { duration: 2000 });
 
-    // ✅ DIRECT CALL - backend will automatically determine optimal K and return best results
+
     this.clusteringService.performClusteringAnalysis(this.selectedSurveyId).subscribe({
       next: (response) => {
         console.log('✅ Optimal clustering analysis completed:', response);
@@ -180,7 +178,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
         if (response.success && response.data) {
           this.displayClusteringResults(response.data);
           
-          // ✅ Show optimal result message
           const qualityScore = (response.data.metadata?.silhouetteScore * 100 || 0).toFixed(1);
           const clusterCount = response.data.clusters?.length || 0;
           
@@ -203,11 +200,11 @@ export class AdminClusteringDashboardComponent implements OnInit {
     });
   }
 
-  // Display clustering results with detailed profiles
+
   displayClusteringResults(data: any): void {
     console.log('📊 Displaying optimal clustering results:', data);
     
-    // Ensure insights is always an array
+
     const insights = Array.isArray(data.insights) ? data.insights : [];
     
     this.clusteringSummary = {
@@ -235,7 +232,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
     };
   }
 
-  // Extract key characteristics from cluster profile
   extractCharacteristics(cluster: any): string[] {
     const characteristics: string[] = [];
     const profile = cluster.profile || {};
@@ -247,7 +243,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
     if (profile.avgConfidenceIndex > 0.7) characteristics.push('Încredere Ridicată');
     if (profile.avgPersistenceIndex > 0.7) characteristics.push('Persistent');
     
-    // Add demographic characteristics
     const demo = cluster.demographicProfile || {};
     if (demo.dominantOccupation) {
       const occupationMap: Record<string, string> = {
@@ -270,10 +265,10 @@ export class AdminClusteringDashboardComponent implements OnInit {
       characteristics.push(ageMap[demo.dominantAgeGroup] || demo.dominantAgeGroup);
     }
     
-    return characteristics.slice(0, 6); // Limit to 6 characteristics
+    return characteristics.slice(0, 6); 
   }
 
-  // Get cluster icon based on name
+
   getClusterIcon(clusterName: string): string {
     const iconMap: Record<string, string> = {
       'Elite Performers': '🏆',
@@ -297,7 +292,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     return iconMap[clusterName] || '👤';
   }
 
-  // Get performance badge class
+
   getPerformanceBadgeClass(technicalAptitude: number): string {
     if (technicalAptitude > 0.8) return 'performance-excellent';
     if (technicalAptitude > 0.6) return 'performance-good';
@@ -305,7 +300,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     return 'performance-needs-improvement';
   }
 
-  // Get performance label
+
   getPerformanceLabel(technicalAptitude: number): string {
     if (technicalAptitude > 0.8) return 'Excelent';
     if (technicalAptitude > 0.6) return 'Bun';
@@ -313,18 +308,17 @@ export class AdminClusteringDashboardComponent implements OnInit {
     return 'Necesită îmbunătățire';
   }
 
-  // Format profile for HTML display
+
   formatProfileForDisplay(profile: string): string {
     if (!profile) return 'Profil indisponibil';
     
     return profile
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // Bold formatting
-      .replace(/•/g, '&nbsp;&nbsp;•')  // Indent bullet points
-      .replace(/\n/g, '<br>')  // Line breaks
-      .replace(/(\d+\.?\d*%)/g, '<span class="percentage-highlight">$1</span>');  // Highlight percentages
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  
+      .replace(/•/g, '&nbsp;&nbsp;•') 
+      .replace(/\n/g, '<br>') 
+      .replace(/(\d+\.?\d*%)/g, '<span class="percentage-highlight">$1</span>');  
   }
 
-  // Get number of unique occupations
   getUniqueOccupations(): number {
     if (!this.clusteringSummary) return 0;
     
@@ -342,7 +336,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     return occupations.size;
   }
 
-  // View cluster details
+ 
   viewClusterDetails(clusterId: number): void {
     console.log('Selected cluster for details:', clusterId);
     
@@ -353,7 +347,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
         if (response.success) {
           console.log('Cluster details:', response.data);
           this.snackBar.open(`Vizualizare detalii pentru ${response.data.cluster.clusterName}`, 'Închide', { duration: 3000 });
-          // Here you could open a detailed dialog or navigate to detail view
+       
         }
       },
       error: (error) => {
@@ -363,7 +357,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     });
   }
 
-  // Export cluster data
+
   exportClusterData(clusterId: number): void {
     console.log('Exporting data for cluster:', clusterId);
     
@@ -390,7 +384,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
     });
   }
 
-  // Tab change handler
   onTabChange(event: any): void {
     console.log('Tab changed:', event.index);
   }

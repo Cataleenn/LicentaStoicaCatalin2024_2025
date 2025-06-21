@@ -1,8 +1,4 @@
 <mat-card>
-  <mat-card-header>
-    <mat-card-title>🔬 Analiză Fisher's Exact Test</mat-card-title>
-    <mat-card-subtitle>Identifică întrebările care definesc fiecare cluster</mat-card-subtitle>
-  </mat-card-header>
   
   <mat-card-content>
     <div class="fisher-controls">
@@ -11,7 +7,7 @@
         color="primary"
         [disabled]="!surveyId || isAnalyzing"
         (click)="runFisherAnalysis()">
-        <span *ngIf="!isAnalyzing">🧮 Rulează Testul Fisher</span>
+        <span *ngIf="!isAnalyzing">Rulează Testul Fisher</span>
         <span *ngIf="isAnalyzing">
           <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
           Se analizează...

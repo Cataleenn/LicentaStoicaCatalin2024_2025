@@ -1,7 +1,5 @@
-<!-- Adaugă progress bar-ul în survey-view.component.html -->
 
 <div class="blue-background">
-  <!-- Progress Bar - se afișează doar la step 3 (chestionar) -->
   <div *ngIf="currentStep === 3" class="progress-container">
     <div class="progress-info">
       <span class="progress-text">
@@ -9,16 +7,12 @@
       </span>
       <span class="progress-percentage">{{ Math.round(questionProgress) }}%</span>
     </div>
-    
-    <!-- Progress bar principal -->
     <div class="progress-bar">
       <div class="progress-fill" 
            [style.width.%]="questionProgress"
            [ngClass]="{'progress-complete': questionProgress === 100}">
       </div>
     </div>
-    
-    <!-- Mini progress dots pentru fiecare întrebare -->
     <div class="progress-dots" *ngIf="totalQuestions <= 10">
       <div *ngFor="let question of questions.controls; let i = index"
            class="progress-dot"
@@ -34,7 +28,6 @@
   </div>
 
   <div class="survey-container" *ngIf="surveyData">
-    <!-- Step 1: Instrucțiuni -->
     <div *ngIf="currentStep === 1" id="step-instructions" class="step fade-in">
       <div class="instructions-container">
         <h3>{{ getSurveyTitle() }}</h3>
@@ -42,16 +35,12 @@
         <button class="start-btn" (click)="goToAssembly()">Start</button>
       </div>
     </div>
-
-    <!-- Step 2: Asamblare -->
     <div *ngIf="currentStep === 2" class="assembly-wrapper pop-in">
       <app-product-assembly
         *ngIf="!assemblyCompleted"
         (completed)="onAssemblyComplete($event)">
       </app-product-assembly>
     </div>
-
-    <!-- Step 3: Chestionar -->
     <div *ngIf="currentStep === 3">
       <ng-container *ngIf="assemblyCompleted">
         <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
@@ -69,8 +58,6 @@
                   <span *ngIf="question.get(['required'])?.value" style="color: red">*</span>
                   {{ i + 1 }}. {{ question.get('questionText')?.value }}
                 </h3>
-
-                <!-- Multiple Choice -->
                 <div *ngIf="question.get('questionType')?.value === 'multiple-choice'">
                   <div *ngIf="getOptions(i).controls.length === 0" class="alert">
                     No options available for this question.
@@ -83,8 +70,6 @@
                     <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
                   </div>
                 </div>
-
-                <!-- Single Choice -->
                 <div *ngIf="question.get('questionType')?.value === 'single-choice'">
                   <div *ngIf="getOptions(i).controls.length === 0" class="alert">
                     No options available for this question.
@@ -97,8 +82,6 @@
                     <label [for]="'q' + i + 'opt' + j">{{ option.get('text')?.value }}</label>
                   </div>
                 </div>
-
-                <!-- Open Text -->
                 <div *ngIf="question.get('questionType')?.value === 'text'">
                   <input type="text" formControlName="response" class="text-input" placeholder="Enter your answer">
                 </div>

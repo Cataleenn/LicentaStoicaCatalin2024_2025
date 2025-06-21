@@ -22,7 +22,7 @@ export class LoginComponent {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    this.errorMessage = ''; // Resetare eroare
+    this.errorMessage = '';
 
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {

@@ -1,4 +1,4 @@
-// Updated Clustering Service - DIRECT OPTIMAL RESULTS - backend/src/clustering/clustering.service.ts
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -67,14 +67,11 @@ export class ClusteringService {
     private readonly featureEngineering: FeatureEngineeringService,
   ) {}
 
-  /**
-   * ✅ SIMPLIFIED: Perform K-means clustering with AUTOMATIC optimal K determination
-   * Returns DIRECTLY the best possible clustering result without showing optimization steps
-   */
+ 
   async performClustering(surveyId?: number, forcedK?: number): Promise<ClusteringResult> {
     console.log('🔬 Starting AUTOMATIC OPTIMAL clustering analysis...');
     
-    // Get responses with computed metrics
+    
     const responses = await this.getResponsesForClustering(surveyId);
     
     if (responses.length < 3) {
@@ -87,29 +84,29 @@ export class ClusteringService {
       throw new Error('Need at least 3 responses with computed metrics for meaningful clustering');
     }
 
-    // Extract feature vectors
+   
     const featureVectors = responsesWithMetrics.map(response => 
       FeatureEngineeringService.metricsToFeatureVector(response.computedMetrics!)
     );
 
-    // ✅ AUTOMATIC OPTIMIZATION: Try different K values and automatically select the best one
+   
     const optimalResult = await this.findOptimalClusteringAutomatically(featureVectors, forcedK);
     console.log(`📊 AUTOMATICALLY selected optimal K=${optimalResult.optimalK} with quality score: ${optimalResult.bestQuality.toFixed(3)}`);
 
-    // Create cluster profiles using the optimal clustering
+   
     const clusters = await this.createClusterProfiles(
       optimalResult.bestAssignments,
       responsesWithMetrics,
       optimalResult.bestCentroids
     );
 
-    // Assign unique cluster names and descriptions
+   
     const namedClusters = this.assignUniqueClusterNames(clusters);
 
-    // Update database with cluster assignments
+
     await this.updateClusterAssignments(responsesWithMetrics, optimalResult.bestAssignments);
 
-    // Generate insights
+ 
     const insights = this.generateClusteringInsights(namedClusters, responsesWithMetrics.length);
 
     return {
@@ -163,9 +160,9 @@ export class ClusteringService {
       };
     }
 
-    // Define K range to test
+   
     const minK = 2;
-    const maxK = Math.min(6, Math.floor(featureVectors.length / 2)); // Max 6 clusters, min 2 points per cluster
+    const maxK = Math.min(6, Math.floor(featureVectors.length / 2)); 
     
     console.log(`🔍 Testing K values from ${minK} to ${maxK} to find optimal clustering...`);
 
@@ -173,16 +170,14 @@ export class ClusteringService {
     let bestQuality = -1;
     let bestResult: any = null;
 
-    // Test each K value and find the one with highest silhouette score
     for (let k = minK; k <= maxK; k++) {
       try {
         console.log(`🧮 Testing K=${k}...`);
         
-        // Run clustering multiple times and take the best result
         let bestKResult: any = null;
         let bestKQuality = -1;
         
-        for (let run = 0; run < 3; run++) { // 3 runs per K to account for randomness
+        for (let run = 0; run < 3; run++) { 
           const result = await this.kMeansClustering(featureVectors, k);
           const quality = this.calculateSilhouetteScore(featureVectors, result.assignments);
           
@@ -194,7 +189,7 @@ export class ClusteringService {
         
         console.log(`   K=${k}: Quality = ${bestKQuality.toFixed(3)}`);
         
-        // Check if this is the best K so far
+        
         if (bestKQuality > bestQuality) {
           bestQuality = bestKQuality;
           bestK = k;
@@ -280,8 +275,6 @@ export class ClusteringService {
     };
   }
 
-  // ... (keep all existing helper methods: initializeCentroids, findNearestCentroid, etc.)
-  // ... (keep all existing methods for cluster profile creation, naming, etc.)
   
   private initializeCentroids(data: number[][], k: number): number[][] {
     const centroids: number[][] = [];
@@ -646,7 +639,7 @@ export class ClusteringService {
     return detailedProfile;
   }
 
-  // Helper methods (keeping existing implementations)
+
   private calculateAverageMetrics(responses: Response[]): any {
     const metrics = responses
       .map(r => r.computedMetrics)
@@ -752,7 +745,7 @@ export class ClusteringService {
     return insights;
   }
 
-  // Utility methods
+
   private average(values: number[]): number {
     if (values.length === 0) return 0;
     return values.reduce((sum, val) => sum + (val || 0), 0) / values.length;

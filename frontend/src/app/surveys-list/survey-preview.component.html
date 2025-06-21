@@ -46,8 +46,6 @@
             Obligatorie
           </mat-chip>
         </div>
-
-        <!-- Options for choice questions -->
         <div *ngIf="hasOptions(question)" class="question-options">
           <div class="options-label">Opțiuni:</div>
           <ul class="options-list">
@@ -58,8 +56,6 @@
             </li>
           </ul>
         </div>
-
-        <!-- Preview for text questions -->
         <div *ngIf="isTextQuestion(question)" class="text-preview">
           <div class="text-input-preview">
             <span class="placeholder">Câmp de text pentru răspuns...</span>
@@ -73,6 +69,6 @@
 <mat-dialog-actions class="dialog-actions">
   <button mat-button (click)="close()">Închide</button>
   <button mat-raised-button color="primary" (click)="openSurvey()">
-    🚀 Deschide Chestionarul
+   Deschide Chestionarul
   </button>
 </mat-dialog-actions>

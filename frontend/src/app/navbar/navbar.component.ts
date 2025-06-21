@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../services/auth.service';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common'; // pentru *ngIf
+import { CommonModule } from '@angular/common'; 
 
 @Component({
   selector: 'app-navbar',

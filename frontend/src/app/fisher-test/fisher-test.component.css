@@ -1,4 +1,4 @@
-/* Fisher Test Component Styles - frontend/src/app/fisher-test/fisher-test.component.css */
+
 
 .fisher-controls {
   margin-bottom: 2rem;
@@ -155,7 +155,7 @@
   font-style: italic;
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .summary-stats {
     flex-direction: column;
@@ -174,7 +174,7 @@
   }
 }
 
-/* Special styling pentru title panel */
+
 ::ng-deep .cluster-panel .mat-expansion-panel-header-title {
   display: flex;
   align-items: center;
@@ -182,7 +182,7 @@
   width: 100%;
 }
 
-/* Styling pentru clusters cu nume diferite */
+
 .cluster-panel:nth-child(1) {
   border-left: 4px solid #FF6B6B;
 }

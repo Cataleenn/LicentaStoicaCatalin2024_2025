@@ -17,9 +17,9 @@ export class SurveyService {
     private readonly responseRepository: Repository<Response>,
   ) {}
 
-  // Create a new survey with creator tracking
+
   async createSurvey(createSurveyDto: CreateSurveyDto, userId?: number): Promise<Survey> {
-    //const survey = this.surveyRepository.create(createSurveyDto);
+   
     const survey = new Survey();
     survey.formTitle = createSurveyDto.formTitle;
     survey.adminDescription = createSurveyDto.adminDescription;
@@ -38,7 +38,7 @@ export class SurveyService {
     return await this.surveyRepository.save(survey);
   }
 
-  // Get all surveys with creator information
+
   async getAllSurveys(): Promise<Survey[]> {
     return await this.surveyRepository.find({
       relations: ['createdBy', 'responses'],
@@ -46,7 +46,6 @@ export class SurveyService {
     });
   }
 
-  // Get survey by ID
   async getSurveyById(id: number): Promise<Survey> {
   const survey = await this.surveyRepository.findOne({
     where: { id }
@@ -59,7 +58,7 @@ export class SurveyService {
   return survey;
 }
 
-  // Get surveys created by a specific user
+
   async getSurveysByUser(userId: number): Promise<Survey[]> {
     return await this.surveyRepository.find({
       where: { createdById: userId },
@@ -68,7 +67,7 @@ export class SurveyService {
     });
   }
 
-  // Get survey responses with user data
+
   async getSurveyResponses(surveyId: number): Promise<any> {
     const survey = await this.surveyRepository.findOne({
       where: { id: surveyId },
@@ -84,7 +83,7 @@ export class SurveyService {
       order: { createdAt: 'DESC' }
     });
 
-    // Process responses to make them more readable
+  
     const processedResponses = responses.map(response => ({
       id: response.id,
       userId: response.userId,
@@ -92,7 +91,6 @@ export class SurveyService {
       assembly: response.assembly,
       isComplete: response.isComplete,
       createdAt: response.createdAt,
-      // Add question text for better readability
       processedAnswers: this.processAnswersWithQuestions(response.answers, survey.questions || {})
     }));
 
@@ -112,21 +110,21 @@ export class SurveyService {
     };
   }
 
-  // Helper method to process answers with question text
+
   private processAnswersWithQuestions(answers: Record<string, any>, questions: Record<string, string>): any[] {
   const processed: any[] = [];
   
   Object.keys(answers).forEach(questionIndex => {
-    // questions folosește cheia directă, nu index-ul
+   
     const questionText = questions[questionIndex];
     
     if (questionText) {
       processed.push({
         questionNumber: questionIndex,
-        questionText: questionText,        // e deja string din Record<string, string>
-        questionType: 'text',             // valoare default
+        questionText: questionText,        
+        questionType: 'text',             
         answer: answers[questionIndex],
-        options: []                       // array gol
+        options: []                     
       });
     }
   });
@@ -134,7 +132,7 @@ export class SurveyService {
   return processed;
 }
 
-  // Delete survey and all associated responses
+ 
   async deleteSurvey(surveyId: number, userId: number, userRole: string): Promise<{ message: string }> {
     const survey = await this.surveyRepository.findOne({
       where: { id: surveyId },
@@ -145,19 +143,19 @@ export class SurveyService {
       throw new NotFoundException('Chestionarul nu a fost găsit.');
     }
 
-    // Check permissions: admin can delete any survey, user can only delete their own
+  
     if (userRole !== 'admin' && survey.createdById !== userId) {
       throw new ForbiddenException('Nu aveți permisiunea să ștergeți acest chestionar.');
     }
 
     const responseCount = survey.responses?.length || 0;
 
-    // Delete all responses first (explicit deletion)
+ 
     if (responseCount > 0) {
       await this.responseRepository.delete({ survey: { id: surveyId } });
     }
 
-    // Delete the survey
+
     await this.surveyRepository.delete(surveyId);
 
     let message = `Chestionarul "${survey.formTitle}" a fost șters cu succes`;
@@ -169,7 +167,6 @@ export class SurveyService {
     return { message };
   }
 
-  // Get survey statistics
   async getSurveyStats(): Promise<{
     totalSurveys: number;
     totalResponses: number;

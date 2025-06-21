@@ -28,7 +28,6 @@ export class SurveyViewComponent implements OnInit {
   rotations: number;
   componentsPlaced: { componentId: string; slotId: string }[];
 } | null = null;
-  //currentStep = 1; // 1 = instructiuni, 2 = asamblare, 3 = chestionar
   
   currentStep = 1;
    scrollProgress: number = 0;
@@ -48,19 +47,18 @@ export class SurveyViewComponent implements OnInit {
     this.surveyId = Number(this.route.snapshot.paramMap.get('id'));
     console.log('Survey ID:', this.surveyId);
 
-    // Initialize the form
+
     this.surveyForm = this.fb.group({
       questions: this.fb.array([])
     });
 
-    // Fetch survey data
+
     this.isLoading = true;
     this.surveyService.getSurveyById(this.surveyId).subscribe(
       (data) => {
         console.log('Survey data received:', data);
         this.surveyData = data;
-        
-        // Check if questions array exists
+      
         if (data && data.questions && Array.isArray(data.questions)) {
           this.setQuestions(data.questions);
           this.totalQuestions = data.questions.length;
@@ -88,10 +86,8 @@ console.log('Questions:', this.questions.value);
   }
 
   setupScrollListener(): void {
-    // Așteaptă ca DOM-ul să fie complet încărcat
     setTimeout(() => {
       window.addEventListener('scroll', () => this.updateProgress());
-      // Calculează progresul inițial
       this.updateProgress();
     }, 500);
   }
@@ -109,10 +105,8 @@ console.log('Questions:', this.questions.value);
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const documentHeight = document.documentElement.scrollHeight - windowHeight;
     
-    // Calculează progresul general de scroll (0-100%)
     this.scrollProgress = Math.min(100, Math.max(0, (scrollTop / documentHeight) * 100));
 
-    // Calculează care întrebare este vizibilă în viewport
     let currentQuestion = 0;
     questionContainers.forEach((container, index) => {
       const rect = container.getBoundingClientRect();
@@ -127,7 +121,6 @@ console.log('Questions:', this.questions.value);
     this.questionProgress = (currentQuestion / this.totalQuestions) * 100;
   }
 
-  // Metodă pentru a face scroll la o întrebare specifică
   scrollToQuestion(questionIndex: number): void {
     const questionElement = document.querySelector(`#question-${questionIndex}`);
     if (questionElement) {
@@ -138,7 +131,6 @@ console.log('Questions:', this.questions.value);
     }
   }
 
-  // Cleanup când componenta se distruge
   ngOnDestroy(): void {
     window.removeEventListener('scroll', () => this.updateProgress());
   }
@@ -157,7 +149,6 @@ console.log('Questions:', this.questions.value);
     return this.surveyForm.get('questions') as FormArray;
   }
 
-  // Map API question type to form question type
   mapQuestionType(apiType: string): string {
     const typeMap: {[key: string]: string} = {
       'open_ended': 'text',
@@ -170,15 +161,12 @@ console.log('Questions:', this.questions.value);
     return typeMap[apiType] || apiType;
   }
 
-  // Set questions into the form
   setQuestions(questions: any[]): void {
     console.log('Setting questions:', questions);
     try {
       const questionFGs = questions.map((question) => {
-        // Get the mapped question type
         const mappedType = this.mapQuestionType(question.questionType);
-        
-        // Create options FormArray with FormGroups for each option
+
         const optionsArray = this.fb.array(
           (question.options || []).map((option: any) => 
             this.fb.group({
@@ -194,7 +182,7 @@ console.log('Questions:', this.questions.value);
           options: optionsArray,
           dependsOn: [question.dependsOn || null],
           required: [question.required || false],
-          response: ['']  // This is where the user's answer is stored
+          response: ['']  
         });
       });
       
@@ -211,12 +199,10 @@ console.log('Questions:', this.questions.value);
   const value = event.target.value;
 
   if (event.target.checked) {
-    // Adaugă dacă nu e deja
     if (!selectedValues.includes(value)) {
       selectedValues.push(value);
     }
   } else {
-    // Elimină dacă era bifat
     const index = selectedValues.indexOf(value);
     if (index !== -1) {
       selectedValues.splice(index, 1);
@@ -226,7 +212,6 @@ console.log('Questions:', this.questions.value);
   question.get('response')?.setValue(selectedValues);
 }
 
-  // Get options for a question
   getOptions(questionIndex: number): FormArray {
     try {
       const questionsArray = this.surveyForm.get('questions') as FormArray;
@@ -238,17 +223,14 @@ console.log('Questions:', this.questions.value);
     }
   }
 
-  // Get survey title from data
   getSurveyTitle(): string {
     return this.surveyData?.formTitle || this.surveyData?.title || 'Untitled Survey';
   }
 
-  // Get survey adminDescription from data
   getSurveyAdminDescription(): string {
     return this.surveyData?.adminDescription || '';
   }
 
-  // Get survey userInstructions from data
   getSurveyUserInstructions(): string {
     return this.surveyData?.userInstructions || '';
   }
@@ -260,13 +242,11 @@ goToAssembly() {
 
     setTimeout(() => {
       this.currentStep = 2;
-    }, 400); // sincronizat cu CSS
+    }, 400); 
   } else {
     this.currentStep = 2;
   }
 }
-
-  // Submit the survey responses
   
 onSubmit(): void {
   console.log('Form submitted:', this.surveyForm.value);
@@ -285,10 +265,10 @@ for (let i = 0; i < this.questions.length; i++) {
     (Array.isArray(response) && response.length === 0);
 
   if (isRequired && isEmpty) {
-    question.get('response')?.setErrors({ required: true }); // 🔴 marchează ca invalid
+    question.get('response')?.setErrors({ required: true }); 
     hasMissingRequired = true;
   } else {
-    question.get('response')?.setErrors(null); // ✅ curăță dacă a fost completat ulterior
+    question.get('response')?.setErrors(null); 
   }
 }
 
@@ -297,8 +277,6 @@ if (hasMissingRequired) {
   return;
 }
 
-
-  // Construim payload-ul pentru backend
   const surveyData = this.surveyForm.value;
   const answers: Record<string, any> = {};
 
@@ -308,7 +286,7 @@ if (hasMissingRequired) {
 
   const payload = {
     formId: this.surveyId,
-    userId: 1, // sau null dacă nu folosești autentificare
+    userId: 1, 
     answers: answers,
     isComplete: true,
     assembly: this.assemblyData

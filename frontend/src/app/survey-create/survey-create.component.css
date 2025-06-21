@@ -1,4 +1,4 @@
-/* Reset și bază */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -11,7 +11,7 @@
   min-height: 100vh;
 }
 
-/* Background gradient mai smooth și modern */
+
 .blue-background {
   min-height: 100vh;
   width: 100%;
@@ -28,7 +28,7 @@
   box-sizing: border-box;
 }
 
-/* Container principal cu design modern */
+
 .survey-create-container {
   width: 100%;
   max-width: 900px;
@@ -50,7 +50,7 @@
   }
 }
 
-/* Header section cu gradient */
+
 .header-section {
   background: linear-gradient(135deg, #1976d2, #1565c0);
   color: white;
@@ -91,12 +91,12 @@
   z-index: 1;
 }
 
-/* Form content */
+
 .form-content {
   padding: 3rem;
 }
 
-/* Section pentru informații generale */
+
 .general-info-section {
   background: #f8f9fa;
   border-radius: 12px;
@@ -120,7 +120,7 @@
   font-size: 1.2rem;
 }
 
-/* Input groups cu design îmbunătățit */
+
 .input-group {
   margin-bottom: 1.5rem;
   position: relative;
@@ -157,7 +157,7 @@
   transform: translateY(-2px);
 }
 
-/* Questions section */
+
 .questions-section {
   margin-top: 2rem;
 }
@@ -166,7 +166,7 @@
   content: "❓";
 }
 
-/* Question block cu design card */
+
 .question-block {
   background: #ffffff;
   border: 2px solid #e3f2fd;
@@ -196,7 +196,7 @@
   75% { transform: translateX(5px); }
 }
 
-/* Question header */
+
 .question-header {
   display: flex;
   justify-content: space-between;
@@ -219,7 +219,7 @@
   font-size: 1.1rem;
 }
 
-/* Required checkbox styling */
+
 .required-checkbox {
   display: flex;
   align-items: center;
@@ -234,7 +234,7 @@
   accent-color: #42a5f5;
 }
 
-/* Options section */
+
 .options-section {
   background: #f8f9fa;
   border-radius: 8px;
@@ -266,7 +266,7 @@
   border-radius: 4px;
 }
 
-/* Buttons styling */
+
 button {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -279,7 +279,7 @@ button {
   letter-spacing: 0.5px;
 }
 
-/* Primary buttons */
+
 .btn-primary {
   background: linear-gradient(135deg, #42a5f5, #1976d2);
   color: white;
@@ -292,7 +292,7 @@ button {
   box-shadow: 0 6px 16px rgba(66, 165, 245, 0.4);
 }
 
-/* Secondary buttons */
+
 .btn-secondary {
   background: #e3f2fd;
   color: #1976d2;
@@ -305,7 +305,7 @@ button {
   transform: translateY(-1px);
 }
 
-/* Delete buttons */
+
 .btn-delete {
   background: #ffebee;
   color: #f44336;
@@ -319,7 +319,7 @@ button {
   transform: scale(1.05);
 }
 
-/* Add buttons */
+
 .btn-add {
   background: #e8f5e9;
   color: #4caf50;
@@ -339,7 +339,7 @@ button {
   font-size: 0.9rem;
 }
 
-/* Submit button special */
+
 .submit-btn {
   background: linear-gradient(135deg, #4caf50, #388e3c);
   color: white;
@@ -369,7 +369,7 @@ button {
   content: "";
 }
 
-/* Action buttons container */
+
 .action-buttons {
   display: flex;
   gap: 1rem;
@@ -377,7 +377,7 @@ button {
   flex-wrap: wrap;
 }
 
-/* Error messages */
+
 .text-danger {
   color: #f44336;
   font-size: 0.85rem;
@@ -398,7 +398,7 @@ button {
   animation: shake 0.3s ease-in-out;
 }
 
-/* Progress indicator pentru numărul de întrebări */
+
 .questions-progress {
   background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
   padding: 1.5rem;
@@ -414,7 +414,7 @@ button {
   color: #1976d2;
 }
 
-/* Responsive design */
+
 @media (max-width: 768px) {
   .blue-background {
     padding: 1rem 0.5rem;
@@ -452,7 +452,7 @@ button {
   }
 }
 
-/* Loading state */
+
 .loading-overlay {
   position: fixed;
   top: 0;

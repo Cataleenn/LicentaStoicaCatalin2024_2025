@@ -2,32 +2,28 @@
 
 <div class="clustering-dashboard">
   <div class="dashboard-header">
-    <h1>🧠 Analiza Comportamentală Avansată</h1>
+    <h1>🧠 Analiza Comportamentală</h1>
     <p>Obține instant cea mai bună analiză comportamentală cu un singur click</p>
   </div>
 
-  <!-- Main Content Card -->
   <mat-card class="main-content">
     <mat-card-header>
-      <mat-card-title>📊 Analiză Clustering Optimizată</mat-card-title>
+      <mat-card-title>📊 Analiză Clustering</mat-card-title>
       <mat-card-subtitle>Selectează un chestionar și primește automat analiza cu cel mai mare scor de calitate</mat-card-subtitle>
     </mat-card-header>
     
     <mat-card-content>
-      <!-- Survey Selection Section -->
       <div class="survey-selection">
-        <!-- Loading State -->
         <div *ngIf="isLoadingSurveys" class="loading-container">
           <mat-spinner diameter="40"></mat-spinner>
           <p>Se încarcă chestionarele disponibile...</p>
         </div>
         
-        <!-- Survey Selection Controls -->
         <div *ngIf="!isLoadingSurveys" class="selection-controls">
           <div class="select-wrapper">
             <mat-select 
               [(value)]="selectedSurveyId" 
-              placeholder="🎯 Selectează chestionarul pentru analiză..."
+              placeholder="Selectează chestionarul pentru analiză..."
               (selectionChange)="onSurveySelected($event.value)"
               class="survey-select">
               <mat-option *ngFor="let survey of availableSurveys" [value]="survey.id">
@@ -39,7 +35,6 @@
             </mat-select>
           </div>
           
-          <!-- Single Analysis Button -->
           <button 
             mat-raised-button 
             color="primary"
@@ -49,22 +44,22 @@
             <div class="button-content">
               <mat-icon *ngIf="!isAnalyzing">psychology</mat-icon>
               <mat-spinner *ngIf="isAnalyzing" diameter="20" style="margin-right: 8px;"></mat-spinner>
-              <span *ngIf="!isAnalyzing">🚀 Analizează Acum</span>
+              <span *ngIf="!isAnalyzing">Analizează Acum</span>
               <span *ngIf="isAnalyzing">Se analizează automat...</span>
             </div>
           </button>
         </div>
         
-        <!-- Error Message -->
+
         <div *ngIf="errorMessage" class="error-container">
           <mat-icon color="warn">error</mat-icon>
           <span>{{ errorMessage }}</span>
         </div>
       </div>
 
-      <!-- Analysis Results Section -->
+
       <div *ngIf="clusteringSummary" class="analysis-results">
-        <!-- Quick Overview -->
+    
         <div class="quick-overview">
           <mat-card class="overview-card">
             <mat-card-content>
@@ -81,16 +76,11 @@
                   <div class="stat-number">{{ (clusteringSummary.qualityScore * 100).toFixed(1) }}%</div>
                   <div class="stat-label">Scor de Calitate</div>
                 </div>
-                <!-- <div class="stat-item">
-                  <div class="stat-number">{{ getUniqueOccupations() }}</div>
-                  <div class="stat-label">Profiluri Profesionale</div>
-                </div> -->
               </div>
             </mat-card-content>
           </mat-card>
         </div>
 
-        <!-- Key Insights -->
         <div *ngIf="clusteringSummary.insights && clusteringSummary.insights.length > 0" class="insights-section">
           <mat-card class="insights-card">
             <mat-card-header>
@@ -107,17 +97,15 @@
           </mat-card>
         </div>
 
-        <!-- Clustering Analysis Results Card -->
         <div class="clustering-results-section">
           <mat-card class="clustering-results-card">
             <mat-card-header>
-              <mat-card-title>🎯 Rezultatele Analizei Clustering</mat-card-title>
+              <mat-card-title>Rezultatele Analizei Clustering</mat-card-title>
               <mat-card-subtitle>Profilurile comportamentale identificate și caracteristicile lor</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <!-- Detailed Clusters -->
               <div class="clusters-section">
-                <h2>🎯 Profilurile Comportamentale Identificate</h2>
+                <h2>Profilurile Comportamentale Identificate</h2>
                 
                 <mat-accordion class="clusters-accordion" multi="true">
                   <mat-expansion-panel 
@@ -125,8 +113,6 @@
                     class="cluster-panel"
                     [ngClass]="'cluster-panel-' + i"
                     [expanded]="i === 0">
-                    
-                    <!-- Cluster Header -->
                     <mat-expansion-panel-header>
                       <mat-panel-title>
                         <div class="cluster-header">
@@ -147,12 +133,9 @@
                         <div class="description-preview">{{ cluster.description }}</div>
                       </mat-panel-description>
                     </mat-expansion-panel-header>
-
-                    <!-- Cluster Content -->
                     <div class="cluster-content">
-                      <!-- Performance Metrics -->
                       <div class="metrics-section">
-                        <h4>📊 Indicatori de Performanță</h4>
+                        <h4>Indicatori de Performanță</h4>
                         <div class="metrics-grid">
                           <div class="metric-card">
                             <div class="metric-label">Aptitudine Tehnică</div>
@@ -184,15 +167,11 @@
                           </div>
                         </div>
                       </div>
-
-                      <!-- Detailed Profile -->
                       <div class="profile-section">
                         <h4>👤 Profil Complet</h4>
                         <div class="profile-content" [innerHTML]="formatProfileForDisplay(cluster.detailedProfile)"></div>
                       </div>
-
-                      <!-- Characteristics Tags -->
-                      <div class="characteristics-section" *ngIf="cluster.characteristics && cluster.characteristics.length > 0">
+                      <!-- <div class="characteristics-section" *ngIf="cluster.characteristics && cluster.characteristics.length > 0">
                         <h4>🏷️ Caracteristici Cheie</h4>
                         <div class="characteristics-tags">
                           <mat-chip 
@@ -202,14 +181,8 @@
                             {{ char }}
                           </mat-chip>
                         </div>
-                      </div>
-
-                      <!-- Actions -->
+                      </div> -->
                       <div class="cluster-actions">
-                        <button mat-button color="primary" (click)="viewClusterDetails(cluster.id)">
-                          <mat-icon>visibility</mat-icon>
-                          Vezi Participanții
-                        </button>
                         <button mat-button color="accent" (click)="exportClusterData(cluster.id)">
                           <mat-icon>download</mat-icon>
                           Exportă Date
@@ -222,8 +195,6 @@
             </mat-card-content>
           </mat-card>
         </div>
-
-        <!-- Separate Fisher Test Analysis Card -->
         <div class="fisher-test-section">
           <mat-card class="fisher-test-card">
             <mat-card-header>
@@ -242,15 +213,11 @@
           </mat-card>
         </div>
       </div>
-
-      <!-- Placeholder when no analysis -->
       <div *ngIf="!clusteringSummary && !isAnalyzing && selectedSurveyId" class="placeholder-message">
         <mat-icon>psychology</mat-icon>
         <h3>Gata pentru Analiză!</h3>
         <p>Apasă "🚀 Analizează Acum" pentru a obține instant cea mai bună analiză comportamentală.</p>
       </div>
-
-      <!-- Initial placeholder -->
       <div *ngIf="!selectedSurveyId && !isLoadingSurveys && availableSurveys.length > 0" class="placeholder-message">
         <mat-icon>quiz</mat-icon>
         <h3>Selectează un Chestionar</h3>

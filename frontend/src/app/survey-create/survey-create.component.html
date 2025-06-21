@@ -1,16 +1,13 @@
 <div class="blue-background">
   <div class="survey-create-container">
     
-    <!-- Header Section -->
     <div class="header-section">
       <h2>Creare Chestionar</h2>
     </div>
 
-    <!-- Form Content -->
     <div class="form-content">
       <form [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
 
-        <!-- General Information Section -->
         <div class="general-info-section">
           <h3 class="section-title">Informații Generale</h3>
           
@@ -47,14 +44,12 @@
           </div>
         </div>
 
-        <!-- Questions Progress -->
         <div class="questions-progress">
           <div class="questions-count">
             <span class="total-questions">{{ questions.length }} întrebări adăugate</span>
           </div>
         </div>
 
-        <!-- Questions Section -->
         <div class="questions-section">
           <h3 class="section-title">Întrebări</h3>
           
@@ -63,8 +58,6 @@
                  [formGroupName]="i"
                  class="question-block"
                  [ngClass]="{ 'has-error': question.errors?.['noOptions'] }">
-
-              <!-- Question Header -->
               <div class="question-header">
                 <div class="question-number">{{ i + 1 }}</div>
                 
@@ -73,8 +66,6 @@
                   <label for="required-{{i}}">Întrebare obligatorie</label>
                 </div>
               </div>
-
-              <!-- Question Text -->
               <div class="input-group">
                 <label>Textul întrebării *</label>
                 <input 
@@ -88,8 +79,6 @@
                   Textul întrebării este obligatoriu.
                 </div>
               </div>
-
-              <!-- Question Type -->
               <div class="input-group">
                 <label>Tipul întrebării</label>
                 <select formControlName="questionType">
@@ -98,13 +87,9 @@
                   <option value="open_ended">Text liber</option>
                 </select>
               </div>
-
-              <!-- Error for missing options -->
               <div *ngIf="question.errors?.['noOptions']" class="text-danger">
                 Trebuie să adaugi cel puțin o opțiune pentru această întrebare.
               </div>
-
-              <!-- Options Section (for choice questions) -->
               <div *ngIf="question.get('questionType')?.value === 'single_choice' || question.get('questionType')?.value === 'multiple_choice'"
                    class="options-section">
                 <h4>Opțiuni de răspuns</h4>
@@ -132,10 +117,7 @@
                   Adaugă opțiune
                 </button>
               </div>
-
-              <!-- Question Actions -->
               <div class="action-buttons">
-                <!-- Move buttons -->
                 <button 
                   type="button" 
                   class="btn-secondary btn-move"
@@ -153,8 +135,6 @@
                   title="Mută în jos">
                   ⬇️
                 </button>
-                
-                <!-- Delete button -->
                 <button 
                   type="button" 
                   class="btn-delete"
@@ -167,16 +147,12 @@
 
             </div>
           </div>
-
-          <!-- Add Question Button -->
           <div style="text-align: center; margin-top: 2rem;">
             <button type="button" class="btn-secondary btn-add" (click)="addQuestion()">
               Adaugă întrebare nouă
             </button>
           </div>
         </div>
-
-        <!-- Submit Button -->
         <button 
           type="submit" 
           class="submit-btn"

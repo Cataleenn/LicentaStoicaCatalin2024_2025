@@ -33,7 +33,6 @@ export class Survey {
   @CreateDateColumn()
   createdAt: Date;
 
-  // Add relationship to User who created the survey
   @ManyToOne(() => User, { eager: true })
   @JoinColumn({ name: 'created_by' })
   createdBy: User;

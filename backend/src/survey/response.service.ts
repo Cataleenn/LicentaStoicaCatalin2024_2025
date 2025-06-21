@@ -1,4 +1,4 @@
-// Fixed Response Service - backend/src/survey/response.service.ts
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,9 +15,7 @@ export class ResponseService {
     private readonly surveyRepo: Repository<Survey>
   ) {}
 
-  /**
-   * Salvează răspuns cu mapare îmbunătățită
-   */
+ 
   async saveResponse(dto: CreateResponseDto): Promise<Response> {
     console.log('💾 Saving response with improved mapping...');
     console.log('📝 Raw answers:', JSON.stringify(dto.answers, null, 2));
@@ -27,32 +25,32 @@ export class ResponseService {
       throw new NotFoundException(`Survey with id ${dto.formId} not found`);
     }
 
-    // Extrage profilurile cu mapare îmbunătățită
+    
     const behavioralProfile = this.extractBehavioralProfile(dto.answers);
     const demographicProfile = this.extractDemographicProfile(dto.answers);
 
     console.log('📊 Extracted demographic profile:', JSON.stringify(demographicProfile, null, 2));
     console.log('🧠 Extracted behavioral profile:', JSON.stringify(behavioralProfile, null, 2));
 
-    // Generează metrici simple din assembly data
+ 
     let computedMetrics = null;
     if (dto.assembly) {
       computedMetrics = this.generateSimpleMetrics(dto.assembly, behavioralProfile, demographicProfile);
     }
 
-    // Creează entitatea step by step
+  
     const newResponse = new Response();
     newResponse.userId = dto.userId;
     newResponse.answers = dto.answers;
     newResponse.isComplete = dto.isComplete;
     newResponse.survey = survey;
     
-    // Setează assembly doar dacă există
+ 
     if (dto.assembly) {
       newResponse.assembly = dto.assembly as any;
     }
     
-    // Setează profilurile - acum cu validare îmbunătățită
+   
     if (behavioralProfile) {
       newResponse.behavioralProfile = behavioralProfile;
     }
@@ -65,7 +63,7 @@ export class ResponseService {
       newResponse.computedMetrics = computedMetrics;
     }
 
-    // Salvează
+ 
     const saved = await this.responseRepo.save(newResponse);
     
     console.log('✅ Response saved with profiles:', {
@@ -83,9 +81,7 @@ export class ResponseService {
     return saved;
   }
 
-  /**
-   * IMPROVED demographic profile extraction cu detecție inteligentă
-   */
+ 
   private extractDemographicProfile(answers: Record<string, any>): any {
     console.log('🔍 IMPROVED: Extracting demographic profile...');
     console.log('📝 Available answers:', JSON.stringify(answers, null, 2));
@@ -95,7 +91,7 @@ export class ResponseService {
       return null;
     }
 
-    // Helper pentru extragerea valorii
+    
     const getAnswerValue = (questionKey: string): string => {
       const rawAnswer = answers[questionKey];
       console.log(`Getting answer for key "${questionKey}":`, rawAnswer, typeof rawAnswer);
@@ -111,14 +107,14 @@ export class ResponseService {
       }
     };
 
-    // Strategy 1: Încearcă să identifice întrebările pe baza conținutului
+    
     let ageAnswer = '';
     let genderAnswer = '';
     let educationAnswer = '';
     let occupationAnswer = '';
     let stemAnswer = '';
 
-    // Verifică toate răspunsurile pentru a identifica tipul întrebării
+    
     Object.keys(answers).forEach(key => {
       const value = getAnswerValue(key);
       console.log(`🔍 Analyzing key "${key}" with value: "${value}"`);
@@ -141,7 +137,7 @@ export class ResponseService {
       }
     });
 
-    // Strategy 2: Fallback la poziție (1-5 pentru demografice)
+    
     if (!ageAnswer) ageAnswer = getAnswerValue('1');
     if (!genderAnswer) genderAnswer = getAnswerValue('2');
     if (!educationAnswer) educationAnswer = getAnswerValue('3');
@@ -165,13 +161,11 @@ export class ResponseService {
     };
   }
 
-  /**
-   * Funcții de detecție conținut pentru demografice
-   */
+ 
   private looksLikeAge(value: string): boolean {
     if (!value) return false;
     const agePatterns = [
-      /\d{1,2}/, // Conține numere
+      /\d{1,2}/, 
       /ani/, /age/, /varsta/, /vârstă/,
       /sub/, /peste/, /între/, /under/, /over/, /between/,
       /16/, /17/, /18/, /19/, /20/, /25/, /30/, /35/, /40/, /45/, /50/, /55/
@@ -218,9 +212,7 @@ export class ResponseService {
     return stemPatterns.some(pattern => pattern.test(value));
   }
 
-  /**
-   * IMPROVED behavioral profile extraction
-   */
+ 
   private extractBehavioralProfile(answers: Record<string, any>): any {
     console.log('🔍 IMPROVED: Extracting behavioral profile...');
     
@@ -241,14 +233,14 @@ export class ResponseService {
       }
     };
 
-    // Caută răspunsuri comportamentale (în general 6-10)
+  
     let problemSolvingAnswer = '';
     let techComfortAnswer = '';
     let assemblyExpAnswer = '';
     let errorHandlingAnswer = '';
     let gamingAnswer = '';
 
-    // Strategy 1: Detecție pe baza conținutului
+
     Object.keys(answers).forEach(key => {
       const value = getAnswerValue(key);
       
@@ -270,7 +262,7 @@ export class ResponseService {
       }
     });
 
-    // Strategy 2: Fallback la poziție (6-10 pentru comportamentale)
+
     if (!problemSolvingAnswer) problemSolvingAnswer = getAnswerValue('6');
     if (!techComfortAnswer) techComfortAnswer = getAnswerValue('7');
     if (!assemblyExpAnswer) assemblyExpAnswer = getAnswerValue('8');
@@ -294,9 +286,7 @@ export class ResponseService {
     };
   }
 
-  /**
-   * Funcții de detecție pentru behavioral
-   */
+ 
   private looksLikeProblemSolving(value: string): boolean {
     if (!value) return false;
     const patterns = [
@@ -347,14 +337,12 @@ export class ResponseService {
     return patterns.some(pattern => pattern.test(value));
   }
 
-  /**
-   * FIXED mapping functions cu logging îmbunătățit
-   */
+  
   private mapAgeGroup(value: string): string {
     console.log(`🔍 Mapping age from: "${value}"`);
     if (!value) return '19_25';
     
-    // Extract number
+   
     const numberMatch = value.match(/\d+/);
     if (numberMatch) {
       const age = parseInt(numberMatch[0]);
@@ -367,7 +355,6 @@ export class ResponseService {
       if (age > 55) return 'over_55';
     }
     
-    // Range matching
     if (value.includes('19') && value.includes('25')) return '19_25';
     if (value.includes('26') && value.includes('35')) return '26_35';
     
@@ -482,9 +469,7 @@ export class ResponseService {
     };
   }
 
-  /**
-   * Recompute metrics pentru răspunsuri existente
-   */
+ 
   async recomputeMetricsForExistingResponses(surveyId?: number): Promise<void> {
     console.log('🔄 Recomputing metrics with IMPROVED mapping...');
     

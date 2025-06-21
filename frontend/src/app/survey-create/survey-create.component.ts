@@ -85,7 +85,6 @@ export class SurveyCreateComponent implements OnInit {
 
   removeQuestion(index: number): void {
     if (this.questions.length > 1) {
-      // Animație de fade-out înainte de ștergere
       const questionElement = document.querySelector(`.question-block:nth-child(${index + 1})`);
       if (questionElement) {
         questionElement.classList.add('fade-out');
@@ -113,27 +112,23 @@ export class SurveyCreateComponent implements OnInit {
   private validateForm(): boolean {
     let isValid = true;
     
-    // Validare titlu
     const titleControl = this.surveyForm.get('formTitle');
     titleControl?.markAsTouched();
     if (titleControl?.invalid) {
       isValid = false;
     }
 
-    // Validare întrebări
     this.questions.controls.forEach((questionControl, index) => {
       const question = questionControl as FormGroup;
       const questionText = question.get('questionText');
       const questionType = question.get('questionType')?.value;
       const options = question.get('options') as FormArray;
 
-      // Validare text întrebare
       questionText?.markAsTouched();
       if (questionText?.invalid) {
         isValid = false;
       }
 
-      // Validare opțiuni pentru întrebări de tip alegere
       const needsOptions = questionType === 'single_choice' || questionType === 'multiple_choice';
       const hasValidOptions = options.controls.some(optionControl => {
         const option = optionControl as FormGroup;
@@ -145,13 +140,10 @@ export class SurveyCreateComponent implements OnInit {
         question.setErrors({ ...question.errors, noOptions: true });
         isValid = false;
       } else if (question.errors?.['noOptions']) {
-        // Curăță eroarea dacă a fost reparată
         const { noOptions, ...otherErrors } = question.errors;
         const hasOtherErrors = Object.keys(otherErrors).length > 0;
         question.setErrors(hasOtherErrors ? otherErrors : null);
       }
-
-      // Validare opțiuni individuale
       if (needsOptions) {
         options.controls.forEach(optionControl => {
           const option = optionControl as FormGroup;
@@ -188,7 +180,7 @@ export class SurveyCreateComponent implements OnInit {
   }
 
   private showToast(message: string, type: 'success' | 'error'): void {
-    // Implementare simplă cu alert - poate fi înlocuită cu o bibliotecă de toast
+
     if (type === 'error') {
       alert(`❌ ${message}`);
     } else {
@@ -234,7 +226,6 @@ export class SurveyCreateComponent implements OnInit {
       const cleanedQuestion = { ...question };
       
       if (question.questionType === 'single_choice' || question.questionType === 'multiple_choice') {
-        // Filtrează opțiunile goale și setează valorile
         cleanedQuestion.options = question.options
           .filter((option: any) => option.text && option.text.trim())
           .map((option: any) => ({
@@ -242,11 +233,11 @@ export class SurveyCreateComponent implements OnInit {
             value: option.value || option.text.trim()
           }));
       } else {
-        // Pentru întrebări text liber, nu sunt necesare opțiuni
+
         cleanedQuestion.options = [];
       }
       
-      delete cleanedQuestion.response; // Nu trimitem response-ul la server
+      delete cleanedQuestion.response; 
       return cleanedQuestion;
     });
 
@@ -261,7 +252,6 @@ export class SurveyCreateComponent implements OnInit {
   }
 
   private resetForm(): void {
-    // Resetează formularul principal
     this.surveyForm.patchValue({
       formTitle: '',
       adminDescription: '',
@@ -269,20 +259,15 @@ export class SurveyCreateComponent implements OnInit {
       required: false
     });
     
-    // Curăță și recreează array-ul de întrebări cu o singură întrebare goală
     const questionsArray = this.surveyForm.get('questions') as FormArray;
     questionsArray.clear();
     questionsArray.push(this.createQuestion());
-    
-    // Resetează starea formularului
     this.surveyForm.markAsUntouched();
     this.surveyForm.markAsPristine();
     
-    // Scroll la început
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Metodă pentru salvare ca draft
   saveDraft(): void {
     const draftData = this.surveyForm.value;
     localStorage.setItem('surveyDraft', JSON.stringify({
@@ -292,13 +277,11 @@ export class SurveyCreateComponent implements OnInit {
     this.showToast('Draft salvat local!', 'success');
   }
 
-  // Metodă pentru încărcare draft
   loadDraft(): void {
     const draftData = localStorage.getItem('surveyDraft');
     if (draftData) {
       const draft = JSON.parse(draftData);
-      
-      // Confirmă încărcarea
+
       if (confirm('Aveți un draft salvat. Doriți să îl încărcați? (Datele curente vor fi suprascrise)')) {
         this.loadDraftData(draft);
         this.showToast('Draft încărcat cu succes!', 'success');
@@ -309,23 +292,20 @@ export class SurveyCreateComponent implements OnInit {
   }
 
   private loadDraftData(draftData: any): void {
-    // Recreează formularul cu datele din draft
     const questionsArray: FormGroup[] = [];
     
     if (draftData.questions && Array.isArray(draftData.questions)) {
       draftData.questions.forEach((question: any) => {
         const questionGroup = this.createQuestion();
-        
-        // Setează valorile pentru întrebare
+
         questionGroup.patchValue({
           questionText: question.questionText || '',
           questionType: question.questionType || 'single_choice',
           required: question.required || false
         });
 
-        // Adaugă opțiunile
         const optionsArray = questionGroup.get('options') as FormArray;
-        optionsArray.clear(); // Curăță opțiunile existente
+        optionsArray.clear(); 
         
         if (question.options && Array.isArray(question.options) && question.options.length > 0) {
           question.options.forEach((option: any) => {
@@ -335,7 +315,6 @@ export class SurveyCreateComponent implements OnInit {
             }));
           });
         } else {
-          // Adaugă cel puțin o opțiune goală pentru întrebări cu opțiuni
           const questionType = question.questionType || 'single_choice';
           if (questionType === 'single_choice' || questionType === 'multiple_choice') {
             optionsArray.push(this.createOption());
@@ -345,21 +324,16 @@ export class SurveyCreateComponent implements OnInit {
         questionsArray.push(questionGroup);
       });
     }
-
-    // Dacă nu există întrebări, adaugă o întrebare goală
     if (questionsArray.length === 0) {
       questionsArray.push(this.createQuestion());
     }
 
-    // Actualizează formularul
     this.surveyForm.patchValue({
       formTitle: draftData.formTitle || '',
       adminDescription: draftData.adminDescription || '',
       userInstructions: draftData.userInstructions || '',
       required: draftData.required || false
     });
-
-    // Înlocuiește array-ul de întrebări
     const currentQuestions = this.surveyForm.get('questions') as FormArray;
     currentQuestions.clear();
     questionsArray.forEach(question => {
@@ -367,7 +341,6 @@ export class SurveyCreateComponent implements OnInit {
     });
   }
 
-  // Metodă pentru mutarea întrebărilor în sus/jos
   moveQuestionUp(index: number): void {
     if (index > 0) {
       const question = this.questions.at(index);
@@ -384,7 +357,6 @@ export class SurveyCreateComponent implements OnInit {
     }
   }
 
-  // Getter pentru statistici
   get surveyStats() {
     const questions = this.questions.controls.map(control => (control as FormGroup).value);
     const requiredCount = questions.filter((q: any) => q.required).length;

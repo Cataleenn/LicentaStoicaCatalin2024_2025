@@ -1,4 +1,4 @@
-// Fisher Test Component - frontend/src/app/fisher-test/fisher-test.component.ts
+
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -26,7 +26,7 @@ import { FisherTestService, FisherTestSummary, AllClustersResult } from '../serv
 })
 export class FisherTestComponent implements OnInit {
   @Input() surveyId: number | null = null;
-  @Input() clusteringSummary: any = null; // ✅ Primește datele de clustering
+  @Input() clusteringSummary: any = null; 
   
   isAnalyzing = false;
   errorMessage = '';
@@ -36,7 +36,7 @@ export class FisherTestComponent implements OnInit {
   constructor(private fisherTestService: FisherTestService) {}
 
   ngOnInit(): void {
-    // Auto-run analysis if surveyId is provided
+   
     if (this.surveyId) {
       this.runFisherAnalysis();
     }
@@ -55,13 +55,11 @@ export class FisherTestComponent implements OnInit {
 
     console.log('🔬 Starting Fisher analysis for survey:', this.surveyId);
 
-    // Get summary first
     this.fisherTestService.getFisherTestSummary(this.surveyId).subscribe({
       next: (summaryResponse) => {
         if (summaryResponse.success) {
           this.fisherResults = summaryResponse;
           
-          // Then get detailed results
           this.fisherTestService.getAllClustersSignificantQuestions(this.surveyId!).subscribe({
             next: (detailResponse) => {
               if (detailResponse.success) {
@@ -91,11 +89,9 @@ export class FisherTestComponent implements OnInit {
     });
   }
 
-  /**
-   * ✅ NEW: Obține numele afișat pentru cluster
-   */
+ 
   getClusterDisplayName(clusterId: number): string {
-    // Dacă avem datele de clustering, folosește numele real
+  
     if (this.clusteringSummary && this.clusteringSummary.clusters) {
       const cluster = this.clusteringSummary.clusters.find((c: any) => c.id === clusterId);
       if (cluster && cluster.name) {
@@ -103,13 +99,10 @@ export class FisherTestComponent implements OnInit {
       }
     }
     
-    // Fallback la numele implicit
+ 
     return `Cluster ${clusterId}`;
   }
 
-  /**
-   * ✅ NEW: Obține iconul pentru cluster
-   */
   getClusterIcon(clusterId: number): string {
     if (this.clusteringSummary && this.clusteringSummary.clusters) {
       const cluster = this.clusteringSummary.clusters.find((c: any) => c.id === clusterId);
@@ -118,7 +111,7 @@ export class FisherTestComponent implements OnInit {
       }
     }
     
-    return '👤'; // Icon implicit
+    return '👤';
   }
 
   private getIconForClusterName(clusterName: string): string {

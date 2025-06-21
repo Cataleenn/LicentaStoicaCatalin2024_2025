@@ -36,7 +36,7 @@
   width: auto;
   margin-left: auto;
 }
-/* Stil de bază pentru toate butoanele din navbar */
+
 mat-toolbar button {
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -45,14 +45,14 @@ mat-toolbar button {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Efect de hover */
+
 mat-toolbar button:hover {
-  background-color: rgba(100, 149, 237, 0.3); /* un albastru mai deschis */
+  background-color: rgba(100, 149, 237, 0.3); 
   border-color: white;
   cursor: pointer;
 }
 
-/* Opțional: active/focus efect */
+
 mat-toolbar button:focus,
 mat-toolbar button:active {
   outline: none;

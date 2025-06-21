@@ -417,9 +417,8 @@ export class UserManagementComponent implements OnInit {
 
       this.successMessage = `Admin "${formData.name}" a fost creat cu succes!`;
       this.adminForm.reset();
-      this.loadAdmins(); // Reîncarcă lista
+      this.loadAdmins(); 
 
-      // Șterge mesajul de succes după 5 secunde
       setTimeout(() => {
         this.successMessage = '';
       }, 5000);
@@ -443,9 +442,9 @@ export class UserManagementComponent implements OnInit {
     try {
       await this.userService.deleteUser(admin.id);
       this.successMessage = `Admin "${admin.name}" a fost șters cu succes!`;
-      this.loadAdmins(); // Reîncarcă lista
+      this.loadAdmins(); 
 
-      // Șterge mesajul de succes după 3 secunde
+ 
       setTimeout(() => {
         this.successMessage = '';
       }, 3000);

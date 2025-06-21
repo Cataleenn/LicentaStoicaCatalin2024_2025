@@ -11,7 +11,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column() // Eliminăm select: false pentru a putea încărca parola când avem nevoie
+  @Column() 
   password: string;
 
   @Column({ default: 'user' }) 

@@ -32,12 +32,9 @@
   </div>
 
   <div class="assembly-grid">
-    <!-- 📱 Screen Area (right of hub) -->
      <div class="flex-group">
-    <!-- 🔧 Hub (Main Board) -->
     <div class="flip-wrapper">
       <div class="flip-inner" [ngClass]="{ 'flipped': currentSide === 'back' }">
-        <!-- HUB FRONT FACE (for modules) -->
         <div class="board face front">
           <ng-container *ngFor="let slot of frontSlots; let i = index">
             <div
@@ -71,8 +68,6 @@
             </div>
           </ng-container>
         </div>
-
-        <!-- HUB BACK FACE (for screen) -->
         <div class="board face back">
           <ng-container *ngFor="let slot of backSlots">
             <div
@@ -82,7 +77,7 @@
               (dragenter)="hoveredSlotId = slot.id"
               (dragleave)="hoveredSlotId = null"
             >
-              <!-- Screen component when placed - covers entire hub -->
+
               <div
                 *ngIf="getComponentInSlot(slot.id)"
                 class="component screen"
@@ -106,7 +101,6 @@
         </div>
       </div>
     </div>
-    <!-- Screen Area (when not placed) -->
     <div class="screen-area">
       <div
         *ngIf="!screen.placedIn"
@@ -128,11 +122,6 @@
       </div>
     </div>
     </div>
-    
-
-    
-
-    <!-- ⬇️ Pool of modules under hub -->
     <div class="pool-below">
     <ng-container *ngFor="let id of ['bluetooth-1', 'bluetooth-2', 'powerbank-1', 'powerbank-2', 'flash-1', 'flash-2']">
       <div
@@ -156,12 +145,9 @@
       </div>
     </ng-container>
   </div>
-
-
   </div>
 </div>
 
-<!-- ERROR + SUBMIT -->
 <div *ngIf="placementError" class="error-message">{{ placementError }}</div>
 <div class="submit">
   <button (click)="submitAssembly()">✅ Confirm Assembly</button>

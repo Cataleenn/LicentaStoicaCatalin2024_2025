@@ -10,11 +10,11 @@ import { AdminGuard } from '../admin/admin.guard';
   imports: [
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
-      secret: 'my_secret_key',  // Asigură-te că folosești același secret!
+      secret: 'my_secret_key',  
     }),
   ],
   controllers: [UsersController],
   providers: [UsersService, AdminGuard],
-  exports: [UsersService], // Export pentru a fi folosit în alte module
+  exports: [UsersService], 
 })
 export class UserModule {}
