@@ -32,18 +32,18 @@ export class EnhancedResponseService {
 
     private readonly QUESTION_KEYWORDS = {
     // Demografice
-    'age': ['vârst', 'ani', 'age', 'years', 'născut'],
-    'gender': ['gen', 'gender', 'sex', 'bărbat', 'femeie'],
-    'education': ['educație', 'școală', 'studii', 'education', 'diploma'],
-    'occupation': ['ocupație', 'job', 'muncă', 'profesie', 'lucrez'],
-    'stem': ['stem', 'științe', 'matematică', 'tehnică'],
+    'age': ['vârstă','varsta', 'ani', 'age', 'years', 'născut','nașterii','data','anul','nascut'],
+    'gender': ['gen', 'gender', 'sex','genul'],
+    'education': ['educație','educatie', 'scoala','școală', 'studii', 'education', 'diploma'],
+    'occupation': ['ocupație','ocupatie', 'job', 'muncă','munca', 'profesie', 'lucrez'],
+    'stem': ['stem','STEM', 'științe','stiinte', 'matematică', 'tehnică','tehnica','tehnice','matematica','fizica','fizică'],
     
     // Comportamentale
-    'tech_comfort': ['confortabil', 'tehnologie', 'tech', 'computer'],
-    'problem_solving': ['rezolv', 'abordez', 'solve', 'probleme'],
-    'assembly_experience': ['asamblare', 'assembly', 'construi'],
-    'error_handling': ['erori', 'greșeli', 'errors', 'mistakes'],
-    'gaming': ['jocuri', 'gaming', 'games', 'play']
+    'tech_comfort': ['confortabil', 'tehnologie', 'tech', 'computer','tehnologia','device','device-uri'],
+    'problem_solving': ['rezolv','rezolva','abordezi', 'abordez', 'solve', 'probleme','problemă','problema'],
+    'assembly_experience': ['asamblare', 'assembly', 'construiesc','construiești','asamblez'],
+    'error_handling': ['erori', 'greșeli', 'errors', 'mistakes','gresești','gresesti', 'gresi', 'greși'],
+    'gaming': ['jocuri', 'gaming', 'games', 'play' , 'joci', 'juca']
   };
   
   private detectQuestionType(questionText: string): string {
@@ -60,23 +60,20 @@ export class EnhancedResponseService {
   return 'unknown';
 }
   async saveEnhancedResponse(dto: CreateResponseDto): Promise<Response> {
-     console.log('🔬 Starting enhanced response processing...');
+     console.log('Starting enhanced response processing...');
       
   
 
   const survey = await this.surveyRepo.findOne({ where: { id: dto.formId } });
   if (!survey) throw new NotFoundException(`Survey with id ${dto.formId} not found`);
   
-  console.log('🔍 DEBUG - Raw DTO received:');
-  console.log('📝 Answers:', JSON.stringify(dto.answers, null, 2));
-  console.log('📋 Questions from survey:', JSON.stringify(survey.questions, null, 2));
+  console.log(' DEBUG - Raw DTO received:');
+  console.log(' Answers:', JSON.stringify(dto.answers, null, 2));
+  console.log(' Questions from survey:', JSON.stringify(survey.questions, null, 2));
 
   const demographicProfile = this.extractDemographicProfile(dto.answers, survey.questions);
   const behavioralProfile = this.extractBehavioralProfile(dto.answers, survey.questions);
-    
-    console.log('📊 FIXED extracted demographic profile:', JSON.stringify(demographicProfile, null, 2));
-    console.log('🧠 FIXED extracted behavioral profile:', JSON.stringify(behavioralProfile, null, 2));
-    
+      
    
     const assemblyData = this.extractAssemblyData(dto.assembly);
     
@@ -103,16 +100,14 @@ export class EnhancedResponseService {
     const response = this.responseRepo.create(responseData);
     const savedResponse = await this.responseRepo.save(response);
     
-    console.log('✅ Response saved with ID:', savedResponse.id);
-    console.log('📊 FIXED Final demographic profile in DB:', JSON.stringify(savedResponse.demographicProfile, null, 2));
-    console.log('🧠 FIXED Final behavioral profile in DB:', JSON.stringify(savedResponse.behavioralProfile, null, 2));
+
 
     return savedResponse;
   }
 
  
  private extractDemographicProfile(answers: Record<string, any>, questions?: Record<string, string>): DemographicProfile {
-  console.log('🔍 Starting dynamic demographic extraction...');
+
   
   const profile: any = {
     ageGroup: '19_25',      
@@ -163,13 +158,13 @@ export class EnhancedResponseService {
     profile.stemFamiliarity = this.mapStemFamiliarityFixed(getAnswerValue('5'));
   }
 
-  console.log('✅ Dynamic mapped demographic profile:', JSON.stringify(profile, null, 2));
+  
   return profile;
 }
 
  
   private extractBehavioralProfile(answers: Record<string, any>, questions?: Record<string, string>): BehavioralProfile {
-  console.log('🔍 Starting dynamic behavioral extraction...');
+
   
   const profile: any = {
     problemSolvingStyle: 'balanced',     
@@ -220,353 +215,316 @@ export class EnhancedResponseService {
     profile.gamingFrequency = this.mapGamingFrequencyFixed(getAnswerValue('10'));
   }
 
-  console.log('✅ Dynamic mapped behavioral profile:', JSON.stringify(profile, null, 2));
+
   return profile;
 }
 
 
   private mapAgeGroupFixed(value: string): string {
-    console.log('🔍 FIXED mapping age group from:', `"${value}"`);
+ 
     
     if (!value) {
-      console.log('⚠️ Empty age value, using default: 19_25');
       return '19_25';
     }
     
   
     if (value.includes('sub 16')) {
-      console.log('✅ FIXED age mapping result: under_16');
       return 'under_16';
     }
     if (value.includes('16-18')) {
-      console.log('✅ FIXED age mapping result: 16_18');
       return '16_18';
     }
     if (value.includes('19-25')) {
-      console.log('✅ FIXED age mapping result: 19_25');
       return '19_25';
     }
     if (value.includes('26-35')) {
-      console.log('✅ FIXED age mapping result: 26_35');
       return '26_35';
     }
     if (value.includes('36-45')) {
-      console.log('✅ FIXED age mapping result: 36_45');
       return '36_45';
     }
     if (value.includes('46-55')) {
-      console.log('✅ FIXED age mapping result: 46_55');
       return '46_55';
     }
     if (value.includes('peste 55') || value.includes('over 55')) {
-      console.log('✅ FIXED age mapping result: over_55');
       return 'over_55';
     }
     
-    console.log('⚠️ No age match found, using default: 19_25');
     return '19_25';
   }
 
   private mapGenderFixed(value: string): string {
-    console.log('🔍 FIXED mapping gender from:', `"${value}"`);
     
     if (!value) {
-      console.log('⚠️ Empty gender value, using default: N/A');
       return 'N/A';
     }
 
     if (value.includes('masculin')) {
-      console.log('✅ FIXED gender mapping result: M');
       return 'M';
     }
     if (value.includes('feminin')) {
-      console.log('✅ FIXED gender mapping result: F');
       return 'F';
     }
     if (value.includes('prefer să nu specific')) {
-      console.log('✅ FIXED gender mapping result: N/A');
       return 'N/A';
     }
     
-    console.log('⚠️ No gender match found, using default: N/A');
     return 'N/A';
   }
 
   private mapEducationFixed(value: string): string {
-    console.log('🔍 FIXED mapping education from:', `"${value}"`);
     
     if (!value) {
-      console.log('⚠️ Empty education value, using default: bachelor');
       return 'bachelor';
     }
 
     if (value.includes('școala generală')) {
-      console.log('✅ FIXED education mapping result: elementary');
       return 'elementary';
     }
     if (value.includes('liceu - profil real')) {
-      console.log('✅ FIXED education mapping result: highschool_tech');
       return 'highschool_tech';
     }
     if (value.includes('liceu - profil uman')) {
-      console.log('✅ FIXED education mapping result: highschool_general');
       return 'highschool_general';
     }
     if (value.includes('studii universitare de licență')) {
-      console.log('✅ FIXED education mapping result: bachelor');
       return 'bachelor';
     }
     if (value.includes('studii universitare de master')) {
-      console.log('✅ FIXED education mapping result: master');
       return 'master';
     }
     if (value.includes('studii de doctorat') || value.includes('phd')) {
-      console.log('✅ FIXED education mapping result: phd');
       return 'phd';
     }
-    
-    console.log('⚠️ No education match found, using default: bachelor');
+
     return 'bachelor';
   }
 
   private mapOccupationFixed(value: string): string {
-    console.log('🔍 FIXED mapping occupation from:', `"${value}"`);
     
     if (!value) {
-      console.log('⚠️ Empty occupation value, using default: other');
       return 'other';
     }
 
     if (value.includes('it/tehnologie')) {
-      console.log('✅ FIXED occupation mapping result: tech');
+
       return 'tech';
     }
     if (value.includes('inginerie')) {
-      console.log('✅ FIXED occupation mapping result: engineering');
+
       return 'engineering';
     }
     if (value.includes('educație')) {
-      console.log('✅ FIXED occupation mapping result: education');
       return 'education';
     }
     if (value.includes('student')) {
-      console.log('✅ FIXED occupation mapping result: student');
       return 'student';
     }
     if (value.includes('sănătate')) {
-      console.log('✅ FIXED occupation mapping result: healthcare');
+
       return 'healthcare';
     }
     if (value.includes('business/management')) {
-      console.log('✅ FIXED occupation mapping result: business');
+  
       return 'business';
     }
     if (value.includes('pensionar')) {
-      console.log('✅ FIXED occupation mapping result: retired');
+
       return 'retired';
     }
     if (value.includes('altceva')) {
-      console.log('✅ FIXED occupation mapping result: other');
+ 
       return 'other';
     }
     
-    console.log('⚠️ No occupation match found, using default: other');
+
     return 'other';
   }
 
   private mapStemFamiliarityFixed(value: string): string {
-    console.log('🔍 FIXED mapping STEM from:', `"${value}"`);
+
     
     if (!value) {
-      console.log('⚠️ Empty STEM value, using default: stem_moderate');
+
       return 'stem_moderate';
     }
 
     if (value.includes('expert stem')) {
-      console.log('✅ FIXED STEM mapping result: stem_expert');
+
       return 'stem_expert';
     }
     if (value.includes('familiar cu stem')) {
-      console.log('✅ FIXED STEM mapping result: stem_familiar');
+
       return 'stem_familiar';
     }
     if (value.includes('moderat familiar')) {
-      console.log('✅ FIXED STEM mapping result: stem_moderate');
+
       return 'stem_moderate';
     }
     if (value.includes('cunoștințe de bază')) {
-      console.log('✅ FIXED STEM mapping result: stem_basic');
+
       return 'stem_basic';
     }
     if (value.includes('fără cunoștințe stem')) {
-      console.log('✅ FIXED STEM mapping result: stem_none');
+
       return 'stem_none';
     }
     
-    console.log('⚠️ No STEM match found, using default: stem_moderate');
     return 'stem_moderate';
   }
 
   private mapProblemSolvingStyleFixed(value: string): string {
-    console.log('🔍 FIXED mapping problem solving from:', `"${value}"`);
     
     if (!value) {
-      console.log('⚠️ Empty problem solving value, using default: balanced');
+
       return 'balanced';
     }
 
     if (value.includes('sistematic')) {
-      console.log('✅ FIXED problem solving mapping result: systematic');
+
       return 'systematic';
     }
     if (value.includes('exploratoriu')) {
-      console.log('✅ FIXED problem solving mapping result: exploratory');
+
       return 'exploratory';
     }
     if (value.includes('echilibrat')) {
-      console.log('✅ FIXED problem solving mapping result: balanced');
       return 'balanced';
     }
     if (value.includes('colaborativ')) {
-      console.log('✅ FIXED problem solving mapping result: collaborative');
       return 'collaborative';
     }
-    
-    console.log('⚠️ No problem solving match found, using default: balanced');
+
     return 'balanced';
   }
 
   private mapTechComfortFixed(value: string): string {
-    console.log('🔍 FIXED mapping tech comfort from:', `"${value}"`);
+
     
     if (!value) {
-      console.log('⚠️ Empty tech comfort value, using default: tech_moderate');
+
       return 'tech_moderate';
     }
 
     if (value.includes('expert în tehnologie')) {
-      console.log('✅ FIXED tech comfort mapping result: tech_expert');
+
       return 'tech_expert';
     }
     if (value.includes('confortabil cu tehnologia')) {
-      console.log('✅ FIXED tech comfort mapping result: tech_comfortable');
+
       return 'tech_comfortable';
     }
     if (value.includes('moderat cu tehnologia')) {
-      console.log('✅ FIXED tech comfort mapping result: tech_moderate');
+ 
       return 'tech_moderate';
     }
     if (value.includes('de bază cu tehnologia')) {
-      console.log('✅ FIXED tech comfort mapping result: tech_basic');
+
       return 'tech_basic';
     }
     if (value.includes('neconfortabil cu tehnologia')) {
-      console.log('✅ FIXED tech comfort mapping result: tech_uncomfortable');
+
       return 'tech_uncomfortable';
     }
     
-    console.log('⚠️ No tech comfort match found, using default: tech_moderate');
+
     return 'tech_moderate';
   }
 
   private mapAssemblyExperienceFixed(value: string): string {
-    console.log('🔍 FIXED mapping assembly experience from:', `"${value}"`);
+
     
     if (!value) {
-      console.log('⚠️ Empty assembly experience value, using default: assembly_rare');
+
       return 'assembly_rare';
     }
 
     if (value.includes('expert în asamblare')) {
-      console.log('✅ FIXED assembly experience mapping result: assembly_expert');
+
       return 'assembly_expert';
     }
     if (value.includes('ceva experiență')) {
-      console.log('✅ FIXED assembly experience mapping result: assembly_some');
+
       return 'assembly_some';
     }
     if (value.includes('experiență rară')) {
-      console.log('✅ FIXED assembly experience mapping result: assembly_rare');
+
       return 'assembly_rare';
     }
     if (value.includes('fără experiență')) {
-      console.log('✅ FIXED assembly experience mapping result: assembly_none');
+
       return 'assembly_none';
     }
     
-    console.log('⚠️ No assembly experience match found, using default: assembly_rare');
+
     return 'assembly_rare';
   }
 
   private mapErrorHandlingFixed(value: string): string {
-    console.log('🔍 FIXED mapping error handling from:', `"${value}"`);
+
     
     if (!value) {
-      console.log('⚠️ Empty error handling value, using default: analytical');
+
       return 'analytical';
     }
 
     if (value.includes('încerc din nou rapid')) {
-      console.log('✅ FIXED error handling mapping result: quick_retry');
+
       return 'quick_retry';
     }
     if (value.includes('mă opresc să analizez')) {
-      console.log('✅ FIXED error handling mapping result: analytical');
+
       return 'analytical';
     }
     if (value.includes('încep totul de la început')) {
-      console.log('✅ FIXED error handling mapping result: restart');
+
       return 'restart';
     }
     if (value.includes('caut ajutor')) {
-      console.log('✅ FIXED error handling mapping result: seek_help');
+
       return 'seek_help';
     }
     if (value.includes('mă frustrez')) {
-      console.log('✅ FIXED error handling mapping result: frustrated');
+
       return 'frustrated';
     }
-    
-    console.log('⚠️ No error handling match found, using default: analytical');
+
     return 'analytical';
   }
 
   private mapGamingFrequencyFixed(value: string): string {
-    console.log('🔍 FIXED mapping gaming from:', `"${value}"`);
+
     
     if (!value) {
-      console.log('⚠️ Empty gaming frequency value, using default: gaming_occasional');
+
       return 'gaming_occasional';
     }
 
     if (value.includes('zilnic, multe ore')) {
-      console.log('✅ FIXED gaming frequency mapping result: gaming_heavy');
+
       return 'gaming_heavy';
     }
     if (value.includes('zilnic, moderat')) {
-      console.log('✅ FIXED gaming frequency mapping result: gaming_daily');
+
       return 'gaming_daily';
     }
     if (value.includes('săptămânal')) {
-      console.log('✅ FIXED gaming frequency mapping result: gaming_weekly');
+
       return 'gaming_weekly';
     }
     if (value.includes('ocazional')) {
-      console.log('✅ FIXED gaming frequency mapping result: gaming_occasional');
+
       return 'gaming_occasional';
     }
     if (value.includes('niciodată')) {
-      console.log('✅ FIXED gaming frequency mapping result: gaming_never');
+
       return 'gaming_never';
     }
-    
-    console.log('⚠️ No gaming frequency match found, using default: gaming_occasional');
+
     return 'gaming_occasional';
   }
 
-  /**
-   * Extract and normalize assembly data
-   */
+  
   private extractAssemblyData(assembly: any): RawAssemblyData {
     if (!assembly) {
       return {
@@ -598,11 +556,8 @@ export class EnhancedResponseService {
     };
   }
 
-  /**
-   * ✅ NEW: Recompute ALL responses with FIXED categories
-   */
   async recomputeAllResponsesWithFixedCategories(): Promise<{ success: boolean; message: string; processedCount: number; categoriesFixed: number }> {
-    console.log('🔧 COMPLETE recomputation of ALL responses with FIXED categories...');
+
     
     try {
       const responses = await this.responseRepo.find({
@@ -617,7 +572,7 @@ export class EnhancedResponseService {
       
       for (const response of responses) {
         try {
-          console.log(`\n🔄 Processing response ${response.id}...`);
+          console.log(`\n Processing response ${response.id}...`);
           
          
           const originalDemo = JSON.stringify(response.demographicProfile);
@@ -647,17 +602,7 @@ export class EnhancedResponseService {
           
           const newDemo = JSON.stringify(demographicProfile);
           const newBehav = JSON.stringify(behavioralProfile);
-          
-          if (originalDemo !== newDemo || originalBehav !== newBehav) {
-            categoriesFixed++;
-            console.log(`✅ FIXED categories for response ${response.id}`);
-            console.log(`   Old demo: ${originalDemo}`);
-            console.log(`   New demo: ${newDemo}`);
-            console.log(`   Old behav: ${originalBehav}`);
-            console.log(`   New behav: ${newBehav}`);
-          } else {
-            console.log(`✓ Categories already consistent for response ${response.id}`);
-          }
+        
           
         } catch (error) {
           console.error(`❌ Error processing response ${response.id}:`, error);
@@ -685,7 +630,6 @@ export class EnhancedResponseService {
    * Method to recompute metrics for existing responses
    */
   async recomputeMetricsForSurvey(surveyId: number): Promise<{ success: boolean; message: string; processedCount: number }> {
-    console.log(`🔄 Recomputing metrics for survey ${surveyId} with FIXED mapping...`);
     
     try {
       const responses = await this.responseRepo.find({
@@ -696,15 +640,11 @@ export class EnhancedResponseService {
         relations: ['survey']
       });
 
-      console.log(`Found ${responses.length} responses to recompute`);
 
       let processedCount = 0;
       for (const response of responses) {
         try {
-          console.log(`\n🔄 Processing response ${response.id}...`);
-          console.log('Original answers:', JSON.stringify(response.answers, null, 2));
-          
-          
+       
           const demographicProfile = this.extractDemographicProfile(response.answers);
           const behavioralProfile = this.extractBehavioralProfile(response.answers);
           const assemblyData = this.extractAssemblyData(response.assembly);
@@ -724,10 +664,7 @@ export class EnhancedResponseService {
           });
 
           processedCount++;
-          console.log(`✅ Updated response ${response.id} with FIXED data:`, {
-            demographic: demographicProfile,
-            behavioral: behavioralProfile
-          });
+         
         } catch (error) {
           console.error(`❌ Error processing response ${response.id}:`, error);
         }
@@ -758,7 +695,7 @@ export class EnhancedResponseService {
     correlationAnalysis: any;
     insights: AnalyticsInsights;
   }> {
-    console.log(`📊 Generating enhanced analytics for survey ${surveyId}`);
+    console.log(`Generating enhanced analytics for survey ${surveyId}`);
     
     
     const responses = await this.getResponsesWithMetrics(surveyId);
@@ -1016,7 +953,7 @@ export class EnhancedResponseService {
 
 async findResponseByResponseId(responseId: number, surveyId: number): Promise<any> {
   try {
-    console.log(`🔍 Searching for response: responseId=${responseId}, surveyId=${surveyId}`);
+    console.log(` Searching for response: responseId=${responseId}, surveyId=${surveyId}`);
     
     const response = await this.responseRepo.findOne({
       where: { 
@@ -1027,10 +964,10 @@ async findResponseByResponseId(responseId: number, surveyId: number): Promise<an
     
     console.log(`📝 Response found:`, !!response);
     if (response) {
-      console.log(`📊 Response has assembly:`, !!response.assembly);
+      console.log(` Response has assembly:`, !!response.assembly);
       if (response.assembly) {
-        console.log(`🔧 Assembly structure keys:`, Object.keys(response.assembly));
-        console.log(`📝 Components placed:`, response.assembly.componentsPlaced ? response.assembly.componentsPlaced.length : 0);
+        console.log(` Assembly structure keys:`, Object.keys(response.assembly));
+        console.log(` Components placed:`, response.assembly.componentsPlaced ? response.assembly.componentsPlaced.length : 0);
       }
     }
     

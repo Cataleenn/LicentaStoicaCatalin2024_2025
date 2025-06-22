@@ -503,7 +503,7 @@ export class ClusteringService {
           c.profile.avgTechnicalAptitude > 0.75 && 
           c.profile.avgSpeedIndex > 0.7 && 
           c.profile.avgPrecisionIndex > 0.7,
-        description: 'Exceptional users with high performance across all metrics'
+        description: 'Utilizatori excepționali cu performanțe ridicate în toate indicatorii'
       },
       {
         name: 'Speed Champions',
@@ -511,42 +511,42 @@ export class ClusteringService {
           c.profile.avgSpeedIndex > 0.8 && 
           c.profile.avgConfidenceIndex > 0.7 &&
           c.profile.avgPrecisionIndex < 0.7,
-        description: 'Fast, confident users who prioritize speed over precision'
+        description: 'Utilizatori rapizi și încrezători care prioritizează viteza în detrimentul preciziei'
       },
       {
         name: 'Precision Masters',
         condition: (c: ClusterCenter) => 
           c.profile.avgPrecisionIndex > 0.8 && 
           c.profile.avgSystematicIndex > 0.7,
-        description: 'Methodical users who excel in accuracy and systematic approaches'
+        description: 'Utilizatori metodici care excelează în acuratețe și abordări sistematice'
       },
       {
         name: 'Tech Experts',
         condition: (c: ClusterCenter) => 
           c.profile.avgTechnicalAptitude > 0.7 &&
           c.demographicProfile.dominantOccupation === 'tech',
-        description: 'Technology professionals with strong technical background'
+        description: 'Profesioniști în tehnologie cu o pregătire tehnică solidă'
       },
       {
         name: 'Systematic Planners',
         condition: (c: ClusterCenter) => 
           c.profile.avgSystematicIndex > 0.75 && 
           c.behavioralProfile.dominantProblemSolvingStyle === 'systematic',
-        description: 'Organized users who plan before acting and follow methodical approaches'
+        description: 'Utilizatori organizați care planifică înainte de a acționa și urmează abordări metodice'
       },
       {
         name: 'Confident Explorers',
         condition: (c: ClusterCenter) => 
           c.profile.avgConfidenceIndex > 0.7 && 
           c.behavioralProfile.dominantProblemSolvingStyle === 'exploratory',
-        description: 'Self-assured users who learn through experimentation'
+        description: 'Utilizatori siguri pe sine care învață prin experimentare'
       },
       {
         name: 'Persistent Learners',
         condition: (c: ClusterCenter) => 
           c.profile.avgPersistenceIndex > 0.75 && 
           c.profile.avgConfidenceIndex < 0.6,
-        description: 'Determined users who overcome challenges through persistence'
+        description: 'Utilizatori hotărâți care depășesc provocările prin perseverență'
       },
       {
         name: 'Balanced Achievers',
@@ -554,21 +554,21 @@ export class ClusteringService {
           c.profile.avgTechnicalAptitude > 0.5 && 
           c.profile.avgTechnicalAptitude < 0.75 &&
           Math.abs(c.profile.avgSpeedIndex - c.profile.avgPrecisionIndex) < 0.2,
-        description: 'Well-rounded users with balanced performance across metrics'
+        description: 'Utilizatori echilibrați cu performanță echilibrată în funcție de parametri'
       },
       {
         name: 'Cautious Beginners',
         condition: (c: ClusterCenter) => 
           c.profile.avgConfidenceIndex < 0.5 && 
           c.profile.avgTechnicalAptitude < 0.6,
-        description: 'Careful users who approach tasks with caution and need guidance'
+        description: 'Utilizatori atenți care abordează sarcinile cu precauție și au nevoie de îndrumare'
       },
       {
         name: 'Gaming Veterans',
         condition: (c: ClusterCenter) => 
           c.behavioralProfile.dominantGamingFrequency === 'gaming_heavy' ||
           c.behavioralProfile.dominantGamingFrequency === 'gaming_daily',
-        description: 'Experienced gamers who bring gaming skills to technical tasks'
+        description: 'Jucători experimentați care își aduc abilitățile de joc și în sarcini tehnice'
       }
     ];
 
@@ -595,7 +595,7 @@ export class ClusteringService {
         for (const fallbackName of fallbackNames) {
           if (!usedNames.has(fallbackName)) {
             cluster.clusterName = fallbackName;
-            cluster.clusterDescription = 'Mixed characteristics users with unique patterns';
+            cluster.clusterDescription = 'Utilizatori cu caracteristici mixte și tipare unice';
             cluster.detailedProfile = this.generateDetailedProfile(cluster);
             usedNames.add(fallbackName);
             break;

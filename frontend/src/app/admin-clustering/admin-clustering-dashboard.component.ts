@@ -293,22 +293,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
   }
 
 
-  getPerformanceBadgeClass(technicalAptitude: number): string {
-    if (technicalAptitude > 0.8) return 'performance-excellent';
-    if (technicalAptitude > 0.6) return 'performance-good';
-    if (technicalAptitude > 0.4) return 'performance-average';
-    return 'performance-needs-improvement';
-  }
-
-
-  getPerformanceLabel(technicalAptitude: number): string {
-    if (technicalAptitude > 0.8) return 'Excelent';
-    if (technicalAptitude > 0.6) return 'Bun';
-    if (technicalAptitude > 0.4) return 'Mediu';
-    return 'Necesită îmbunătățire';
-  }
-
-
   formatProfileForDisplay(profile: string): string {
     if (!profile) return 'Profil indisponibil';
     
@@ -317,23 +301,6 @@ export class AdminClusteringDashboardComponent implements OnInit {
       .replace(/•/g, '&nbsp;&nbsp;•') 
       .replace(/\n/g, '<br>') 
       .replace(/(\d+\.?\d*%)/g, '<span class="percentage-highlight">$1</span>');  
-  }
-
-  getUniqueOccupations(): number {
-    if (!this.clusteringSummary) return 0;
-    
-    const occupations = new Set<string>();
-    this.clusteringSummary.clusters.forEach(cluster => {
-      if (cluster.characteristics) {
-        cluster.characteristics.forEach(char => {
-          if (['IT/Tehnologie', 'Inginerie', 'Studenți', 'Educație', 'Sănătate', 'Business'].includes(char)) {
-            occupations.add(char);
-          }
-        });
-      }
-    });
-    
-    return occupations.size;
   }
 
  

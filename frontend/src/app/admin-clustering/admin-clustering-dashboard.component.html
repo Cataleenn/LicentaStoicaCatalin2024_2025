@@ -84,7 +84,7 @@
         <div *ngIf="clusteringSummary.insights && clusteringSummary.insights.length > 0" class="insights-section">
           <mat-card class="insights-card">
             <mat-card-header>
-              <mat-card-title>💡 Descoperiri Cheie</mat-card-title>
+              <mat-card-title>💡 Observații inițiale</mat-card-title>
             </mat-card-header>
             <mat-card-content>
               <div class="insights-grid">
@@ -122,9 +122,6 @@
                             <div class="cluster-meta">
                               <span class="participant-count">{{ cluster.size }} participanți</span>
                               <span class="percentage">({{ cluster.percentage.toFixed(1) }}%)</span>
-                              <span class="performance-badge" [ngClass]="getPerformanceBadgeClass(cluster.performanceMetrics.technicalAptitude)">
-                                {{ getPerformanceLabel(cluster.performanceMetrics.technicalAptitude) }}
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -203,7 +200,7 @@
             </mat-card-header>
             <mat-card-content>
               <div class="fisher-description">
-                <p>Testul Fisher analizează care întrebări din chestionar sunt cele mai importante pentru a diferenția între clustere. Aceasta ne arată ce răspunsuri caracterizează cel mai bine fiecare grup comportamental.</p>
+                <p>Testul Fisher analizează care întrebări din chestionar sunt cele mai importante pentru a diferenția între clustere. Acesta ne arată ce răspunsuri caracterizează cel mai bine fiecare grup comportamental.</p>
               </div>
               <app-fisher-test 
                 [surveyId]="selectedSurveyId" 

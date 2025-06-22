@@ -138,8 +138,8 @@ export class FeatureEngineeringService {
     const timeScore = Math.max(0, (maxTime - data.completionTime) / maxTime);
     
     // Bonus for very fast completion, penalty for very slow
-    if (data.completionTime < 60) return Math.min(1, timeScore * 1.2); // Bonus for under 1 minute
-    if (data.completionTime > 240) return timeScore * 0.8; // Penalty for over 4 minutes
+    if (data.completionTime < 30) return Math.min(1, timeScore * 1.2); // Bonus for under 1 minute
+    if (data.completionTime > 60) return timeScore * 0.8; // Penalty for over 4 minutes
     
     return timeScore;
   }
@@ -174,7 +174,7 @@ export class FeatureEngineeringService {
     else if (behavioral.assemblyExperience === 'assembly_none') score -= 0.1;
     
     // Assembly behavior indicators
-    const quickStart = data.completionTime < 120; // Completed quickly
+    const quickStart = data.completionTime < 40; // Completed quickly
     const fewRotations = data.rotations <= 2;     // Didn't need many views
     
     if (quickStart) score += 0.2;
@@ -233,7 +233,7 @@ export class FeatureEngineeringService {
     }
     
     // Long time spent but completed = persistence through difficulty
-    if (data.completionTime > 180 && data.completed) {
+    if (data.completionTime > 40 && data.completed) {
       score += 0.1;
     }
     
@@ -260,7 +260,7 @@ export class FeatureEngineeringService {
     }
     
     // Quick completion with high accuracy = good adaptation
-    if (data.completionTime < 120 && data.correctnessPercentage > 85) {
+    if (data.completionTime < 30 && data.correctnessPercentage > 85) {
       score += 0.3;
     }
     
@@ -349,7 +349,7 @@ export class FeatureEngineeringService {
     }
     
     // Quick recovery (fast completion despite errors)
-    if (data.completionTime < 180 && data.wrongPlacementsCount > 0 && data.completed) {
+    if (data.completionTime < 40 && data.wrongPlacementsCount > 0 && data.completed) {
       score += 0.2;
     }
     
@@ -370,7 +370,7 @@ export class FeatureEngineeringService {
     else if (behavioral.errorHandlingStyle === 'analytical') score -= 0.2;
     
     // Assembly behavior indicators
-    if (data.completionTime < 90) score += 0.3; // Very fast = potentially impulsive
+    if (data.completionTime < 30) score += 0.3; // Very fast = potentially impulsive
     if (data.wrongPlacementsCount > 5) score += 0.2; // Many mistakes = impulsive
     if (data.rotations === 0) score += 0.1; // Didn't look around = impulsive
     
@@ -438,7 +438,7 @@ export class FeatureEngineeringService {
     else if (behavioral.assemblyExperience === 'assembly_none') score -= 0.1;
     
     // Efficiency bonus
-    if (data.completionTime < 120 && data.correctnessPercentage > 90) {
+    if (data.completionTime < 30 && data.correctnessPercentage > 90) {
       score += 0.2; // Bonus for high performance
     }
     

@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, FormArray, AbstractControl } from '@angular/for
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProductAssemblyComponent } from './product-assembly.component';
+import { Router } from '@angular/router';
 
 
 
@@ -40,7 +41,8 @@ export class SurveyViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private surveyService: SurveyService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+     private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -253,29 +255,29 @@ onSubmit(): void {
 
   let hasMissingRequired = false;
 
-for (let i = 0; i < this.questions.length; i++) {
-  const question = this.questions.at(i);
-  const isRequired = question.get('required')?.value;
-  const response = question.get('response')?.value;
+  for (let i = 0; i < this.questions.length; i++) {
+    const question = this.questions.at(i);
+    const isRequired = question.get('required')?.value;
+    const response = question.get('response')?.value;
 
-  const isEmpty =
-    response === null ||
-    response === undefined ||
-    (typeof response === 'string' && response.trim() === '') ||
-    (Array.isArray(response) && response.length === 0);
+    const isEmpty =
+      response === null ||
+      response === undefined ||
+      (typeof response === 'string' && response.trim() === '') ||
+      (Array.isArray(response) && response.length === 0);
 
-  if (isRequired && isEmpty) {
-    question.get('response')?.setErrors({ required: true }); 
-    hasMissingRequired = true;
-  } else {
-    question.get('response')?.setErrors(null); 
+    if (isRequired && isEmpty) {
+      question.get('response')?.setErrors({ required: true }); 
+      hasMissingRequired = true;
+    } else {
+      question.get('response')?.setErrors(null); 
+    }
   }
-}
 
-if (hasMissingRequired) {
-  alert('Te rugăm să completezi toate întrebările obligatorii.');
-  return;
-}
+  if (hasMissingRequired) {
+    alert('Te rugăm să completezi toate întrebările obligatorii.');
+    return;
+  }
 
   const surveyData = this.surveyForm.value;
   const answers: Record<string, any> = {};
@@ -294,14 +296,29 @@ if (hasMissingRequired) {
 
   this.surveyService.submitResponses(this.surveyId, payload).subscribe({
     next: (res) => {
-      console.log('Responses submitted successfully', res);
-      alert('Chestionar trimis cu succes!');
+      console.log('✅ Responses submitted successfully', res);
+      
+      this.showSuccessMessage();
     },
     error: (err) => {
-      console.error('Error submitting responses', err);
-      alert('Eroare la trimiterea răspunsurilor!');
+      console.error('❌ Error submitting responses', err);
+      alert('Eroare la trimiterea răspunsurilor! Te rugăm să încerci din nou.');
     }
   });
+}
+
+private showSuccessMessage(): void {
+
+  const message = `✅ MULȚUMIM!
+
+Chestionarul a fost trimis cu succes!
+
+Răspunsurile dumneavoastră au fost înregistrate și vor fi analizate. 
+Vă mulțumim pentru timpul acordat!`;
+
+  alert(message);
+  
+  window.location.href = '/login';
 }
 
 

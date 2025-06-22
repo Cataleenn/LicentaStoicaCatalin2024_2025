@@ -35,5 +35,4 @@ export const routes: Routes = [
     path: 'survey/:id', 
     component: SurveyViewComponent 
   },
-  { path: '**', redirectTo: '/login' }
 ];
