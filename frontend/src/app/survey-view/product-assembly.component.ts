@@ -481,7 +481,7 @@ export class ProductAssemblyComponent {
       detailedStats
     };
 
-    console.log('📊 Complete Assembly Statistics (with STRICT rules):', {
+    console.log(' Complete Assembly Statistics (with STRICT rules):', {
       ...statistics,
       summary: {
         'Strict rule violations (blocked)': this.wrongPlacementsCount,

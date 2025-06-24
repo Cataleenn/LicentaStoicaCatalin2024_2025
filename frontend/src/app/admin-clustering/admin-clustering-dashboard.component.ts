@@ -130,7 +130,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     this.clusteringSummary = null;
     this.errorMessage = '';
     
-    console.log('📊 Selected survey for analysis:', surveyId);
+    console.log(' Selected survey for analysis:', surveyId);
     this.checkExistingResults(surveyId);
   }
 
@@ -166,7 +166,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
     this.errorMessage = '';
     this.clusteringSummary = null;
 
-    console.log('🔬 Starting OPTIMAL clustering analysis for survey:', this.selectedSurveyId);
+    console.log(' Starting OPTIMAL clustering analysis for survey:', this.selectedSurveyId);
     this.snackBar.open('Se efectuează analiza optimală...', 'Închide', { duration: 2000 });
 
 
@@ -202,7 +202,7 @@ export class AdminClusteringDashboardComponent implements OnInit {
 
 
   displayClusteringResults(data: any): void {
-    console.log('📊 Displaying optimal clustering results:', data);
+    console.log(' Displaying optimal clustering results:', data);
     
 
     const insights = Array.isArray(data.insights) ? data.insights : [];

@@ -69,7 +69,7 @@ export class ClusteringService {
 
  
   async performClustering(surveyId?: number, forcedK?: number): Promise<ClusteringResult> {
-    console.log('🔬 Starting AUTOMATIC OPTIMAL clustering analysis...');
+    console.log(' Starting AUTOMATIC OPTIMAL clustering analysis...');
     
     
     const responses = await this.getResponsesForClustering(surveyId);
@@ -91,7 +91,7 @@ export class ClusteringService {
 
    
     const optimalResult = await this.findOptimalClusteringAutomatically(featureVectors, forcedK);
-    console.log(`📊 AUTOMATICALLY selected optimal K=${optimalResult.optimalK} with quality score: ${optimalResult.bestQuality.toFixed(3)}`);
+    console.log(` AUTOMATICALLY selected optimal K=${optimalResult.optimalK} with quality score: ${optimalResult.bestQuality.toFixed(3)}`);
 
    
     const clusters = await this.createClusterProfiles(
@@ -172,7 +172,7 @@ export class ClusteringService {
 
     for (let k = minK; k <= maxK; k++) {
       try {
-        console.log(`🧮 Testing K=${k}...`);
+        console.log(` Testing K=${k}...`);
         
         let bestKResult: any = null;
         let bestKQuality = -1;
@@ -681,7 +681,7 @@ export class ClusteringService {
       });
     }
     
-    console.log(`✅ Updated cluster assignments for ${responses.length} responses`);
+    console.log(` Updated cluster assignments for ${responses.length} responses`);
   }
 
   private calculateAssignmentConfidence(point: number[], centroids: number[][], assignedCluster: number): number {

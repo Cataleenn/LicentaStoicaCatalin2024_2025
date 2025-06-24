@@ -35,7 +35,7 @@ export class EnhancedResponseService {
     'age': ['vârstă','varsta', 'ani', 'age', 'years', 'născut','nașterii','data','anul','nascut'],
     'gender': ['gen', 'gender', 'sex','genul'],
     'education': ['educație','educatie', 'scoala','școală', 'studii', 'education', 'diploma'],
-    'occupation': ['ocupație','ocupatie', 'job', 'muncă','munca', 'profesie', 'lucrez'],
+    'occupation': ['ocupație','ocupatie', 'job', 'muncă','munca', 'profesie', 'lucrez','jobul'],
     'stem': ['stem','STEM', 'științe','stiinte', 'matematică', 'tehnică','tehnica','tehnice','matematica','fizica','fizică'],
     
     // Comportamentale
@@ -962,7 +962,7 @@ async findResponseByResponseId(responseId: number, surveyId: number): Promise<an
       }
     });
     
-    console.log(`📝 Response found:`, !!response);
+    console.log(` Response found:`, !!response);
     if (response) {
       console.log(` Response has assembly:`, !!response.assembly);
       if (response.assembly) {

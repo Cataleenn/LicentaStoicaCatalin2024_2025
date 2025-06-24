@@ -53,7 +53,7 @@ export class FisherTestComponent implements OnInit {
     this.fisherResults = null;
     this.allClustersResult = null;
 
-    console.log('🔬 Starting Fisher analysis for survey:', this.surveyId);
+    console.log(' Starting Fisher analysis for survey:', this.surveyId);
 
     this.fisherTestService.getFisherTestSummary(this.surveyId).subscribe({
       next: (summaryResponse) => {
@@ -64,14 +64,14 @@ export class FisherTestComponent implements OnInit {
             next: (detailResponse) => {
               if (detailResponse.success) {
                 this.allClustersResult = detailResponse;
-                console.log('✅ Fisher analysis completed successfully');
+                console.log(' Fisher analysis completed successfully');
               } else {
                 this.errorMessage = detailResponse.message || 'Eroare la obținerea detaliilor Fisher test';
               }
               this.isAnalyzing = false;
             },
             error: (error) => {
-              console.error('❌ Error getting Fisher details:', error);
+              console.error(' Error getting Fisher details:', error);
               this.errorMessage = 'Eroare la obținerea detaliilor Fisher test';
               this.isAnalyzing = false;
             }
@@ -82,7 +82,7 @@ export class FisherTestComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('❌ Error running Fisher analysis:', error);
+        console.error(' Error running Fisher analysis:', error);
         this.errorMessage = error.error?.message || 'Eroare la rularea Fisher test';
         this.isAnalyzing = false;
       }

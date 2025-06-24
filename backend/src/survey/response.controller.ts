@@ -14,17 +14,17 @@ export class ResponseController {
 
   @Post()
   async submitResponse(@Body() dto: CreateResponseDto) {
-    console.log('\n🔥 === RESPONSE SUBMISSION WITH FIXED CATEGORIES ===');
-    console.log('📦 FULL DTO:', JSON.stringify(dto, null, 2));
+    console.log('\n === RESPONSE SUBMISSION WITH FIXED CATEGORIES ===');
+    console.log(' FULL DTO:', JSON.stringify(dto, null, 2));
 
     try {
       
-      console.log('🔬 Using Enhanced Response Service with FIXED categories...');
+      console.log(' Using Enhanced Response Service with FIXED categories...');
       const savedResponse = await this.enhancedResponseService.saveEnhancedResponse(dto);
-      console.log('\n✅ === RESPONSE SAVED WITH FIXED CATEGORIES ===');
-      console.log('🆔 Response ID:', savedResponse.id);
-      console.log('📊 FIXED Demographic Profile:', JSON.stringify(savedResponse.demographicProfile, null, 2));
-      console.log('🧠 FIXED Behavioral Profile:', JSON.stringify(savedResponse.behavioralProfile, null, 2));
+      console.log('\n === RESPONSE SAVED WITH FIXED CATEGORIES ===');
+      console.log(' Response ID:', savedResponse.id);
+      console.log(' FIXED Demographic Profile:', JSON.stringify(savedResponse.demographicProfile, null, 2));
+      console.log(' FIXED Behavioral Profile:', JSON.stringify(savedResponse.behavioralProfile, null, 2));
       return {
         success: true,
         message: 'Response submitted with FIXED categories successfully',
@@ -130,7 +130,7 @@ export class ResponseController {
   @Get('analytics/survey/:id')
   @UseGuards(AdminGuard)
   async getSurveyAnalytics(@Param('id') surveyId: number) {
-    console.log(`📊 Generating analytics for survey ${surveyId}`);
+    console.log(` Generating analytics for survey ${surveyId}`);
     
     try {
       const analytics = await this.enhancedResponseService.getEnhancedSurveyAnalytics(surveyId);

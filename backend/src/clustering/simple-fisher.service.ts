@@ -44,7 +44,7 @@ export class SimpleFisherService {
 
  
   async getSignificantQuestionsForCluster(surveyId: number, clusterId: number): Promise<ClusterQuestionAnalysis> {
-    console.log(`🔬 Simple Fisher test for cluster ${clusterId} in survey ${surveyId}`);
+    console.log(`Simple Fisher test for cluster ${clusterId} in survey ${surveyId}`);
     
 
     const survey = await this.surveyRepo.findOne({ where: { id: surveyId } });
@@ -219,6 +219,7 @@ export class SimpleFisherService {
     const { inClusterWithAnswer: a, notInClusterWithAnswer: b, inClusterWithoutAnswer: c, notInClusterWithoutAnswer: d } = table;
     
     console.log(`Fisher test table: a=${a}, b=${b}, c=${c}, d=${d}`);
+
     
     return this.exactFisherPValue(a, b, c, d);
     
@@ -249,7 +250,7 @@ export class SimpleFisherService {
         pValue += prob;
       }
     }
-    
+    console.log(`p-value= ${pValue}`)
     return Math.min(pValue, 1.0);
   }
 
@@ -292,9 +293,9 @@ export class SimpleFisherService {
     explanation += `vs ${otherPercentage}% din ceilalți participanți. `;
     
     if (pValue < 0.01) {
-      explanation += 'Diferența este FOARTE SEMNIFICATIVĂ statistik.';
+      explanation += 'Diferența este FOARTE SEMNIFICATIVĂ statistic.';
     } else if (pValue < 0.05) {
-      explanation += 'Diferența este SEMNIFICATIVĂ statistik.';
+      explanation += 'Diferența este SEMNIFICATIVĂ statistic.';
     } else {
       explanation += 'Diferența este potențial relevantă.';
     }
@@ -304,7 +305,7 @@ export class SimpleFisherService {
 
 
   async getAllClustersSignificantQuestions(surveyId: number): Promise<AllClustersAnalysis> {
-    console.log(`🔬 Getting significant questions for all clusters in survey ${surveyId}`);
+    console.log(` Getting significant questions for all clusters in survey ${surveyId}`);
     
     const responses = await this.responseRepo.find({
       where: {

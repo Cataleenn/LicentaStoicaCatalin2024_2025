@@ -31,7 +31,7 @@ export class ClusteringController {
     @Param('id') surveyId: number,
     @Body() options?: { forcedK?: number }
   ) {
-    console.log(`🔬 Starting clustering analysis for survey ${surveyId}`);
+    console.log(` Starting clustering analysis for survey ${surveyId}`);
     
     try {
       const clusteringResult = await this.clusteringService.performClustering(
@@ -58,7 +58,7 @@ export class ClusteringController {
   
   @Get('survey/:id/results')
   async getClusteringResults(@Param('id') surveyId: number) {
-    console.log(`📊 Getting clustering results for survey ${surveyId}`);
+    console.log(` Getting clustering results for survey ${surveyId}`);
     
     try {
 
@@ -196,7 +196,7 @@ export class ClusteringController {
   
   @Get('comparison')
   async getClusteringComparison(@Query('surveyIds') surveyIds: string) {
-    console.log('📊 Getting clustering comparison across surveys');
+    console.log(' Getting clustering comparison across surveys');
     
     try {
       const surveyIdArray = surveyIds.split(',').map(id => parseInt(id));

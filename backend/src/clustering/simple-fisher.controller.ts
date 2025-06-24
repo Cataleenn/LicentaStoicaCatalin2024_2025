@@ -20,7 +20,7 @@ export class SimpleFisherController {
     error?: string;
     message: string;
   }> {
-    console.log(`🔬 Fisher test for cluster ${clusterId} in survey ${surveyId}`);
+    console.log(` Fisher test for cluster ${clusterId} in survey ${surveyId}`);
     
     try {
       const result = await this.fisherService.getSignificantQuestionsForCluster(surveyId, clusterId);
@@ -53,7 +53,7 @@ export class SimpleFisherController {
     error?: string;
     message: string;
   }> {
-    console.log(`🔬 Fisher test for all clusters in survey ${surveyId}`);
+    console.log(` Fisher test for all clusters in survey ${surveyId}`);
     
     try {
       const result = await this.fisherService.getAllClustersSignificantQuestions(surveyId);
@@ -91,7 +91,7 @@ export class SimpleFisherController {
     error?: string;
     message: string;
   }> {
-    console.log(`📊 Fisher test summary for survey ${surveyId}`);
+    console.log(` Fisher test summary for survey ${surveyId}`);
     
     try {
       const allClustersResult = await this.fisherService.getAllClustersSignificantQuestions(surveyId);
