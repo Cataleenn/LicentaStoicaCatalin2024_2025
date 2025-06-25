@@ -88,8 +88,11 @@ export class SimpleFisherService {
         if (this.hasEnoughDataForTest(contingencyTable)) {
           const pValue = this.calculateSimpleFisherPValue(contingencyTable);
           
+          const clusterTotal = contingencyTable.inClusterWithAnswer + contingencyTable.inClusterWithoutAnswer;
+          const clusterPercentage = clusterTotal > 0 ? 
+          (contingencyTable.inClusterWithAnswer / clusterTotal) * 100 : 0;
           
-          if (pValue < 0.1) {
+          if (pValue < 0.1 && clusterPercentage>49) {
             results.push({
               questionNumber: questionKey,
               questionText: questionTexts[questionKey] || `Întrebarea ${questionKey}`,
@@ -296,9 +299,7 @@ export class SimpleFisherService {
       explanation += 'Diferența este FOARTE SEMNIFICATIVĂ statistic.';
     } else if (pValue < 0.05) {
       explanation += 'Diferența este SEMNIFICATIVĂ statistic.';
-    } else {
-      explanation += 'Diferența este potențial relevantă.';
-    }
+    } 
     
     return explanation;
   }
